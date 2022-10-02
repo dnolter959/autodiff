@@ -1,1 +1,1 @@
-[![test Actions Status](https://code.harvard.edu/CS107/team14/blob/m1b/.github/workflows/test.yml/badge.svg)
+![example workflow](https://github.com/CS107/team14/actions/workflows/test.yml/badge.svg?branch=m1b?event=push)
