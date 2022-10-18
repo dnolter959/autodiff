@@ -107,10 +107,15 @@ df2 = ad.backward(inputs)
 team14/
     ├── src/
     │   ├── __init__.py
-    │   ├── AutoDiff.py # I believe this should be a different directory which is what gets imported Georgios
-    │   ├── DualNumber.py # Dual number and utility functions all in a utilities directory
-    │   ├── utility.py
-    │   └── example.py # Example of how to use the package separated from the package itself
+    │   ├── adiff.py
+    │   ├── utils/
+    |   |   ├── __init__.py     
+    │   │   ├── dual_numbers.py
+    │   │   └── helpers.py
+    │   └── examples/
+    |       ├── __init__.py
+    │       ├── example_1.py
+    |       └── ...
     ├── tests/
     ├── docs/
     │   └── milestone1
@@ -123,13 +128,13 @@ team14/
   - Math: for mathematical constants like $\pi$ and $e$
 
 - Where will your test suite live?
-  - As indicated above, the test suite will be in the git directory, separated from the source files.
+  - As indicated above, the test suite will be in the `tests/` directory, separated from the source files.
 
 - How will you distribute your package (e.g. PyPI with PEP517/518 or simply setuptools)?
-  -PyPI with PEP517.
+  - PyPI with PEP517.
 
 - Other considerations?
-
+  - If the operations included in the `dual_numbers` module prove to be too extensive for a single file we will consider changing it into a directory and separating the dual number related operations in different modules
 
 ## Implementation
 
@@ -141,22 +146,22 @@ team14/
 
   - The core data data structures include the inputs:
 
-    - function_output:
-      - Type: List[str]
-      - Description: list of strings where each value represents the output of the function $f: R^n \rightarrow R^m$ in each dimension. Thus function_output[i] represents the return of function $f$ at dimension $i+1$.
+    - `function_output`:
+      - Type: `List[str]`
+      - Description: list of strings where each value represents the output of the function $f: R^n \rightarrow R^m$ in each dimension. Thus `function_output[i]` represents the return of function $f$ at dimension $i+1$.
 
-    - inputs:
-      - Type: Dict[str, float]
-      - Description: dictionary of input values for vector $x$ to function $f: R^n \rightarrow R^m$. Key represents the name of the input variable that is used in function_output and value is the number we calculate the derivative at.
-    - ad:
-      - Type: AutoDiff
-      - Description: class where the forward or backward automaticdifferention is performed.
-
-Dual numbers will be used inside the AutoDiff class to perform forward automatic differentiation using the DualNumber class.
+    - `inputs`:
+      - Type: `Dict[str, float]`
+      - Description: dictionary of input values for vector $x$ to function $f: R^n \rightarrow R^m$. Key represents the name of the input variable that is used in `function_output` and value is the number we calculate the derivative at.
+    - `ad`:
+      - Type: `AutoDiff`
+      - Description: class where the forward or backward automatic differention is performed.
+  
+  - Dual numbers will be used inside the `AutoDiff` class to perform forward automatic differentiation using the `DualNumber` class.
 
 - What method and name attributes will your classes have?
 
-  - The DualNumber class will have two instance variables representing the real and dual part of the dual number. It will overwrite most of the dunder methods that are used in mathmatical expressions, such as binary operations, comparison, equality, etc.
+  - The `DualNumber` class will have two instance variables representing the real and dual part of the dual number. It will overwrite most of the dunder methods that are used in mathmatical expressions, such as binary operations, comparison, equality, etc.
 
 ```python
 class DualNumber:
@@ -168,6 +173,9 @@ class DualNumber:
         pass
         
     def __mul__(self, other):
+        pass
+
+    def __pow__(self, other):
         pass
     
     def __radd__(self, other):
@@ -191,7 +199,7 @@ class DualNumber:
     # and more
 ```
 
-The AutoDiffMath class is used to carry out elementary math functions for the forward mode in automatic differentiation.
+The `AutoDiffMath` class is used to carry out elementary math functions for the forward mode in automatic differentiation.
 
 ```python
 import numpy as np
@@ -210,19 +218,16 @@ class AutoDiffMath:
         return DualNumber(np.cos(x.real), -np.sin(x.real)*x.dual)
         
     @staticmethod
-    def log(DualNumber: x, float: base=np.e):  
+    def log(DualNumber: x, float: base=math.e):  
         return DualNumber(np.log(x.real)/np.log(base), 1/(x.real*np.log(base))*x.dual)
                
     @staticmethod
     def exp(DualNumber: x):  
         return DualNumber(np.exp(x.real), np.exp(x.real)*x.dual)           
-        
-    @staticmethod
-    def pow(DualNumber: x, float: p):  
-        return DualNumber(np.pow(x.real, p), np.pow(x.real, p-1)*x.dual)
     
     # ... and more
 ```
+
 ```
 f = [
     "x1+sin(x2)"
@@ -252,11 +257,11 @@ f_parsed =
     ,[DN(pi_sq, 1),          DN(ln(pi_sq), 2/pi)]
 ]
 ```
-The AudoDiff class is the interface of the package. Users will initiate an AutoDiff object. The instance variables include the vector function passed as a list of strings and a seed vector. The class will implement two methods, one for forward mode and one for reverse, each taking a point $\mathbf{x}\in\mathbb{R}^m$ for evaluation. The class will also implement helper functions for forward and reverse mode, such as those to check the validity of the functions passed as strings, the correspondence between variables in $\mathbf{f}$ and $\mathbf{x}$, parsing the vector function passed as strings into an evaluable function using methods from AutoDiffMath, etc.
+
+The `AudoDiff` class is the interface of the package. Users will initiate an `AutoDiff` object. The instance variables include the vector function passed as a list of strings and a seed vector. The class will implement two methods, one for forward mode and one for reverse, each taking a point $\mathbf{x}\in\mathbb{R}^m$ for evaluation. The class will also implement helper functions for forward and reverse mode, such as those to check the validity of the functions passed as strings, the correspondence between variables in $\mathbf{f}$ and $\mathbf{x}$, parsing the vector function passed as strings into an evaluable function using methods from AutoDiffMath, etc.
 
 ```python
-import DualNumber as DN
-from AutoDiffMath import *
+from utils import *
 
 class AutoDiff:
     def __init__(self, f, seed):
@@ -302,12 +307,11 @@ class AutoDiff:
         pass
 ```
 
-  - Will you need some graph class to resemble the computational graph in forward mode or maybe later for reverse mode? Note that in milestone 2 you propose an extension for your project, an example could be reverse mode.
+- Will you need some graph class to resemble the computational graph in forward mode or maybe later for reverse mode? Note that in milestone 2 you propose an extension for your project, an example could be reverse mode.
 
-    - We will need a graph class for the computational graph for reverse mode. We will not need a graph class for forward mode, as python implicitly carries out the calculation based on the computational graph, once the string function is correctly parsed and evaluated as a function that calls the overwritten methods from AutoDiffMath class.
+  - We will need a graph class for the computational graph for reverse mode. We will not need a graph class for forward mode, as python implicitly carries out the calculation based on the computational graph, once the string function is correctly parsed and evaluated as a function that calls the overwritten methods from AutoDiffMath class.
 
 Think about how your basic operator overloading template should look like. How will you deal with elementary functions like sin, sqrt, log, and exp (and many others)?
-
 
 ## Licensing
 Licensing is an essential consideration when you create new software. You should choose a suitable license for your project. A comprehensive list of licenses can be found here. The license you choose depends on factors such as what other software or libraries you use in your code (copyleft, copyright). will you have to deal with patents? How can others advertise software that makes use of your code (or parts thereof)? You may consult the following reading to aid you in choosing a license:
