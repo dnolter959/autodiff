@@ -89,16 +89,15 @@ explain forward mode and example
 
 explain reverse mode and example 
 
-## How to Use PackageName
+## How to Use AutoDiff
 
 The package will include a module for an AutoDiff class that utilizes the core data structure, the DualNumber objects. User will interact with the AutoDiff module, without needing to interact with the DualNumber class. As such, user should import the AutoDiff module. User will initialize an AutomaticDifferentiator object with a list of strings representing a vector function $\mathbf{f}$. User can then use either forward or backward mode to evaluate the vector function at a point $\mathbf{x}$, represented by a dictionary with keys corresponding to the variable names in the user defined function. For example:
 
 ```python
-function_output = ["sin(x1)+x2", "exp(x2)*ln(x1)"]
-ad = AutoDiff(function_output)
-inputs = {"x1": 2, "x2":1}
-df1 = ad.forward(inputs)
-df2 = ad.backward(inputs)
+f = ["sin(x1)+x2", "exp(x2)*ln(x1)"]
+value = {"x1": 2, "x2":1}
+ad = AutoDiff(f, value)
+jacobian = ad.forward()
 ```
 
 ## Software Organization
