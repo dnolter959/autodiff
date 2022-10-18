@@ -22,7 +22,7 @@ There are three popular methods to calculate derivatives:
 
 Numerical differentiation is the most basic and general introduction to calculating derivatives. In numerical differentiation we rely on the definition of the derivative, where we measure the amount of change in our function with a very small change in our input (x+h).
 
-$\frac{\delta{f(x)}}{\delta x} = lim_{h\to 0} \frac{f(x + h) - f(x)}{h}$
+$$\frac{\delta{f(x)}}{\delta x} = lim_{h\to 0} \frac{f(x + h) - f(x)}{h}$$
 
 However, numerical differentiation can have issues with round off errors that lead to not achieving machine precision and can struggle with computational time when many dependent variables exist. 
 
@@ -81,7 +81,7 @@ $f(x_1, x_2) = [sin(\frac{x_1}{x_2} + \frac{x_1}{x_2} - e^{x_2} ] \cdot [ \frac{
 
 We can see that elementary functions we will need are exp(), sin(), addition, subtraction, multiplication, and division. Additionally, we will need to create intermediate steps that build on the independent variables $x_1$ and $x_2$ in order to create all parts of the complex model. By following the arrows of the graph, we can see how we can begin at the independent variables and arrive back at the full complex function f(x). 
 
-![](files/Figure1.png)
+![](files/Figure2.png)
 
 provide explanation of evaluation trace and example 
 
