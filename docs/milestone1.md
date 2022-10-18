@@ -133,30 +133,45 @@ team14/
 
 ## Implementation
 
-- What classes do you need and what will you implement first?
+**Overview**
 
-  - We will implement three classes: DualNumber, AutoDiffMath, and AutoDiff, in that order.
+The package will implement Automatic Differentiation by appropriately translating variables into **dual numbers**, and then simply evaluating expressions containing dual numbers using the built-in order of operations defined within Python. Crucially, when we perform (binary or unary) operations in evaluating these expressions, we will do so **using only** elemental operations which we explicitly define ourselves on `DualNumber`s (an object which we define), and which obey the characteristics of dual numbers. The resulting expression will itself be a dual number, the **real** part of which represents the evaluation of the function at the provided input, and the **dual** part of which represents the derivative of the functions evaluated the provided inputs.  
 
-- What are the core data structures? How will you incorporate dual numbers?
+**Classes**
 
-  - The core data data structures include the inputs:
+Class 1: `AutoDiff`
 
-    - function_output:
-      - Type: List[str]
-      - Description: list of strings where each value represents the output of the function $f: R^n \rightarrow R^m$ in each dimension. Thus function_output[i] represents the return of function $f$ at dimension $i+1$.
+- This is the only class that users will directly interact with.
+- Users instantiate an `AutoDiff` object with two parameters, `f` and `value`
+  - `f` is either a *string* or *list of strings* representing the functions ($f : R^n \rightarrow R^m$) over which to evaluate the derivative. 
+  - `value` is a *dictionary* (`str` : `float`), representing the value(s) at which the user seeks to evaluate the derivative
+  - Some examples:
+    - `ad = AutoDiff("sin(x) + 14", {"x" : 0})`
+    - `ad = AutoDiff("sin(xy)", {"x" : 0, "y" : 1})`
+    - `ad = AutoDiff("sin(xz)", {"x" : 0, "z" : 1})`
+    - `ad = AutoDiff(["sin(x)", "x+y"], {"x" : 0, "y" : 1})`
+    - `ad = AutoDiff(["sin(xyz)", "x+y", "y+z^2"], {"x" : 0, "y" : 1, "z" : 0})`
+- Upon initialization the function will also check for valid input. For example, it will check:
+  - Parenthesis correctly applied
+  - Valid function names
+  - Valid correspondence in variable names between functions and value names
+- It will have a class method called `forward` which perform forward mode AD 
+  - `forward` will operate on `self` and return:
+    - A **scalar** of the specified derivative **if** provided a 1D input and 1D function
+    - A **gradient** **if** provided a vector input and 1D output
+    - A **Jacobian** **if** provided a vector input and vector output
+  - Forward will calculate partial derivatives by simply converting functional string expressions into python functions which operate on DualNumbers, and evaluating these expressions using elementary operations which we explicitly define on DualNumbers (discussed below) 
+  
+Class 2: `DualNumber`
 
-    - inputs:
-      - Type: Dict[str, float]
-      - Description: dictionary of input values for vector $x$ to function $f: R^n \rightarrow R^m$. Key represents the name of the input variable that is used in function_output and value is the number we calculate the derivative at.
-    - ad:
-      - Type: AutoDiff
-      - Description: class where the forward or backward automaticdifferention is performed.
-
-Dual numbers will be used inside the AutoDiff class to perform forward automatic differentiation using the DualNumber class.
-
-- What method and name attributes will your classes have?
-
-  - The DualNumber class will have two instance variables representing the real and dual part of the dual number. It will overwrite most of the dunder methods that are used in mathmatical expressions, such as binary operations, comparison, equality, etc.
+- This class will be used inside the `AutoDiff` class; it is the foundation upon which our implementation is build
+- This class defines a DualNumber object which has two attributes `real` and `dual`
+  - If not specified, the `dual` part of a DualNumber will default to 1
+- We need to be able to perform elementary operations on DualNumbers in such a way that adheres to the behavior of dual numbers, as defined above.
+- For example, for $z_1 = a_1 + b_1\epsilon$ and $z_2 = a_2  b_2 \epsilon$, we want that:
+  - $z_1 + z_2 = (a_1 + a_2) + (b_1 + b_2)\epsilon$
+  - $z_1z_2 = (a_1a_2) + (a_1b_2 + b_1a_2)\epsilon$
+- In order to do this we will perform "operation overloading" on dunder methods, and define, for example:
 
 ```python
 class DualNumber:
@@ -165,33 +180,46 @@ class DualNumber:
         self.dual=1
     
     def __add__(self, other):
-        pass
+        pass #TODO
         
     def __mul__(self, other):
-        pass
-    
+        pass #TODO
+
     def __radd__(self, other):
-        pass
+        pass #TODO
     
     def __rmul__(self, other):
-        pass
+        pass #TODO
+
+    def __pow__(self, other):
+        pass #TODO
     
     def __eq__(self, other):
-        pass
+        pass #TODO
     
     def __lt__(self, other):
-        pass
+        pass #TODO
     
     def __gt__(self, other):
-        pass
+        pass #TODO
     
     def __str__(self):
-        pass
+        pass #TODO
 
     # and more
 ```
+- These methods will be carefully constructed to handle cases of, say, adding a DualNumber to a scalar (no matter the order in which they are passed)
 
-The AutoDiffMath class is used to carry out elementary math functions for the forward mode in automatic differentiation.
+Class 3: `AutoDiffMath`
+
+- For those operations for which dunder methods are not defined, we will define a separate set of functions which perform these operations on DualNumbers. 
+- We include these functions as static methods in a separate class which we import for use in the `AutoDiff` class defined above
+- We need to import `numpy` and `math` for use in these functions
+- These functions each follow the same structure: for a DualNumber, `a = DualNumber(real, dual)`, and a function `func`, if we pass `func(a)`, we will return another DualNumber, say `DualNumber(new_real, new_dual)` such that:
+   - `new_real` is `func` applied to `real` 
+   - `new_dual` is the derivative of `func` applied to `real` *times* `dual` (by the chain rule)
+- By explicitly defining elemental operations in this way, we ensure that when evaluating expressions containing dual numbers, python will resolve to a final expression which is itself a dual number whose dual part represents the derivative of interest
+- Here are some such functions:
 
 ```python
 import numpy as np
@@ -223,92 +251,82 @@ class AutoDiffMath:
     
     # ... and more
 ```
-```
-f = [
-    "x1+sin(x2)"
-    ,"ln(x1*(x2**2))"
-]
-x = {'x1': 1, 'x2':pi}
-
-f_parsed = 
-    # resolve variables not being diff with respect to 
-    [
-     [DN(x1,1) + sin(x2),    x1+sin(DN(x2, 1)) = 1+sin(DN(x2,1))]
-    ,[ln(DN(x1, 1)*(x2**2)), ln(x1*(DN(x2, 1)**2))]
-] = [
-     [DN(x1, 1) + 0,         1+sin(DN(x2, 1))]
-    ,[ln(DN(x1, 1)*pi_sq),   ln(DN(x2, 1)**2)]
-] = [
-     [DN(1, 1) + 0,          1+sin(DN(pi, 1))]
-    ,[ln(DN(1, 1)*pi_sq),    ln(DN(pi, 1)**2)]
-] = [
-     [DN(1, 1),              1+DN(cos(pi), -sin(pi)*1)]
-    ,[ln(DN(pi_sq, pi_sq)),  ln(DN(pi_sq, 2*pi)]
-] = [
-     [DN(1, 1),              1+DN(1, 0)]
-    ,[DN(pi_sq, 1),          DN(ln(pi_sq), 1/pi_sq*(2*pi))]
-] = [
-     [DN(1, 1),              DN(2, 0)]
-    ,[DN(pi_sq, 1),          DN(ln(pi_sq), 2/pi)]
-]
-```
-The AudoDiff class is the interface of the package. Users will initiate an AutoDiff object. The instance variables include the vector function passed as a list of strings and a seed vector. The class will implement two methods, one for forward mode and one for reverse, each taking a point $\mathbf{x}\in\mathbb{R}^m$ for evaluation. The class will also implement helper functions for forward and reverse mode, such as those to check the validity of the functions passed as strings, the correspondence between variables in $\mathbf{f}$ and $\mathbf{x}$, parsing the vector function passed as strings into an evaluable function using methods from AutoDiffMath, etc.
+    
+- Below is skeleton code for the `AutoDiff` class which relies upon the DualNumber objects discussed above.
 
 ```python
-import DualNumber as DN
+import DualNumber
 from AutoDiffMath import *
 
 class AutoDiff:
-    def __init__(self, f, seed):
+    def __init__(self, f, value):
         self.format_check(f)
         self.f = f
-        self.seed = seed
+        self.value = value
         
-    @classmethod    
-    def from_func(self, f):
-        '''constructor for initializing with a list of functions'''
-        pass
-    
     def _format_check(self):
         '''check that vector function passed as strings are correctly formated'''
-        # check parathesis
-        # check function names 
         pass
         
-    # This would be the key function for forward mode.
-    # For example, parse f = "x1 - exp(-2(sin(4x1))^2)" to 
-    # DN(x1) - DN.exp(-2*DN.pow(DN.sin(4 * DN(x1)), 2)).
-    # This way the DualNumber object would handle all the calculation.
-    def _parse(self, x, xi):
-        '''parse functions expressed in string to the overloading functions 
+    def _parse(self, f, xi):
+        '''parse f expressed in string to the overloading functions 
            defined for DualNumber
-           xi: differentiate with respect to xi (xj treated as constant for j!=i)
+           f: The function to parse
+           xi: Differentiate with respect to xi (xj treated as constant for j!=i)
+           return: A function involving (potentially) a combination of DualNumbers and scalars which
+           takes as input the entire dictionary self.value, passed via **kwargs
         '''
         return func
     
-    def forward(self, x):
-        eval(x)
-        jacobian = np.array()
-        # very rough psudocode - haven't thought thru things like dimensions & efficiency
-        for i in len(x):
-            for j in len(f):
-                f_parsed = _parse(self.f[i])
-                x_dual = DualNumber(x[i])
-                jacobian[i,j] = f_parsed(x_dual)
-        
+    def forward(self):
+        jacobian = np.empty((len(self.value), (len(self.f)))
+        for j, func in enumerate(self.f):
+          for i, val in enumerate(self.value)
+            parsed_func = parse(func, val)
+            derivative  = parsed_func(self.value)
+            jacobian[i, j] = derivative
+            
         return jacobian
-        
-    def reverse(self, x):
-        pass
 ```
 
-  - Will you need some graph class to resemble the computational graph in forward mode or maybe later for reverse mode? Note that in milestone 2 you propose an extension for your project, an example could be reverse mode.
+- Note that, as written,  `forward` always returns a Jacobian
+  - In the event that a user passes in a scalar function and input, we can appropriately index into the Jacobian to return a scalar
+  - The indexing of the Jacobian will correspond to the order in which functions and values were passed to `AutoDiff`. We will explore ways to potentially disambiguate this output. 
+  - Further, the format_check class method will handle the case of converting a single string function into a single-element list for compatibility with `forward`.
 
-    - We will need a graph class for the computational graph for reverse mode. We will not need a graph class for forward mode, as python implicitly carries out the calculation based on the computational graph, once the string function is correctly parsed and evaluated as a function that calls the overwritten methods from AutoDiffMath class.
+**Other Comments**
 
-Think about how your basic operator overloading template should look like. How will you deal with elementary functions like sin, sqrt, log, and exp (and many others)?
+- We will not need a graph class to resemble the computational graph in forward mode since, as discussed above, we can avoid storing this information by simply casting certain variables to dual numbers and using python's built in "order of operations" to evaluate these expressions in the ways we define. However, we may need to implement a graph class if we proceed to implement reverse mode at a later stage in the project.  
 
+**Example**
+
+Say a user runs:
+
+```python
+f = "sin(x)+3y"
+value = {"x" : 0, "y" : 4}
+ad = AutoDiff(f, value)
+derivative = ad.forward()
+print(derivative)
+```
+
+What is happening "behind the scenes"?
+
+- Step 1: `AutoDiff(f, value)` will first check for valid input, and then create and instance of `AutoDiff` with `self.f = f` and `self.value = value`
+- Step 2: `ad.forward()` will initialize an empty `jacobian` matrix of dimension 2x1
+- Step 3: Fill in jacobian[0, 0] via `forward`, which will first calculate the derivative of `f` with respect to `x`
+  - `parse(func, val)` will `parse` `f` with respect to `x` and return a function, `DualNumber.sin(DualNumber(x)) + 3*y` which takes two inputs, `x` and `y` 
+    - Note that it only converted `x` to a DualNumber because we are differentiating with respect to `x` in this pass
+  - `parsed_func(self.value)` will evaluate the parsed expression at the value `{"x" : 0, "y" : 4}`
+  - The dual part of this expression will be the derivative of `f` with respect to `x`
+  - We add the `derivative` to the appropriate index in the jacobian
+- Step 4: Fill in jacobian[0, 1] via `forward`, which will calculate the derivative of `f` with respect to `y`
+  - `parse(func, val)` will `parse` `f` with respect to `y` and return a function, `np.sin(x) + 3*DualNumber(y)` which takes two inputs, `x` and `y` 
+    - Note that it only converted `y` to a DualNumber because we are differentiating with respect to `y` in this pass
+  - `parsed_func(self.value)` will evaluate the parsed expression at the value `{"x" : 0, "y" : 4}`
+  - The dual part of this expression will be the derivative of `f` with respect to `y`
+  - We add the `derivative` to the appropriate index in the jacobian
+- Step 5: Return the Jacobian
 
 ## Licensing
 Licensing is an essential consideration when you create new software. You should choose a suitable license for your project. A comprehensive list of licenses can be found here. The license you choose depends on factors such as what other software or libraries you use in your code (copyleft, copyright). will you have to deal with patents? How can others advertise software that makes use of your code (or parts thereof)? You may consult the following reading to aid you in choosing a license:
-
