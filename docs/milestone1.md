@@ -298,6 +298,8 @@ class AutoDiff:
 
 - We will not need a graph class to resemble the computational graph in forward mode since, as discussed above, we can avoid storing this information by simply casting certain variables to dual numbers and using python's built in "order of operations" to evaluate these expressions in the ways we define. However, we may need to implement a graph class if we proceed to implement reverse mode at a later stage in the project.  
 
+**Example**
+
 Say a user runs:
 
 ```python
