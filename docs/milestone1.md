@@ -107,10 +107,15 @@ df2 = ad.backward(inputs)
 team14/
     ├── src/
     │   ├── __init__.py
-    │   ├── AutoDiff.py # I believe this should be a different directory which is what gets imported Georgios
-    │   ├── DualNumber.py # Dual number and utility functions all in a utilities directory
-    │   ├── utility.py
-    │   └── example.py # Example of how to use the package separated from the package itself
+    │   ├── adiff.py
+    │   ├── utils/
+    |   |   ├── __init__.py     
+    │   │   ├── dual_numbers.py
+    │   │   └── helpers.py
+    │   └── examples/
+    |       ├── __init__.py
+    │       ├── example_1.py
+    |       └── ...
     ├── tests/
     ├── docs/
     │   └── milestone1
@@ -123,13 +128,13 @@ team14/
   - Math: for mathematical constants like $\pi$ and $e$
 
 - Where will your test suite live?
-  - As indicated above, the test suite will be in the git directory, separated from the source files.
+  - As indicated above, the test suite will be in the `tests/` directory, separated from the source files.
 
 - How will you distribute your package (e.g. PyPI with PEP517/518 or simply setuptools)?
-  -PyPI with PEP517.
+  - PyPI with PEP517.
 
 - Other considerations?
-
+  - If the operations included in the `dual_numbers` module prove to be too extensive for a single file we will consider changing it into a directory and separating the dual number related operations in different modules
 
 ## Implementation
 
@@ -244,19 +249,14 @@ class AutoDiffMath:
     @staticmethod
     def exp(DualNumber: x):  
         return DualNumber(np.exp(x.real), np.exp(x.real)*x.dual)           
-        
-    @staticmethod
-    def pow(DualNumber: x, float: p):  
-        return DualNumber(np.pow(x.real, p), np.pow(x.real, p-1)*x.dual)
     
     # ... and more
 ```
-    
+
 - Below is skeleton code for the `AutoDiff` class which relies upon the DualNumber objects discussed above.
 
 ```python
-import DualNumber
-from AutoDiffMath import *
+from utils import *
 
 class AutoDiff:
     def __init__(self, f, value):
@@ -298,8 +298,6 @@ class AutoDiff:
 
 - We will not need a graph class to resemble the computational graph in forward mode since, as discussed above, we can avoid storing this information by simply casting certain variables to dual numbers and using python's built in "order of operations" to evaluate these expressions in the ways we define. However, we may need to implement a graph class if we proceed to implement reverse mode at a later stage in the project.  
 
-**Example**
-
 Say a user runs:
 
 ```python
@@ -329,4 +327,5 @@ What is happening "behind the scenes"?
 - Step 5: Return the Jacobian
 
 ## Licensing
-Licensing is an essential consideration when you create new software. You should choose a suitable license for your project. A comprehensive list of licenses can be found here. The license you choose depends on factors such as what other software or libraries you use in your code (copyleft, copyright). will you have to deal with patents? How can others advertise software that makes use of your code (or parts thereof)? You may consult the following reading to aid you in choosing a license:
+
+We will use the *MIT License*, since we want our library to be open for anyone to modify it. This library will not provide all uses or versions of automatic differentiation available or the ones being still developed. Due to the limited timeframe of the project we only aim to provide the backbones for automatic differentiation and some of the basic algorithms in automatic differentiation. Thus we want anyone that wants to make changes to the library to fill their specific needs to be able to do so, either in a commercial setting or not.
