@@ -26,7 +26,7 @@ $$\frac{\delta{f(x)}}{\delta x} = lim_{h\to 0} \frac{f(x + h) - f(x)}{h}$$
 
 However, numerical differentiation can have issues with round off errors that lead to not achieving machine precision and can struggle with computational time when many dependent variables exist. 
 
-Symbolic differentiation attempts to manipulate formulas to create new formulas rather than performing numerical calculations. In doing so, we can in essence memorize derivatices of functiosn. However, symbolic interpretation is challenging to implement in computer programs and can be inefficient coding. 
+Symbolic differentiation attempts to manipulate formulas to create new formulas rather than performing numerical calculations. In doing so, we can in essence memorize derivatives of functions. However, symbolic interpretation is challenging to implement in computer programs and can be inefficient coding. 
 
 Automatic differentiation focuses on certain core elements: the chain rule, elementary functions and, to a lesser extent, dual numbers. The benefits of automatic differentiation are that it does not suffer form the same round off errors that numerical differentiation is susceptible to and does not suffer from the overly expensive, inefficient methods of symbolic differentiation. For these reasons, automatic differentiation is ubiquitous in tasks requiring quick differentiation, such as optimization in machine learning.
 
@@ -69,9 +69,9 @@ $\frac{df}{dx} = \frac{df}{du} \cdot \frac{du}{dx} =  \frac{2}{x}$
 
 
 
-### Computational Graph
+### Computational Graph (Forward Mode)
 
-A computational graph allows us to see the ordered sequence of elementary functions, how we break down a more complex function from inisde to outside (in forward mode), and how we can calculate intermediate steps to arrive at our final derivative result. 
+A computational graph allows us to see the ordered sequence of elementary functions, how we break down a more complex function from inside to outside (in forward mode), and how we can calculate intermediate steps to arrive at our final derivative result. 
 
 In the computational graph below, we can see that we begin with the inputs to the function, independent variables denoted by subscripts -1 and 0 (these generally take values <1). Additionally, we build on these with intermediate variables from $v_0, v_1, ...$. The intermediate variables parallel the elementary functions applied at each step until we arrive at the full complex model from the inside out (again in forward mode). We can follow the computational graph's arrows to see how the elementary functions are applied until we reach our desired result of differentiation.
 
@@ -83,11 +83,24 @@ We can see that elementary functions we will need are exp(), sin(), addition, su
 
 ![](files/Figure2.png)
 
-provide explanation of evaluation trace and example 
+### Evaluation Trace (Forward Mode)
 
-explain forward mode and example 
+The evaluation trace allows us to utilize the components of our computational graph to aid us in solving the function value at a specific point and the partial derivatives with respect to each independent variable. The latter is done by utilizing seed vectors, p, which indicate the input variable to calculate the partial derivative of for the function. We will require one pass for each of the independent variables (x1, x2). In the first pass, shown below, we set the seed vector p = [1,0].
 
-explain reverse mode and example 
+| Forward Primal Trace| Forward Tangent Trace (p = [1 0])|
+| --- | --- |
+| $v_{-1} = x_1 = 1.5$| $D_pv_{-1} = 1$|
+| $v_0 = x_2 = 0.5$ |  $D_pv_{0} = 0$|
+| $v_1 = \frac{v_{-1}}{v_0} = 3$ | $D_pv_1 = \frac{(v_0 D_pv_{-1} - v_{-1}D_pv_0}{v_o^2} = 2$ |
+| $v_2 = sin(v_1)$ | $D_pv_2 = cos(v_1) \cdot D_pv_1 = -1.98$|
+| $v_3 = exp(v_0)$ | $D_pv_3 = v_3 \cdot D_pv_0 = 0$ |
+| $v_4 = v_1 - v_3$ | $D_pv_4 = D_pv_1 - D_pv_3 = 2$|
+| $v_5 = v_2 + v_4$ | $D_pv_5 = D_pv_2 + D_pv_4 = 0.02$ |
+| $v_6 = v_5 \cdot v_6$ | $D_pv_5 \cdot v_4 - D_pv_4 \cdot v_5 = 3.012$|
+
+
+We point out that the left column gives us the result of our function f($x_1$ = 1.5, $x_2$ = 0.5). Meanwhile, the right column gives us the results of the partial derivative with respect to $x_1$. We would require another pass with p =[0 1] in order to solve for the partial derivative with respect to $x_2$
+
 
 ## How to Use AutoDiff
 
