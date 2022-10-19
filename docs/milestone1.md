@@ -268,7 +268,7 @@ class AutoDiff:
         
     def get_derivative(self, df_wrt):
       dual_var = { df_wrt : DualNumber(self.value[df_wrt]) }
-      other_vars = {(k, self.value[k]) for k != dual_var)}
+      other_vars = {(k, self.value[k]) for k != df_wrt)}
       kwargs = {**dual_var, **other_vars}
       derivative = self.f(**kwargs).dual
       return derivative
