@@ -103,25 +103,19 @@ We point out that the left column gives us the result of our function f($x_1$ = 
 The package will include a module for an AutoDiff class that utilizes the core data structure, the DualNumber objects. The user will interact with the AutoDiff module, without needing to interact with the DualNumber class. As such, user should import the AutoDiff module. The user will initialize an AutoDiff object with a list of strings representing a vector function $\mathbf{f}$, and an associated `value` at which to evalauate. The user can then evaluate either a derivative, gradient, or Jacobian. For example:
 
 ```python
-f = "sin(x1)"
-value = {"x1": 2}
+value = {"x": 2, "y" : 5}
+f = lambda x, y : x**2 + 2y
 ad = AutoDiff(f, value)
-derivative = ad.get_derivative()
+derivative = ad.get_derivative("x") # 4
+derivative = ad.get_derivative("y") # 2
+gradient  = ad.get_gradient() # [4, 2]
 
-f = "sin(x1)+x2"
-value = {"x1": 2, "x2":1}
+value = {"x": 2, "y" : 5}
+f1 = lambda x, y : x**2 + 2y
+f2 = lambda x, y : sin(x) + 3y
+f = [f1, f2]
 ad = AutoDiff(f, value)
-gradient = ad.get_gradient() # [cos(2), 1]
-gradient = ad.get_gradient("x1") # cos(2)
-
-f = ["sin(x1)+x2", "2x2 + 3x1"]
-value = {"x1": 2, "x2":1}
-ad = AutoDiff(f, value)
-jacobian = ad.get_jacobian() # [[cos(2)][1], [3, 2]]
-jacobian = ad.get_jacobian(f[0]) # [cos(2), 1]
-jacobian = ad.get_jacobian(f[1]) # [3, 2]
-jacobian = ad.get_jacobian("x1") # [cos(2), 3]
-jacobian = ad.get_jacobian(f[0], "x1") # cos(2)
+jacobian = ad.get_jacobian() # [[4, 2], [cos(2), 3]]
 ```
 
 ## Software Organization
@@ -171,29 +165,28 @@ Class 1: `AutoDiff`
 
 - This is the only class that users will directly interact with.
 - Users instantiate an `AutoDiff` object with two parameters, `f` and `value`
-  - `f` is either a *string* or *list of strings* representing the functions ($f : R^n \rightarrow R^m$) over which to evaluate the derivative. 
+  - `f` is either a *function* or *list of functions* ($f : R^n \rightarrow R^m$) over which to evaluate derivatives. 
   - `value` is a *dictionary* (`str` : `float`), representing the value(s) at which the user seeks to evaluate the derivative
   - Some examples:
-    - `ad = AutoDiff("sin(x) + 14", {"x" : 0})`
-    - `ad = AutoDiff("sin(xy)", {"x" : 0, "y" : 1})`
-    - `ad = AutoDiff("sin(xz)", {"x" : 0, "z" : 1})`
-    - `ad = AutoDiff(["sin(x)", "x+y"], {"x" : 0, "y" : 1})`
-    - `ad = AutoDiff(["sin(xyz)", "x+y", "y+z^2"], {"x" : 0, "y" : 1, "z" : 0})`
-- Upon initialization the function will also check for valid input. For example, it will check:
-  - Parenthesis correctly applied
-  - Valid function names
-  - Valid correspondence in variable names between functions and value names
+    - `ad = AutoDiff(lambda x: sin(x) + 14, {"x" : 0})`
+    - `f1 = lambda x : x**2; f2 = lambda x, y : x + y` 
+    - `ad = AutoDiff([f1, f2], {"x" : 0, "y" : 1})`
+- Upon initialization the function will also check for valid input. For example, it will check for valid correspondence in variable names between functions and value names
+ - The variable strings supplied in `value` must match the variable names supplied in `f`
+ - Variables will ultimately be passed to f as kwargs, so the following two cases will return the same derivative
+    - `AutoDiff(lambda x, y: x - y, {"x" : 0, "y" : 1})`
+    - `AutoDiff(lambda y, x: x - y, {"x" : 0, "y" : 1})`
 - It will have a class method called `get_derivative` which performs forward mode AD 
   - `get_derivative` will operate on `self` and return the specified derivative
-- It will also have class methods called `get_gradient` and `get_jacobian` which similarly operate on self and return either a gradient or jacobian, provided these these methods are compatible with the AutoDiff instance attributes
-- Each of these functions will compute partial derivatives by simply converting functional string expressions into python functions which operate on Dual Numbers, and evaluating these expressions using elementary operations, which we explicitly define on DualNumbers (discussed below) 
+- It will also have class methods called `get_gradient` and `get_jacobian` which similarly operate on self and return either a gradient or jacobian, provided these these methods are compatible with the AutoDiff instance attributes provided
+- Each of these functions will compute partial derivatives by evaluating expression involving dual number using elementary operations which we explicitly define on the `DualNumbers` class (discussed below) 
   
 Class 2: `DualNumber`
 
-- This class will be used inside the `AutoDiff` class; it is the foundation upon which our implementation is build
-- This class defines a DualNumber object which has two attributes `real` and `dual`
-  - If not specified, the `dual` part of a DualNumber will default to 1
-- We need to be able to perform elementary operations on DualNumbers in such a way that adheres to the behavior of dual numbers, as defined above.
+- This class will be used inside the `AutoDiff` class; it is the foundation upon which our implementation is built
+- This class defines a `DualNumber` object which has two attributes `real` and `dual`
+  - If not specified, the `dual` part of a `DualNumber` will default to 1
+- We need to be able to perform elementary operations on `DualNumber`s in such a way that adheres to the behavior of dual numbers, as defined above.
 - For example, for $z_1 = a_1 + b_1\epsilon$ and $z_2 = a_2  b_2 \epsilon$, we want that:
   - $z_1 + z_2 = (a_1 + a_2) + (b_1 + b_2)\epsilon$
   - $z_1z_2 = (a_1a_2) + (a_1b_2 + b_1a_2)\epsilon$
@@ -226,14 +219,16 @@ class DualNumber:
 
 Class 3: `AutoDiffMath`
 
-- For those operations for which dunder methods are not defined, we will define a separate set of functions which perform these operations on DualNumbers. 
+- For those operations for which dunder methods are not defined, we will define a separate set of functions which perform these operations on `DualNumber`s. 
 - We include these functions as static methods in a separate class which we import for use in the `AutoDiff` class defined above
 - We need to import `numpy` and `math` for use in these functions
-- These functions each follow the same structure: for a DualNumber, `a = DualNumber(real, dual)`, and a function `func`, if we pass `func(a)`, we will return another DualNumber, say `DualNumber(new_real, new_dual)` such that:
+- These functions will be defined in a module and imported so that a user may call, e.g., `sin(DualNumber(3))` directly
+- These functions each follow the same structure: for a `DualNumber`, `a = DualNumber(real, dual)`, and a function `func`, if we pass `func(a)`, we will return another `DualNumber`, say `DualNumber(new_real, new_dual)` such that:
    - `new_real` is `func` applied to `real` 
-   - `new_dual` is the derivative of `func` applied to `real` *times* `dual` (by the chain rule)
+   - `new_dual` is the derivative of `func` applied to `real` *times* `dual`
+- These functions will ultimately need to gracefully handle non-Dual numbers, by, for example, falling back to the standard implementation (e.g., `np.sin`) when passed a real number.
 - By explicitly defining elemental operations in this way, we ensure that when evaluating expressions containing dual numbers, python will resolve to a final expression which is itself a dual number whose dual part represents the derivative of interest
-- Here are some such functions. Note that these functions will ultimately need to gracefully handle non-Dual numbers, by, for example, falling back to the standard implementation (e.g., `np.sin`) when passed a real number.
+- Here are some such functions.
 
 ```python
 import numpy as np
@@ -246,10 +241,12 @@ class AutoDiffMath:
     @staticmethod
     def sin(DualNumber: x):  
         return DualNumber(np.sin(x.real), np.cos(x.real)*x.dual)
+        # TODO: Add handling of non dual numbers
         
     @staticmethod
     def cos(DualNumber: x):  
         return DualNumber(np.cos(x.real), -np.sin(x.real)*x.dual)
+        # TODO: Add handling of non dual numbers
         
     # ... and more
 ```
@@ -267,70 +264,26 @@ class AutoDiff:
         
     def format_check(self):
         '''check that vector function passed as strings are correctly formated'''
-        pass
+        pass #TODO
         
-    def parse(self, f, xi):
-        '''parse f expressed in string to the overloading functions 
-           defined for DualNumber
-           f: The function to parse
-           xi: Differentiate with respect to xi (xj treated as constant for j!=i)
-           return: A function involving (potentially) a combination of DualNumbers and scalars which
-           takes as input the entire dictionary self.value, passed via **kwargs
-        '''
-        return func
-    
-    def get_derivative(self):
-      pass
-    
-    def get_gradient(self, x = None):
-      gradient = np.zeros(len(self.value)
-      for i, val in enumerate(self.value)
-        parsed_func = parse(self.f, val)
-        derivative  = parsed_func(self.value)
-        if val == x:
-          return derivative
-        else
-          gradient[i] = derivative
+    def get_derivative(self, df_wrt):
+      dual_var = { df_wrt : DualNumber(self.value[df_wrt]) }
+      other_vars = self.values.pop(df_wrt)
+      kwargs = {**dual_var, **other_vars}
+      derivative = self.f(**kwargs).dual
+      return derivative
       
-      return gradient
-
-    def get_jacobian(self, f = None, x = None):
-      pass
+    def get_gradient(self):
+      pass #TODO
+      
+    def get_jacobian(self):
+      pass #TODO
 ```
 
 **Other Comments**
 
 - We will not need a graph class to resemble the computational graph in forward mode since, as discussed above, we can avoid storing this information by simply casting certain variables to dual numbers and using python's built in "order of operations" to evaluate these expressions in the ways we define. However, we may need to implement a graph class if we proceed to implement reverse mode at a later stage in the project.
-
-**Example**
-
-Say a user runs:
-
-```python
-f = ["sin(x)+3y"]
-value = {"x" : 0, "y" : 4}
-ad = AutoDiff(f, value)
-gradient = ad.get_gradient()
-print(gradient)
-```
-
-What is happening "behind the scenes"?
-
-- Step 1: `AutoDiff(f, value)` will first check for valid input, and then create an instance of `AutoDiff` with `self.f = f` and `self.value = value`
-- Step 2: `ad.get_gradient()` will initialize an empty `gradient` vector of dimension 2x1
-- Step 3: Fill in gradient[0] via `get_gradient`, which will first calculate the derivative of `f` with respect to `x`
-  - `parse(func, val)` will `parse` `f` with respect to `x` and return a function, `DualNumber.sin(DualNumber(x)) + 3*y` which takes two inputs, `x` and `y` 
-    - Note that it only converted `x` to a DualNumber because we are differentiating with respect to `x` in this pass
-  - `parsed_func(self.value)` will evaluate the parsed expression at the value `{"x" : 0, "y" : 4}`
-  - The dual part of this expression will be the derivative of `f` with respect to `x`
-  - We add the `derivative` to the appropriate index in the `gradient`
-- Step 4: Fill in gradient[1] via `get_gradient`, which will calculate the derivative of `f` with respect to `y`
-  - `parse(func, val)` will `parse` `f` with respect to `y` and return a function, `np.sin(x) + 3*DualNumber(y)` which takes two inputs, `x` and `y` 
-    - Note that it only converted `y` to a DualNumber because we are differentiating with respect to `y` in this pass
-  - `parsed_func(self.value)` will evaluate the parsed expression at the value `{"x" : 0, "y" : 4}`
-  - The dual part of this expression will be the derivative of `f` with respect to `y`
-  - We add the `derivative` to the appropriate index in the `gradient`
-- Step 5: Return the gradient
+- ADD COMMENTS ABOUT REVERSE MODE/SAVING NODES/CLASS STRUCTURE 
 
 ## Licensing
 
