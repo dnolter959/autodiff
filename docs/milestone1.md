@@ -2,15 +2,17 @@
 
 In its simplest form, we define the derivative of a function as its rate of change. We should familiarize ourselves with an example of a function, the notation for a derivative, and the graphical representation of rate of change.
 
-Say we are incredibly lucky in our investments and our return, f(x), is modeled by the function f(x) = x2. Here, x can represent the dollar amount we invest. We would like to measure the rate at which our return, f(x), changes with respect to a change in our investment dollar amount, x. The notation for such is represented mathematically as:
+Say we are incredibly lucky in our investments and our return, f(x), is modeled by the function f(x) = $x_2$. Here, x can represent the dollar amount we invest. We would like to measure the rate at which our return, f(x), changes with respect to a change in our investment dollar amount, x. The notation for such is represented mathematically as:
 
-$\frac{df}{dx}$ = $lim_{x\to 0} \frac{\Delta f}{\Delta x}$
+$\frac{df}{dx}$ = $lim_{\Delta x\to 0} \frac{\Delta f}{\Delta x}$
 
 For example, we may model the relationship between investment ($x$) and returns ($f(x)$) using a function f : $R$ &rarr; $R$, by $f(x) = x^2$. 
 
+The derivative is modeled as $2\cdot x$ and we can interpret it as the instantaneous rate of change - slope - as seen in the illustration below. 
+
 ![](files/Figure1.png)
 
-While the example above serves as a toy example to familiarize ourselves with the topic of differentiation and its graphical interpretation, the power of the derivative is not to be understated. Its origins data back to Isaac Newton and an application in physics and movement; however, it has since grown with applications in various different branches such as statistics, biology, finance, computer science, and many more fields.
+While the example above serves as a toy example to familiarize ourselves with the topic of differentiation and its graphical interpretation, the power of the derivative is not to be understated. Its origins date back to Isaac Newton and applications in physics and movement; however, it has since grown with applications in various different branches such as statistics, biology, finance, computer science, and many more fields.
 
 There are three popular methods to calculate derivatives:
 
@@ -28,7 +30,7 @@ However, numerical differentiation can have issues with round off errors that le
 
 Symbolic differentiation attempts to manipulate formulas to create new formulas rather than performing numerical calculations. In doing so, we can in essence memorize derivatives of functions. However, symbolic interpretation is challenging to implement in computer programs and can be inefficient coding. 
 
-Automatic differentiation focuses on certain core elements: the chain rule, elementary functions and, to a lesser extent, dual numbers. The benefits of automatic differentiation are that it does not suffer form the same round off errors that numerical differentiation is susceptible to and does not suffer from the overly expensive, inefficient methods of symbolic differentiation. For these reasons, automatic differentiation is ubiquitous in tasks requiring quick differentiation, such as optimization in machine learning.
+Automatic differentiation focuses on certain core elements: the chain rule, elementary functions and, to a lesser extent, dual numbers. The benefits of automatic differentiation are that it does not suffer from the same round off errors that numerical differentiation is susceptible to and does not suffer from the overly expensive, inefficient methods of symbolic differentiation. For these reasons, automatic differentiation is ubiquitous in tasks requiring quick differentiation, such as optimization in machine learning.
 
 
 ## Background
@@ -41,7 +43,7 @@ First, we can begin by providing an example of identifying elementary functions 
 
 $f(x_{1}, x_{2}) = exp( sin(x_{1}^{2} + x_{2}^{2}) + 2 * cos(\frac{x_1}{x_2}))$
 
-In the function above we can identify several functions that would be considered elementary functions: multiplication, division, sin(), cos(), exponentiation, powers. Automatic differentiation breaks about functions such as f(x) into the components of its elementary functions to act on intermediate steps in order to solve for its derivative. A more comprehensive list of variables is included below: 
+In the function above we can identify several functions that would be considered elementary functions: multiplication, division, sin(), cos(), exponentiation, powers. Automatic differentiation breaks about functions such as f(x) into the components of its elementary functions to act on intermediate steps in order to solve for its derivative. A more comprehensive list of elementary functions is included below: 
 
 <br> 
 
@@ -50,26 +52,24 @@ In the function above we can identify several functions that would be considered
 | Arithmetic | multiplication, addition, subtraction, division |
 | Powers and Roots | $x^{2}$, $y^{1/2}$ |
 | Trigonometric | sine, cosine, tangent, secant, cosecant, cotangent |
-| Logorithmic | $\log(x)$ |
+| Logarithmic | $\log(x)$ |
 | Exponential | $\exp(x)$ |
 
 ### Chain Rule 
 
-Utilizing the above elementary functions, automatic differentiation applies the ever important chain rule to the elementary functions in order to solve the derivative of more complex functions. As  aquick recap of the chain rule, let us define the following function: 
+Utilizing the above elementary functions, automatic differentiation applies the ever important chain rule to the elementary functions in order to solve the derivative of more complex functions. As a quick recap of the chain rule, let us define the following function: 
 
-$f(x) = log(7x^{2})$
+$f(x) = exp(4x)$
 
-We can replace $7x^{2}$ with u(x). This will allow us to do the following differentiation to get our desired derivative of f(x) with respect to x. 
+We can replace $4x$ with u(x). This will allow us to do the following differentiation to get our desired derivative of f(x) with respect to x. 
 
-**potentially include more steps below**
-
-$\frac{df}{dx} = \frac{df}{du} \cdot \frac{du}{dx} =  \frac{2}{x}$ 
+$\frac{df}{dx} = \frac{df}{du} \cdot \frac{du}{dx} = exp(u)\cdot 4 = 4\cdot exp(4x)$
 
 ### Computational Graph (Forward Mode)
 
 A computational graph allows us to see the ordered sequence of elementary functions, how we break down a more complex function from inside to outside (in forward mode), and how we can calculate intermediate steps to arrive at our final derivative result. 
 
-In the computational graph below, we can see that we begin with the inputs to the function, independent variables denoted by subscripts -1 and 0 (these generally take values <1). Additionally, we build on these with intermediate variables from $v_0, v_1, ...$. The intermediate variables parallel the elementary functions applied at each step until we arrive at the full complex model from the inside out (again in forward mode). We can follow the computational graph's arrows to see how the elementary functions are applied until we reach our desired result of differentiation.
+In the computational graph below, we can see that we begin with the inputs to the function, independent variables denoted by subscripts -1 and 0 (these generally take values < 1). Additionally, we build on these with intermediate variables from $v_0, v_1, ...$. The intermediate variables parallel the elementary functions applied at each step until we arrive at the full complex model from the inside out (again in forward mode). We can follow the computational graph's arrows to see how the elementary functions are applied until we reach our desired result of differentiation.
 
 Let us examine the utility of a computational graph with a complex function such as: 
 
