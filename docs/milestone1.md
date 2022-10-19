@@ -88,11 +88,11 @@ The evaluation trace allows us to utilize the components of our computational gr
 | $v_{-1} = x_1 = 1.5$| $D_pv_{-1} = 1$|
 | $v_0 = x_2 = 0.5$ |  $D_pv_{0} = 0$|
 | $v_1 = \frac{v_{-1}}{v_0} = 3$ | $D_pv_1 = \frac{(v_0 D_pv_{-1} - v_{-1}D_pv_0}{v_o^2} = 2$ |
-| $v_2 = sin(v_1)$ | $D_pv_2 = cos(v_1) \cdot D_pv_1 = -1.98$|
-| $v_3 = exp(v_0)$ | $D_pv_3 = v_3 \cdot D_pv_0 = 0$ |
-| $v_4 = v_1 - v_3$ | $D_pv_4 = D_pv_1 - D_pv_3 = 2$|
-| $v_5 = v_2 + v_4$ | $D_pv_5 = D_pv_2 + D_pv_4 = 0.02$ |
-| $v_6 = v_5 \cdot v_6$ | $D_pv_5 \cdot v_4 - D_pv_4 \cdot v_5 = 3.012$|
+| $v_2 = sin(v_1)$ = 0.141 | $D_pv_2 = cos(v_1) \cdot D_pv_1 = -1.98$|
+| $v_3 = exp(v_0) = 1.649$ | $D_pv_3 = v_3 \cdot D_pv_0 = 0$ |
+| $v_4 = v_1 - v_3 = 1.351$ | $D_pv_4 = D_pv_1 - D_pv_3 = 2$|
+| $v_5 = v_2 + v_4 = 1.492$ | $D_pv_5 = D_pv_2 + D_pv_4 = 0.02$ |
+| $v_6 = v_5 \cdot v_4 = 2.017$ | $D_pv_5 \cdot v_4 - D_pv_4 \cdot v_5 = 3.012$|
 
 
 We point out that the left column gives us the result of our function f($x_1$ = 1.5, $x_2$ = 0.5). Meanwhile, the right column gives us the results of the partial derivative with respect to $x_1$. We would require another pass with p =[0 1] in order to solve for the partial derivative with respect to $x_2$
@@ -100,7 +100,7 @@ We point out that the left column gives us the result of our function f($x_1$ = 
 
 ## How to Use AutoDiff
 
-The package will include a module for an AutoDiff class that utilizes the core data structure, the DualNumber objects. The user will interact with the AutoDiff module, without needing to interact with the DualNumber class. As such, user should import the AutoDiff module. The user will initialize an AutoDiff object with a list of strings representing a vector function $\mathbf{f}$, and an associated `value` at which to evlauate. The user can then evaluate either a derivative, gradient, or Jacobian. For example:
+The package will include a module for an AutoDiff class that utilizes the core data structure, the DualNumber objects. The user will interact with the AutoDiff module, without needing to interact with the DualNumber class. As such, user should import the AutoDiff module. The user will initialize an AutoDiff object with a list of strings representing a vector function $\mathbf{f}$, and an associated `value` at which to evalauate. The user can then evaluate either a derivative, gradient, or Jacobian. For example:
 
 ```python
 f = "sin(x1)"
@@ -163,7 +163,7 @@ team14/
 
 **Overview**
 
-The package will implement Automatic Differentiation by appropriately translating variables into **dual numbers**, and then simply evaluating expressions containing dual numbers using the built-in order of operations defined within Python. Crucially, when we perform (binary or unary) operations in evaluating these expressions, we will do so **using only** elemental operations which we explicitly define ourselves via "operation overloading" on `DualNumber`s (an object which we define), and which obey the characteristics of dual numbers. The resulting expression will itself be a dual number, the **real** part of which represents the evaluation of the function at the provided input, and the **dual** part of which represents the derivative of the functions evaluated the provided inputs.  
+The package will implement Automatic Differentiation by appropriately translating variables into **dual numbers**, and then simply evaluating expressions containing dual numbers using the built-in order of operations defined within Python. Crucially, when we perform (binary or unary) operations in evaluating these expressions, we will do so **using only** elemental operations which we explicitly define ourselves via "operation overloading" on `DualNumber`s (an object which we define), and which obey the characteristics of dual numbers. The resulting expression will itself be a dual number, the **real** part of which represents the evaluation of the function at the provided input, and the **dual** part of which represents the derivative of the functions evaluated at the provided inputs.  
 
 **Classes**
 
@@ -183,10 +183,10 @@ Class 1: `AutoDiff`
   - Parenthesis correctly applied
   - Valid function names
   - Valid correspondence in variable names between functions and value names
-- It will have a class method called `get_derivative` which perform forward mode AD 
+- It will have a class method called `get_derivative` which performs forward mode AD 
   - `get_derivative` will operate on `self` and return the specified derivative
-- It will also have a class methods called `get_gradient` and `get_jacobian` which similarly operate on self and return either a gradient or jacobian, provided these these methods are compatible with the AutoDiff instance attributes.
-- Each of these functions will compute partial derivatives by simply converting functional string expressions into python functions which operate on Dual Numbers, and evaluating these expressions using elementary operations which we explicitly define on DualNumbers (discussed below) 
+- It will also have class methods called `get_gradient` and `get_jacobian` which similarly operate on self and return either a gradient or jacobian, provided these these methods are compatible with the AutoDiff instance attributes
+- Each of these functions will compute partial derivatives by simply converting functional string expressions into python functions which operate on Dual Numbers, and evaluating these expressions using elementary operations, which we explicitly define on DualNumbers (discussed below) 
   
 Class 2: `DualNumber`
 
@@ -316,7 +316,7 @@ print(gradient)
 
 What is happening "behind the scenes"?
 
-- Step 1: `AutoDiff(f, value)` will first check for valid input, and then create and instance of `AutoDiff` with `self.f = f` and `self.value = value`
+- Step 1: `AutoDiff(f, value)` will first check for valid input, and then create an instance of `AutoDiff` with `self.f = f` and `self.value = value`
 - Step 2: `ad.get_gradient()` will initialize an empty `gradient` vector of dimension 2x1
 - Step 3: Fill in gradient[0] via `get_gradient`, which will first calculate the derivative of `f` with respect to `x`
   - `parse(func, val)` will `parse` `f` with respect to `x` and return a function, `DualNumber.sin(DualNumber(x)) + 3*y` which takes two inputs, `x` and `y` 
