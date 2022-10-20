@@ -100,19 +100,22 @@ We point out that the left column gives us the result of our function f($x_1$ = 
 
 ## How to Use AutoDiff
 
-The package will include a module for an AutoDiff class that utilizes the core data structure, the DualNumber objects. The user will interact with the AutoDiff module, without needing to interact with the DualNumber class. As such, user should import the AutoDiff module. The user will initialize an AutoDiff object with a list of strings representing a vector function $\mathbf{f}$, and an associated `value` at which to evalauate. The user can then evaluate either a derivative, gradient, or Jacobian. For example:
+The package will include a module for an `AutoDiff` class that utilizes the core data structure, the `DualNumber` objects. The user will interact with the `AutoDiff` module, without needing to interact with the `DualNumber` class. As such, user should import the `AutoDiff` module and the elementary functions for dual numbers. The user will initialize an `AutoDiff` object with a list of lambda functions representing a vector function $\mathbf{f}$, and an associated `value` at which to evalauate. The user can then evaluate either a derivative, gradient, or Jacobian. For example:
 
 ```python
+from team14.auto_diff import AutoDiff
+import team14.utils.auto_diff_math as adm
+
 value = {"x": 2, "y" : 5}
-f = lambda x, y : x**2 + 2y
+f = lambda x, y : x**2 + 2*y
 ad = AutoDiff(f, value)
 derivative = ad.get_derivative("x") # 4
 derivative = ad.get_derivative("y") # 2
 gradient  = ad.get_gradient() # [4, 2]
 
 value = {"x": 2, "y" : 5}
-f1 = lambda x, y : x**2 + 2y
-f2 = lambda x, y : sin(x) + 3y
+f1 = lambda x, y : x**2 + 2*y
+f2 = lambda x, y : adm.sin(x) + 3*y
 f = [f1, f2]
 ad = AutoDiff(f, value)
 jacobian = ad.get_jacobian() # [[4, 2], [cos(2), 3]]
@@ -124,10 +127,11 @@ jacobian = ad.get_jacobian() # [[4, 2], [cos(2), 3]]
 team14/
     ├── src/
     │   ├── __init__.py
-    │   ├── adiff.py
+    │   ├── auto_diff.py
     │   ├── utils/
     |   |   ├── __init__.py     
     │   │   ├── dual_numbers.py
+    │   │   ├── auto_diff_math.py
     │   │   └── helpers.py
     │   └── examples/
     |       ├── __init__.py
@@ -234,21 +238,15 @@ Class 3: `AutoDiffMath`
 import numpy as np
 import math
 
-class AutoDiffMath:
-    def __init__(self):
-        pass
-        
-    @staticmethod
-    def sin(DualNumber: x):  
-        return DualNumber(np.sin(x.real), np.cos(x.real)*x.dual)
-        # TODO: Add handling of non dual numbers
-        
-    @staticmethod
-    def cos(DualNumber: x):  
-        return DualNumber(np.cos(x.real), -np.sin(x.real)*x.dual)
-        # TODO: Add handling of non dual numbers
-        
-    # ... and more
+def sin(DualNumber: x):  
+    return DualNumber(np.sin(x.real), np.cos(x.real)*x.dual)
+    # TODO: Add handling of non dual numbers
+    
+def cos(DualNumber: x):  
+    return DualNumber(np.cos(x.real), -np.sin(x.real)*x.dual)
+    # TODO: Add handling of non dual numbers
+    
+# ... and more
 ```
 
 - Below is skeleton code for the `AutoDiff` class which relies upon the DualNumber objects discussed above.
