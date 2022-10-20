@@ -10,7 +10,7 @@ For example, we may model the relationship between investment ($x$) and returns 
 
 The derivative is modeled as $2\cdot x$ and we can interpret it as the instantaneous rate of change - slope - as seen in the illustration below. 
 
-![](files/Figure1.png)
+![](images/Figure1.png)
 
 While the example above serves as a toy example to familiarize ourselves with the topic of differentiation and its graphical interpretation, the power of the derivative is not to be understated. Its origins date back to Isaac Newton and applications in physics and movement; however, it has since grown with applications in various different branches such as statistics, biology, finance, computer science, and many more fields.
 
@@ -77,7 +77,7 @@ $f(x_1, x_2) = [sin(\frac{x_1}{x_2} + \frac{x_1}{x_2} - e^{x_2} ] \cdot [ \frac{
 
 We can see that elementary functions we will need are exp(), sin(), addition, subtraction, multiplication, and division. Additionally, we will need to create intermediate steps that build on the independent variables $x_1$ and $x_2$ in order to create all parts of the complex model. By following the arrows of the graph, we can see how we can begin at the independent variables and arrive back at the full complex function f(x). 
 
-![](files/Figure2.png)
+![](images/Figure2.png)
 
 ### Evaluation Trace (Forward Mode)
 
@@ -100,7 +100,7 @@ We point out that the left column gives us the result of our function f($x_1$ = 
 
 ## How to Use AutoDiff
 
-The package will include a module for an `AutoDiff` class that utilizes the core data structure, the `DualNumber` objects. The user will interact with the `AutoDiff` module, without needing to interact with the `DualNumber` class. As such, user should import the `AutoDiff` module and the elementary functions for dual numbers. The user will initialize an `AutoDiff` object with a list of lambda functions representing a vector function $\mathbf{f}$, and an associated `value` at which to evalauate. The user can then evaluate either a derivative, gradient, or Jacobian. For example:
+The package will include a module for an `AutoDiff` class that utilizes the core data structure, the `DualNumber` objects. The user will interact with the `AutoDiff` module, without needing to interact with the `DualNumber` class. As such, user should import the `AutoDiff` module and the elementary functions for dual numbers. The user will initialize an `AutoDiff` object with a list of lambda functions representing a vector function $\mathbf{f}$, and an associated `value` at which to evaluate. The user can then evaluate either a derivative, gradient, or Jacobian. For example:
 
 ```python
 from team14.auto_diff import AutoDiff
