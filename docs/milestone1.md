@@ -267,9 +267,14 @@ class AutoDiff:
         pass #TODO
         
     def get_derivative(self, df_wrt):
+      # user input independent variable df_wrt for derivative 
+      # store in dictionary with value dual number 
       dual_var = { df_wrt : DualNumber(self.value[df_wrt]) }
+      # store all other independent variabels in dictionary 
       other_vars = {(k, self.value[k]) for k != df_wrt)}
+      # kwargs stores independent variables in desired order 
       kwargs = {**dual_var, **other_vars}
+      # dual component = derivative
       derivative = self.f(**kwargs).dual
       return derivative
       
