@@ -1,8 +1,14 @@
+---
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+---
 ## Introduction
 
 In its simplest form, we define the derivative of a function as its rate of change. We should familiarize ourselves with an example of a function, the notation for a derivative, and the graphical representation of rate of change.
 
-Say we are incredibly lucky in our investments and our return, $f(x)$, is modeled by the function $f(x) = x_2$. Here, $x$ can represent the dollar amount we invest. We would like to measure the rate at which our return, $f(x)$, changes with respect to a change in our investment dollar amount, $x$. The notation for such is represented mathematically as:
+Say we are incredibly lucky in our investments and our return, $f(x)$, is modeled by the function $f(x) = x^2$. Here, $x$ can represent the dollar amount we invest. We would like to measure the rate at which our return, $f(x)$, changes with respect to a change in our investment dollar amount, $x$. The notation for such is represented mathematically as:
 
 $$\frac{df}{dx} =lim_{\Delta x\to 0} \frac{\Delta f}{\Delta x}$$
 
@@ -77,7 +83,7 @@ $f(x_1, x_2) = [sin(\frac{x_1}{x_2} + \frac{x_1}{x_2}) - e^{x_2} ] \cdot [ \frac
 
 We can see that elementary functions we will need are exp(), sin(), addition, subtraction, multiplication, and division. Additionally, we will need to create intermediate steps that build on the independent variables $x_1$ and $x_2$ in order to create all parts of the complex model. By following the arrows of the graph, we can see how we can begin at the independent variables and arrive back at the full complex function f(x). 
 
-![80%](images/Figure2_new.png)
+![](images/Figure2_new.png)
 
 ### Evaluation Trace (Forward Mode)
 
@@ -103,18 +109,19 @@ We point out that the left column gives us the result of our function $f(x_1 = 1
 The package will include a module for an `AutoDiff` class that utilizes the core data structure, the `DualNumber` objects. The user will interact with the `AutoDiff` module, without needing to interact with the `DualNumber` class. As such, user should import the `AutoDiff` module and the elementary functions for dual numbers. The user will initialize an `AutoDiff` object with a list of lambda functions representing a vector function $\mathbf{f}$. The user can then evaluate either a directional derivative, gradient, or Jacobian. and an associated `value` at which to evalauate.For example:
 
 ```python
-from team14.auto_diff import AutoDiff
-import team14.utils.auto_diff_math as adm
+from autodiff import AutoDiff
+from autodiff.utils import *
 
 f1 = lambda x, y : x**2 + 2*y
-f2 = lambda x, y : adm.sin(x) + 3*y
+f2 = lambda x, y : sin(x) + 3*y
 f = [f1, f2]
 ad = AutoDiff(f)
 value = {"x": 2, "y" : 5}
 jacobian = ad.get_jacobian(value) # [[4, 2], [cos(2), 3]]
 
-# to get the partial derivatives w.r.t. x evaluated at given point
-derivative = ad.get_derivative(value, np.array([1,0])) # 4
+# to get the partial derivatives w.r.t. x evaluated at given point (Both are equivalent)
+derivative = ad.get_derivative(value, "x") # 4
+derivative = ad.get_derivative(value, [1, 0]) # 4 
 # to get the directional derivative at the seed  vector p=[-2, 1]
 derivative = ad.get_derivative(value, np.array([-2, 1])) # 2
 # gradient vector evaluate at given point 
@@ -123,9 +130,9 @@ gradient  = ad.get_gradient(value) # [4, 2]
 
 ## Software Organization
 
-- What will the directory sturcture look like?
+- What will the directory structure look like?
 
-  We plan to set up our pacakge directory structure as the following:
+  We plan to set up our package directory structure as the following:
 ```
 team14/
     ├── src/
@@ -158,17 +165,10 @@ team14/
   - Third-party modules:
     - NumPy: used for mathematical operations in automatic differentiation.
     - Math: for mathematical constants like $\pi$ and $e$.
-  <br> <br>
-  
 - Where will your test suite live?
   - As indicated above, the test suite will be in the `tests/` directory, separated from the source files.
-  <br> <br>
-
 - How will you distribute your package (e.g. PyPI with PEP517/518 or simply setuptools)?
   - PyPI with PEP517.
-  <br> <br>
-
-  
 - Other considerations?
   - If the operations included in the `dual_numbers` module prove to be too extensive for a single file we will consider changing it into a directory and separating the dual number related operations in different modules
 
@@ -233,12 +233,11 @@ Class 2: `AutoDiff`
 - The AutoDiff class will have an instance method call `get_jacobian` which takes an argument `value`, representing the point for evaluating the Jacobian matrix. The method performs forward mode AD by default (with the possibility of performing AD with reverse mode, provided the team decides to implement a reverse mode). This implementation allows automatic differentiation of functions of $\mathbb{R}^m\to\mathbb{R}^n$. 
     - `value` is a *dictionary* (`str` : `float`), representing the value(s) at which the user seeks to evaluate the derivative.
     - The method checks valid correspondence in variable names between functions and value names.
-    - For each partial derivative, $\frac{\partial f_1}{\partial x}$, $x_i$ will be converted into a DualNumber object `(x_i, 1)` while other variables $x_j, j\neq i$ will be converted into DualNumber objects `(x_j, 0)`, such that the differentiation will be done with respect to $x_i$.
-- The class will also have an instance method called `get_derivative` which takes a point `value` and a seed vector `p` and return the directional derivative of `self.f` along the given vector `p` at the point `value`.
+    - For each partial derivative, $\frac{\partial f_1}{\partial x}$, $x_i$ will be converted into a DualNumber object `(x_i, 1)` while other variables $x_j, j\neq i$ will be converted into `DualNumber` objects `(x_j, 0)`, such that the differentiation will be done with respect to $x_i$.
+- The class will also have an instance method called `get_derivative` which takes a point `value` and either an explicit reference to a varible to differentiate with respect to (e.g., `"x"`) or a seed vector `p` and return the specified directional derivative of `self.f` at the point `value`.
     - `get_derivative` will operate on the functions `self` and return the specified derivative
 - It will also have class methods called `get_gradient` which similarly operates on `self.f` and returns a gradient vector, provided these these methods are compatible with the AutoDiff instance attributes provided.
-- Each of these functions will compute partial derivatives by evaluating expression involving dual number using elementary operations which we explicitly define on the `DualNumbers` class (discussed below). Note that  
-  
+- Each of these functions will compute partial derivatives by evaluating expression involving dual number using elementary operations which we explicitly define on the `DualNumbers` class (discussed below).  
 - Below is skeleton code for the `AutoDiff` class which relies upon the DualNumber objects discussed above.
 
 ```python
@@ -264,17 +263,16 @@ class AutoDiff:
         '''check that the variables correspond to those in the functions'''
         pass #TODO
         
-    def get_derivative(self, value, seed):
-        # user input seed vector p for directional derivative 
-        # store in dictionary with value dual number 
-        dual_var = { df_wrt : DualNumber(self.value[df_wrt]) }
-        # store all other independent variabels in dictionary 
-        other_vars = {(k, self.value[k]) for k != df_wrt)}
-        # kwargs stores independent variables in desired order 
-        kwargs = {**dual_var, **other_vars}
-        # dual component = derivative
-        derivative = self.f(**kwargs).dual
-        return derivative
+    def get_derivative(self, value, df_wrt, seed_vector = None):
+        if seed_vector !=None:
+          # TODO: Calculate derivative using seed_vector
+        else:
+          # Calculate derivative w.r.t explicitly specified variable (Sketch)
+          dual_var = { df_wrt : DualNumber(self.value[df_wrt]) }
+          other_vars = {(k, self.value[k]) for k != df_wrt)}
+          kwargs = {**dual_var, **other_vars}
+          derivative = self.f(**kwargs).dual
+          return derivative
           
     def get_gradient(self):
       pass #TODO
@@ -284,9 +282,7 @@ class AutoDiff:
             return self.jacobian
          
         self._var_check()
-            
         jacobian = np.array()
-        
         for i in len(value):
             for j in len(self.f):
                 x = DualNumber(value[i], 1)
@@ -296,11 +292,10 @@ class AutoDiff:
         return jacobian
 ```
 
-Class 3: `AutoDiffMath`
+Module: `auto_diff_math.py`
 
-- The `DualNumber` objects are useful for implementing the automatic differentiation algorihm. However, conceptually they do not onll serve the purpose of carrying out automatic diffentiation. Furthermore, we also envision that the `AutoDiff` objects only perform differentiation-related operations. As a result, we include another module the overloading functions that perform mathematical operations on `DualNumber` objects.
-- We include these functions as static methods in a separate class which we import for use in the `AutoDiff` class defined above.
-- These functions will be defined in a module and imported so that a user may call, e.g., `sin(DualNumber(3))` directly
+- The `DualNumber` objects are useful for implementing the automatic differentiation algorithm. However, conceptually they do not only serve the purpose of carrying out automatic differentiation. Furthermore, we also envision that the `AutoDiff` objects only perform differentiation-related operations. As a result, we include another module the overloading functions that perform mathematical operations on `DualNumber` objects.
+- We include these functions in a module which we import for use in the `AutoDiff` class defined above.
 - These functions each follow the same structure: for a `DualNumber`, `a = DualNumber(real, dual)`, and a function `func`, if we pass `func(a)`, we will return another `DualNumber`, say `DualNumber(new_real, new_dual)` such that:
    - `new_real` is `func` applied to `real` 
    - `new_dual` is the derivative of `func` applied to `real` *times* `dual`
@@ -321,7 +316,6 @@ def cos(DualNumber: x):
     
 # ... and more
 ```
-
 
 **Other Comments**
 
