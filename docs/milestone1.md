@@ -10,7 +10,7 @@ For example, we may model the relationship between investment ($x$) and returns 
 
 The derivative is modeled as $2\cdot x$ and we can interpret it as the instantaneous rate of change - slope - as seen in the illustration below. 
 
-![](files/Figure1.png)
+![](images/Figure1.png)
 
 While the example above serves as a toy example to familiarize ourselves with the topic of differentiation and its graphical interpretation, the power of the derivative is not to be understated. Its origins date back to Isaac Newton and applications in physics and movement; however, it has since grown with applications in various different branches such as statistics, biology, finance, computer science, and many more fields.
 
@@ -77,7 +77,7 @@ $f(x_1, x_2) = [sin(\frac{x_1}{x_2} + \frac{x_1}{x_2}) - e^{x_2} ] \cdot [ \frac
 
 We can see that elementary functions we will need are exp(), sin(), addition, subtraction, multiplication, and division. Additionally, we will need to create intermediate steps that build on the independent variables $x_1$ and $x_2$ in order to create all parts of the complex model. By following the arrows of the graph, we can see how we can begin at the independent variables and arrive back at the full complex function f(x). 
 
-![80%](files/Figure2_new.png)
+![80%](images/Figure2_new.png)
 
 ### Evaluation Trace (Forward Mode)
 
