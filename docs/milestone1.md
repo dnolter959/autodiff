@@ -1,9 +1,3 @@
----
-output:
-  html_document: default
-  pdf_document: default
-  word_document: default
----
 ## Introduction
 
 In its simplest form, we define the derivative of a function as its rate of change. We should familiarize ourselves with an example of a function, the notation for a derivative, and the graphical representation of rate of change.
