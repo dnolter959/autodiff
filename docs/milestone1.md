@@ -102,6 +102,7 @@ We point out that the left column gives us the result of our function $f(x_1 = 1
 
 The package will include a module for an `AutoDiff` class that utilizes the core data structure, the `DualNumber` objects. The user will interact with the `AutoDiff` module, without needing to interact with the `DualNumber` class. As such, user should import the `AutoDiff` module and the elementary functions for dual numbers. The user will initialize an `AutoDiff` object with a list of lambda functions representing a vector function $\mathbf{f}$. The user can then evaluate either a directional derivative, gradient, or Jacobian. and an associated `value` at which to evalauate.For example:
 
+<br> <br> 
 ```python
 from autodiff import AutoDiff
 from autodiff.utils import *
