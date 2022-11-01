@@ -130,24 +130,24 @@ gradient  = ad.get_gradient(value) # [4, 2]
   We plan to set up our package directory structure as the following:
 ```
 team14/
-    ├── src/
-    │   └── autodiff/
-    |       ├── __init__.py
-    │       ├── auto_diff.py
-    │       ├── utils/
-    |       |   ├── __init__.py     
-    │       │   ├── dual_numbers.py
-    │       │   ├── auto_diff_math.py
-    │       │   └── helpers.py
-    │   └── examples/
-    |       ├── __init__.py
-    │       ├── example_1.py
-    |       └── ...
-    ├── tests/
-    ├── docs/
-    │   └── milestone1
-    ├── LICENSE
-    └── README.md
+    |-- src/
+    |   |-- autodiff/
+    |       |-- __init__.py
+    |       |-- auto_diff.py
+    |       |-- utils/
+    |       |   |-- __init__.py
+    |       |   |-- dual_numbers.py
+    |       |   |-- auto_diff_math.py
+    |       |   |-- helpers.py
+    |   |-- examples/
+    |       |-- __init__.py
+    |       |-- example_1.py
+    |       |-- ...
+    |-- tests/
+    |-- docs/
+       |-- milestone1
+    |-- LICENSE
+    |-- README.md
 ```
 
 - What modules do you plan on including? What is their basic functionality?
@@ -319,3 +319,28 @@ def cos(DualNumber: x):
 ## Licensing
 
 We will use the *MIT License*, since we want our library to be open for anyone to modify it. This library will not provide all uses or versions of automatic differentiation available or the ones being still developed. Due to the limited timeframe of the project we only aim to provide the backbones for automatic differentiation and some of the basic algorithms in automatic differentiation. Thus we want anyone that wants to make changes to the library to fill their specific needs to be able to do so, either in a commercial setting or not.
+
+## Feedback
+
+### Milestone 1
+
+- Introduction(2/2):
+  - This section was really nicely done!
+
+- Background(2/2):
+  - This section was really nicely done!
+
+- How to use(3/3):
+  - This section was really nicely done!
+
+- Software Organization(2/2):
+  - Good
+
+- Implementation(4/4):
+  - Good ! Your milestone 1 contains enough details and concrete examples. It is impressive.
+
+- License(2/2):
+
+- Total: (15/15)
+
+We got full credit on Milestone 1 and did not receive any actionable feedback. Our Milestone 1 document is unchanged from its original submission.
