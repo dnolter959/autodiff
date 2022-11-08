@@ -56,31 +56,57 @@ def cos(x):
     else:
         raise TypeError("cos() only accepts DualNumbers, ints, or floats.")
 
-    def exp(x):
-        """Computes the exponential of a DualNumber or a numpy array of DualNumbers.
+def tan(x):
+    """Computes the tangent of a DualNumber or a numpy array of DualNumbers.
         
-        Parameters
-        ----------
-        x : DualNumber or int or float
-            The value to compute the exponential of.
+    Parameters
+    ----------
+    x : DualNumber or int or float
+        The value to compute the tangent of.
             
-        Returns
-        -------
-        DualNumber or int or float
-            The exponential of x.
+    Returns
+    -------
+    DualNumber or int or float
+        The tangent of x.
             
-        Raises
-        ------
-        TypeError
-            If x is not a DualNumber or int or float.
+    Raises
+    ------
+    TypeError
+        If x is not a DualNumber or int or float.
         
-        """
-        if isinstance(x, DualNumber):
-            return DualNumber(math.exp(x.real), math.exp(x.real) * x.dual)
-        elif isinstance(x, (int, float)):
-            return DualNumber(math.exp(x), 0)
-        else:
-            raise TypeError("exp() only accepts DualNumbers, ints, or floats.")
+    """
+    if isinstance(x, DualNumber):
+        return DualNumber(math.tan(x.real), (1/(math.cos(x.real)**2)) * x.dual)
+    elif isinstance(x, (int, float)):
+        return DualNumber(math.tan(x), 0)
+    else:
+        raise TypeError("tan() only accepts DualNumbers, ints, or floats.")
+
+def exp(x):
+    """Computes the exponential of a DualNumber or a numpy array of DualNumbers.
+        
+    Parameters
+    ----------
+    x : DualNumber or int or float
+        The value to compute the exponential of.
+            
+    Returns
+    -------
+    DualNumber or int or float
+        The exponential of x.
+            
+    Raises
+    ------
+    TypeError
+        If x is not a DualNumber or int or float.
+        
+    """
+    if isinstance(x, DualNumber):
+        return DualNumber(math.exp(x.real), math.exp(x.real) * x.dual)
+    elif isinstance(x, (int, float)):
+        return DualNumber(math.exp(x), 0)
+    else:
+        raise TypeError("exp() only accepts DualNumbers, ints, or floats.")
 
 def log(x):
     """Computes the natural logarithm of a DualNumber or a numpy array of DualNumbers.
