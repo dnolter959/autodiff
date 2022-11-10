@@ -33,5 +33,6 @@ Here is what each team member has 1) been assigned and 2) completed since our su
 - **Been Assigned for Milestone 2**
   - Write tests for operator overloading functions, as well as AutoDiff class interface
   - Configure test coverage reporting using Github Actions
+  - Refine documentation sections, especially as it relates to how a user will load and use our package
 - **Completed Since Milestone 1 Submission**
   - Submitted Milestone 2A
