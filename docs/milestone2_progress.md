@@ -15,7 +15,13 @@ Here is what each team member has 1) been assigned and 2) completed since our su
 ### Yixuan Huang
 
 - **Been Assigned for Milestone 2**
+    - Implement the interface class (AutoDiff) and write the corresponding documentation 
+    - Write tests for the interface class
+    - Modify milestone1 documentation based on latest implementation
 - **Completed Since Milestone 1 Submission**
+    - Set up structure for AutodDiff class
+    - Implemented the major methods including get_jacobian
+    - Drafted plan to implement computational graph
 
 ### Georgios Efstathiadis
 
