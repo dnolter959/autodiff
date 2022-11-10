@@ -5,12 +5,12 @@ Here is what each team member has 1) been assigned and 2) completed since our su
 ### Daniel Herrera
 
 - **Been Assigned for Milestone 2**
-  - Write additional operator overload functions 
+  - Write additional operator overload functions
   - Write/ensure appropriate docstrings
   - Flexible to help with testing as needed
 - **Completed Since Milestone 1 Submission**
   - Code review Georgios DualNumber class and operator overload
-  - Added funcitons to operator overload 
+  - Added functions to operator overload
   
 ### Yixuan Huang
 
@@ -20,7 +20,13 @@ Here is what each team member has 1) been assigned and 2) completed since our su
 ### Georgios Efstathiadis
 
 - **Been Assigned for Milestone 2**
+  - Review additional operator overload functions and docstrings
+  - Will assist on creating necessary tests
+  - Review and help with interface
 - **Completed Since Milestone 1 Submission**
+  - Completed the toml file for installing the package
+  - Created DualNumber class and basic operator overloads
+  - Created the docstrings for the DualNumber class and operator overloads
 
 ### Dan Nolte
 
