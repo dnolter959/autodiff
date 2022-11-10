@@ -133,3 +133,81 @@ def log(x):
         return DualNumber(math.log(x), 0)
     else:
         raise TypeError("log() only accepts DualNumbers, ints, or floats.")
+
+def sinh(x):
+    """Computes the hyperbolic sine of a DualNumber or a numpy array of DualNumbers.
+    
+    Parameters
+    ----------
+    x : DualNumber or int or float
+        The value to compute the hyperbolic sine of.
+        
+    Returns
+    -------
+    DualNumber or int or float
+        The hyperbolic sine (sinh) of x.
+        
+    Raises
+    ------
+    TypeError
+        If x is not a DualNumber or int or float.
+    
+    """
+    if isinstance(x, DualNumber):
+        return DualNumber(math.sinh(x.real), math.cosh(x.real) * x.dual)
+    elif isinstance(x, (int, float)):
+        return DualNumber(math.sinh(x), 0)
+    else:
+        raise TypeError("sinh() only accepts DualNumbers, ints, or floats.")  
+
+def cosh(x):
+    """Computes the hyperbolic cosine of a DualNumber or a numpy array of DualNumbers.
+    
+    Parameters
+    ----------
+    x : DualNumber or int or float
+        The value to compute the hyperbolic cosine of.
+        
+    Returns
+    -------
+    DualNumber or int or float
+        The hyperbolic cosine (cosh) of x.
+        
+    Raises
+    ------
+    TypeError
+        If x is not a DualNumber or int or float.
+    
+    """
+    if isinstance(x, DualNumber):
+        return DualNumber(math.cosh(x.real), math.sinh(x.real) * x.dual)
+    elif isinstance(x, (int, float)):
+        return DualNumber(math.cosh(x), 0)
+    else:
+        raise TypeError("cosh() only accepts DualNumbers, ints, or floats.")          
+
+def tanh(x):
+    """Computes the hyperbolic tangent of a DualNumber or a numpy array of DualNumbers.
+    
+    Parameters
+    ----------
+    x : DualNumber or int or float
+        The value to compute the hyperbolic tangent of.
+        
+    Returns
+    -------
+    DualNumber or int or float
+        The hyperbolic tangent (cosh) of x.
+        
+    Raises
+    ------
+    TypeError
+        If x is not a DualNumber or int or float.
+    
+    """
+    if isinstance(x, DualNumber):
+        return DualNumber(math.tanh(x.real), (1/math.cosh(x.real)**2) * x.dual)
+    elif isinstance(x, (int, float)):
+        return DualNumber(math.tanh(x), 0)
+    else:
+        raise TypeError("tanh() only accepts DualNumbers, ints, or floats.")   
