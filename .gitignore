@@ -2,4 +2,6 @@
 *.pyc
 .DS_Store
 .viminfo
+.Rhistory
+.ipynb_checkpoints
 
