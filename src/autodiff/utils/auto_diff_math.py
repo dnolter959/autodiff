@@ -4,6 +4,7 @@ import math
 
 from autodiff.utils.dual_numbers import DualNumber
 
+
 def sin(x):
     """Computes the sine of a DualNumber or a numpy array of DualNumbers.
     
@@ -29,6 +30,7 @@ def sin(x):
         return DualNumber(math.sin(x), 0)
     else:
         raise TypeError("sin() only accepts DualNumbers, ints, or floats.")
+
 
 def cos(x):
     """Computes the cosine of a DualNumber or a numpy array of DualNumbers.
@@ -56,6 +58,7 @@ def cos(x):
     else:
         raise TypeError("cos() only accepts DualNumbers, ints, or floats.")
 
+
 def tan(x):
     """Computes the tangent of a DualNumber or a numpy array of DualNumbers.
         
@@ -76,11 +79,13 @@ def tan(x):
         
     """
     if isinstance(x, DualNumber):
-        return DualNumber(math.tan(x.real), (1/(math.cos(x.real)**2)) * x.dual)
+        return DualNumber(math.tan(x.real),
+                          (1 / (math.cos(x.real)**2)) * x.dual)
     elif isinstance(x, (int, float)):
         return DualNumber(math.tan(x), 0)
     else:
         raise TypeError("tan() only accepts DualNumbers, ints, or floats.")
+
 
 def exp(x):
     """Computes the exponential of a DualNumber or a numpy array of DualNumbers.
@@ -108,6 +113,7 @@ def exp(x):
     else:
         raise TypeError("exp() only accepts DualNumbers, ints, or floats.")
 
+
 def log(x):
     """Computes the natural logarithm of a DualNumber or a numpy array of DualNumbers.
     
@@ -134,6 +140,7 @@ def log(x):
     else:
         raise TypeError("log() only accepts DualNumbers, ints, or floats.")
 
+
 def sinh(x):
     """Computes the hyperbolic sine of a DualNumber or a numpy array of DualNumbers.
     
@@ -158,7 +165,8 @@ def sinh(x):
     elif isinstance(x, (int, float)):
         return DualNumber(math.sinh(x), 0)
     else:
-        raise TypeError("sinh() only accepts DualNumbers, ints, or floats.")  
+        raise TypeError("sinh() only accepts DualNumbers, ints, or floats.")
+
 
 def cosh(x):
     """Computes the hyperbolic cosine of a DualNumber or a numpy array of DualNumbers.
@@ -184,7 +192,8 @@ def cosh(x):
     elif isinstance(x, (int, float)):
         return DualNumber(math.cosh(x), 0)
     else:
-        raise TypeError("cosh() only accepts DualNumbers, ints, or floats.")          
+        raise TypeError("cosh() only accepts DualNumbers, ints, or floats.")
+
 
 def tanh(x):
     """Computes the hyperbolic tangent of a DualNumber or a numpy array of DualNumbers.
@@ -206,8 +215,9 @@ def tanh(x):
     
     """
     if isinstance(x, DualNumber):
-        return DualNumber(math.tanh(x.real), (1/math.cosh(x.real)**2) * x.dual)
+        return DualNumber(math.tanh(x.real),
+                          (1 / math.cosh(x.real)**2) * x.dual)
     elif isinstance(x, (int, float)):
         return DualNumber(math.tanh(x), 0)
     else:
-        raise TypeError("tanh() only accepts DualNumbers, ints, or floats.")   
+        raise TypeError("tanh() only accepts DualNumbers, ints, or floats.")
