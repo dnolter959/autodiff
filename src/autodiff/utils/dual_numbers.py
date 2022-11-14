@@ -3,8 +3,8 @@
 import math
 import numpy as np
 
-
 class DualNumber:
+    
     def __init__(self, real, dual=1):
         """class DualNumber
 
@@ -48,9 +48,7 @@ class DualNumber:
         elif isinstance(other, (int, float)):
             return DualNumber(self.real + other, self.dual)
         else:
-            raise TypeError(
-                "unsupported operand type(s) for +: '{}' and '{}'".format(
-                    type(self), type(other)))
+            raise TypeError("unsupported operand type(s) for +: '{}' and '{}'".format(type(self), type(other)))
 
     def __radd__(self, other):
         """Addition operator for dual numbers.
@@ -74,7 +72,7 @@ class DualNumber:
 
         """
         return self + other
-
+    
     def __sub__(self, other):
         """Subtraction operator for dual numbers.
 
@@ -101,10 +99,8 @@ class DualNumber:
         elif isinstance(other, (int, float)):
             return DualNumber(self.real - other, self.dual)
         else:
-            raise TypeError(
-                "unsupported operand type(s) for -: '{}' and '{}'".format(
-                    type(self), type(other)))
-
+            raise TypeError("unsupported operand type(s) for -: '{}' and '{}'".format(type(self), type(other)))
+    
     def __rsub__(self, other):
         """Subtraction operator for dual numbers.
 
@@ -150,14 +146,11 @@ class DualNumber:
 
         """
         if isinstance(other, DualNumber):
-            return DualNumber(self.real * other.real,
-                              self.real * other.dual + self.dual * other.real)
+            return DualNumber(self.real * other.real, self.real * other.dual + self.dual * other.real)
         elif isinstance(other, (int, float)):
             return DualNumber(self.real * other, self.dual * other)
         else:
-            raise TypeError(
-                "unsupported operand type(s) for *: '{}' and '{}'".format(
-                    type(self), type(other)))
+            raise TypeError("unsupported operand type(s) for *: '{}' and '{}'".format(type(self), type(other)))
 
     def __rmul__(self, other):
         """Multiplication operator for dual numbers.
@@ -204,16 +197,11 @@ class DualNumber:
 
         """
         if isinstance(other, DualNumber):
-            return DualNumber(
-                self.real / other.real,
-                (self.dual * other.real - self.real * other.dual) /
-                (other.real**2))
+            return DualNumber(self.real / other.real, (self.dual * other.real - self.real * other.dual) / (other.real ** 2))
         elif isinstance(other, (int, float)):
             return DualNumber(self.real / other, self.dual / other)
         else:
-            raise TypeError(
-                "unsupported operand type(s) for /: '{}' and '{}'".format(
-                    type(self), type(other)))
+            raise TypeError("unsupported operand type(s) for /: '{}' and '{}'".format(type(self), type(other)))
 
     def __rtruediv__(self, other):
         """Division operator for dual numbers.
@@ -236,7 +224,7 @@ class DualNumber:
             If the other operand is not a dual number or a real number.
 
         """
-        return other * (self**-1)
+        return other * (self ** -1)
 
     def __pow__(self, other):
         """Power operator for dual numbers.
@@ -272,12 +260,9 @@ class DualNumber:
                 self.real**other.real,
                 other.real * self.real**(other.real - 1) * self.dual)
         elif isinstance(other, (int, float)):
-            return DualNumber(self.real**other,
-                              other * self.real**(other - 1) * self.dual)
+            return DualNumber(self.real ** other, other * self.real ** (other - 1) * self.dual)
         else:
-            raise TypeError(
-                "unsupported operand type(s) for **: '{}' and '{}'".format(
-                    type(self), type(other)))
+            raise TypeError("unsupported operand type(s) for **: '{}' and '{}'".format(type(self), type(other)))
 
     def __rpow__(self, other):
         """Power operator for dual numbers.
@@ -302,8 +287,7 @@ class DualNumber:
             If the other operand is not a dual number with a non-zero dual part or a real number.
 
         """
-        return DualNumber(other**self.real,
-                          other**self.real * self.dual * math.log(other))
+        return DualNumber(other ** self.real, other ** self.real * self.dual * math.log(other))
 
     def __neg__(self):
         """Negation operator for dual numbers.
@@ -359,9 +343,7 @@ class DualNumber:
 
         """
         if not isinstance(other, DualNumber):
-            raise TypeError(
-                "unsupported operand type(s) for ==: '{}' and '{}'".format(
-                    type(self), type(other)))
+            raise TypeError("unsupported operand type(s) for ==: '{}' and '{}'".format(type(self), type(other)))
         return self.real == other.real and self.dual == other.dual
 
     def __ne__(self, other):
