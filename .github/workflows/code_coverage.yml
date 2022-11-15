@@ -1,5 +1,5 @@
 name: code coverage
-
-on: 
+on:
   push:
-    branches: [master]
+    branches:
+      - add_unit_tests

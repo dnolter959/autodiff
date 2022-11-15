@@ -3,18 +3,44 @@ name: Test workflow
 on:
   push:
     branches:
-      - add_tests
+      - add_unit_tests
 
 jobs:
-  test_code:
-    name: Test Python implementation of Forward Mode AD
-    runs-on: ubuntu-latest
+  cleanup:
+    runs-on: self-hosted
+    container:
+      image: ubuntu:latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Cleaning up the $GITHUB_WORKSPACE as root from a Docker image
+        # Volume auto mounted by gh actions pointing to the current working-directory
+        run: find /__w/${{ github.event.repository.name }}/${{ github.event.repository.name }}/. -name . -o -prune -exec rm -rf -- {} + || true
+
+  unit_tests:
+    needs: cleanup
+    name: Run the unit tests
+    runs-on: self-hosted
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
       - uses: actions/setup-python@v3
         with:
           python-version: '3.10'
       - name: Install Python dependencies
         run: python -m pip install pytest
       - name: Run Dual Number test suite
-        run: ./tests/run_tests.sh pytest -v
+        run: cd tests && ./run_tests.sh pytest -v
+
+
+  # test_code:
+  #   name: Test Python implementation of Forward Mode AD
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - run: echo ${{secrets.DEPLOY_PASSWORD}} | sudo chown -R $USER:$USER /home/github/actions-runner/_work/team14/team14      
+  #     - uses: actions/checkout@v3
+  #     - uses: actions/setup-python@v3
+  #       with:
+  #         python-version: '3.10'
+  #     - name: Install Python dependencies
+  #       run: python -m pip install pytest
+  #     - name: Run Dual Number test suite
+  #       run: ./tests/run_tests.sh pytest -v

@@ -2,8 +2,6 @@
 
 set -e
 
-export PYTHONPATH="$(pwd -P)/../src/":${PYTHONPATH}
-
 tool='coverage'
 if [[ $# -gt 0 ]]; then
     # optional argument to use different tool to check coverage
