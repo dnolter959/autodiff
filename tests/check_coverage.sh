@@ -10,13 +10,13 @@ fi
 
 if [[ ${tool} == 'coverage' ]]; then
     # run the tests (generates coverage data to build report)
-    ./tests/run_tests.sh coverage run --source=src "${@}"
+    cd tests && ./run_tests.sh coverage run --source=../src "${@}"
 
     # build the coverage report on stdout
     coverage report -m
 elif [[ ${tool} == 'pytest' ]]; then
     # generate coverage reports with pytest in one go
-    ./tests/run_tests.sh pytest --cov=src "${@}"
+    cd tests && ./run_tests.sh pytest --cov=../src --cov-report term --cov-report=html:htmlcov "${@}"
 else
     # error: write to stderr
     >&2 echo "Error: unknown tool '${tool}'"
