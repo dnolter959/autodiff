@@ -2,7 +2,7 @@
 
 import math
 
-from dual_numbers import DualNumber
+from .dual_numbers import DualNumber
 
 
 def sin(x):
