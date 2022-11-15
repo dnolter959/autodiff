@@ -25,11 +25,3 @@ jobs:
         run: (python3 -m build --wheel && python3 -m pip install dist/*)
       - name: Run tests and generate coverage html
         run: ./tests/check_coverage.sh pytest
-      - name: pass or fail test_coverage
-        run: coverage report --fail-under=80
-      # - name: Clean .gitignore in coverage output
-      #   run: rm -f tests/htmlcov/.gitignore
-      # - name: Deploy test coverage GitHub page
-      #   uses: JamesIves/github-pages-deploy-action@v4
-      #   with:
-      #     folder: tests/
