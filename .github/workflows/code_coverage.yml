@@ -1,5 +1,33 @@
 name: code coverage
+
 on:
   push:
     branches:
       - add_unit_tests
+  pull_request:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+jobs:
+  test_coverage:
+    runs-on: ubuntu-latest
+
+    container:
+      image: iacs/cs107_lecture16:latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Check Python installation
+        run: python3 -VV
+      - name: Build and install the cs107_project in the container (using PEP517/518)
+        run: (python3 -m build --wheel && python3 -m pip install dist/*)
+      - name: Run tests and generate coverage html
+        run: ./tests/check_coverage.sh
+      - name: Clean .gitignore in coverage output
+        run: rm -f tests/htmlcov/.gitignore
+      - name: Deploy test coverage GitHub page
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: tests/htmlcov
