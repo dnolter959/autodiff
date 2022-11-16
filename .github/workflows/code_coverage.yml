@@ -4,9 +4,7 @@ on:
   push:
     branches:
       - add_unit_tests
-  pull_request:
-    branches:
-      - main
+      - master
 
   workflow_dispatch:
 
