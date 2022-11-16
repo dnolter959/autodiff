@@ -82,10 +82,10 @@ class TestAutoDiffMath:
         z1 = DualNumber(5)
         z2 = 5
 
-        assert sinh(z1).real == np.sinh(5)
-        assert sinh(z1).dual == np.cosh(5)
+        assert sinh(z1).real == pytest.approx(np.sinh(5))
+        assert sinh(z1).dual == pytest.approx(np.cosh(5))
 
-        assert sinh(z2).real == np.sinh(5)
+        assert sinh(z2).real == pytest.approx(np.sinh(5))
         assert sinh(z2).dual == 0
 
         with pytest.raises(TypeError):
@@ -95,10 +95,10 @@ class TestAutoDiffMath:
         z1 = DualNumber(5)
         z2 = 5
 
-        assert cosh(z1).real == np.cosh(5)
-        assert cosh(z1).dual == np.sinh(5)
+        assert cosh(z1).real == pytest.approx(np.cosh(5))
+        assert cosh(z1).dual == pytest.approx(np.sinh(5))
 
-        assert cosh(z2).real == np.cosh(5)
+        assert cosh(z2).real == pytest.approx(np.cosh(5))
         assert cosh(z2).dual == 0
 
         with pytest.raises(TypeError):
