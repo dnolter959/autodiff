@@ -1,25 +1,29 @@
-name: code coverage
-
-on:
-  push:
-    branches:
-      - add_unit_tests
-      - master
-
-  workflow_dispatch:
+name: Code coverage
+on: [push]
+permissions:
+  contents: write
 
 jobs:
   test_coverage:
     runs-on: ubuntu-latest
 
-    container:
-      image: iacs/cs107_lecture16:latest
-
     steps:
       - uses: actions/checkout@v3
-      - name: Check Python installation
-        run: python3 -VV
+      - uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'  # let's use a recent version
+      - name: Install dependencies
+        run: python -m pip install build pytest pytest-cov
       - name: Build and install the cs107_project in the container (using PEP517/518)
         run: (python3 -m build --wheel && python3 -m pip install dist/*)
       - name: Run tests and generate coverage html
         run: ./tests/check_coverage.sh pytest
+      - name: Clean .gitignore in coverage output
+        run: rm -f tests/htmlcov/.gitignore
+      - name: test
+        run: ls -al tests/htmlcov        
+      - name: Deploy test coverage GitHub page
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: tests/htmlcov
+          branch: gh-pages
