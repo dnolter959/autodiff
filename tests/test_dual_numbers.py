@@ -167,13 +167,21 @@ class TestDualNumber:
             z1 ** "string"
             "string" ** z1
 
-        # # Dual Number ** Dual Number
-        # z2 = DualNumber(1, 1)
-        # assert (z1 ** z2).real == 5
-        # assert (z1 ** z2).dual == (5 ** 0) * (1 * 5 + np.log(5) * 5 * 1)
+        # Dual Number ** Dual Number
+        z2 = DualNumber(1, 1)
+        assert (z1 ** z2).real == 5
+        assert (z1 ** z2).dual == (5 ** 0) * (1 * 5 + np.log(5) * 5 * 1)
 
     def test_reflective_power(self):
-        pass
+        z1 = DualNumber(3, 3)
+
+        # int * DualNumber
+        assert (2 ** z1).real == 8
+        assert (2 ** z1).dual == np.log(2) * 2 ** 3 * 3
+
+        # float * DualNumber
+        assert (2.0 ** z1).real == 8.0
+        assert (2.0 ** z1).dual == np.log(2.0) * 2.0 ** 3.0 * 3.0
 
     def test_negation(self):
         z1 = DualNumber(5, 5)
