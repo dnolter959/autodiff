@@ -1,6 +1,7 @@
 """Module contains the dual number class for automatic differentiation."""
 
 import math
+import numpy as np 
 
 
 class DualNumber:
@@ -262,11 +263,11 @@ class DualNumber:
         """
         if isinstance(other, DualNumber):
             if self.dual != 0:
-                raise TypeError(
-                    "Dual numbers with non-zero dual part cannot be raised to a power"
-                )
+                return DualNumber(
+                self.real ** other.real,
+                self.real ** (-1 + other.real) * (self.dual * other.real + self.real * other.dual * np.log(self.real)))
             return DualNumber(
-                self.real**other.real,
+                self.real ** other.real,
                 other.real * self.real**(other.real - 1) * self.dual)
         elif isinstance(other, (int, float)):
             return DualNumber(self.real**other,
