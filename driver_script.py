@@ -1,12 +1,12 @@
 """In this script we implement the newton method using automatic differentiation"""
 
-import autodiff as ad
+from autodiff.auto_diff import AutoDiff
 from autodiff.utils.auto_diff_math import *
 
 f = lambda x: x**2 - 5 * x + 2 * exp(x) - sin(x) - 4
 # f has 2 roots: -0.42 and 1.662
 
-ad_class = ad.AutoDiff(f)
+ad_class = AutoDiff(f)
 
 # Newton's method
 eps = 1e-4  # tolerance
