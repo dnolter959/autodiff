@@ -104,23 +104,20 @@ The package will include a module for an `AutoDiff` class that utilizes the core
 
 <br> <br> 
 ```python
-from autodiff import AutoDiff
-from autodiff.utils import *
+from autodiff.auto_diff import AutoDiff
+from autodiff.utils.auto_diff_math import *
 
 f1 = lambda x, y : x**2 + 2*y
 f2 = lambda x, y : sin(x) + 3*y
 f = [f1, f2]
-ad = AutoDiff(f)
+ad_class = AutoDiff(f)
 value = {"x": 2, "y" : 5}
-jacobian = ad.get_jacobian(value) # [[4, 2], [cos(2), 3]]
+jacobian = ad_class.get_jacobian(value) # [[4, 2], [cos(2), 3]]
 
 # to get the partial derivatives w.r.t. x evaluated at given point (Both are equivalent)
-derivative = ad.get_derivative(value, "x") # 4
-derivative = ad.get_derivative(value, [1, 0]) # 4 
+derivative = ad_class.get_derivative(value, [1, 0]) # [4, cos(2)]
 # to get the directional derivative at the seed  vector p=[-2, 1]
-derivative = ad.get_derivative(value, np.array([-2, 1])) # 2
-# gradient vector evaluate at given point 
-gradient  = ad.get_gradient(value) # [4, 2]
+derivative = ad_class.get_derivative(value, np.array([-2, 1])) # [-6, -2cos(2) + 3]
 ```
 
 ## Software Organization
