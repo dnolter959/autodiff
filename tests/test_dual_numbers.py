@@ -10,6 +10,7 @@ import numpy as np
 # import names to test
 from autodiff.utils.dual_numbers import DualNumber
 
+
 class TestDualNumber:
     """Test class for dual number types"""
     def test_init(self):
@@ -77,7 +78,7 @@ class TestDualNumber:
     def test_reflective_subtraction(self):
         z1 = DualNumber(5, 5)
 
-        # int - DualNumber 
+        # int - DualNumber
         assert (1 - z1).real == -4
         assert (1 - z1).dual == -5
 
@@ -118,7 +119,7 @@ class TestDualNumber:
         # float * DualNumber
         assert (z1 * 3.0).real == (3.0 * z1).real == 3.0
         assert (z1 * 3.0).dual == (3.0 * z1).dual == 6.0
-    
+
     def test_true_division(self):
         z1 = DualNumber(5, 5)
         z2 = DualNumber(1, 1)
@@ -143,7 +144,7 @@ class TestDualNumber:
     def test_reflective_true_division(self):
         z1 = DualNumber(5, 5)
 
-        # int / DualNumber 
+        # int / DualNumber
         assert (5 / z1).real == 1
         assert (5 / z1).dual == -1
 
@@ -155,37 +156,37 @@ class TestDualNumber:
         z1 = DualNumber(5, 5)
 
         # DualNumber ** int
-        assert (z1 ** 3).real == 125
-        assert (z1 ** 3).dual == 375
+        assert (z1**3).real == 125
+        assert (z1**3).dual == 375
 
         # DualNumber ** float
-        assert (z1 ** 3.0).real == 125.0
-        assert (z1 ** 3.0).dual == 375.0
+        assert (z1**3.0).real == 125.0
+        assert (z1**3.0).dual == 375.0
 
         # Handle Non-Supported Types (String)
         with pytest.raises(TypeError):
-            z1 ** "string"
-            "string" ** z1
+            z1**"string"
+            "string"**z1
 
         # Dual Number ** Dual Number
         z2 = DualNumber(1, 1)
-        assert (z1 ** z2).real == 5
-        assert (z1 ** z2).dual == (5 ** 0) * (1 * 5 + np.log(5) * 5 * 1)
+        assert (z1**z2).real == 5
+        assert (z1**z2).dual == (5**0) * (1 * 5 + np.log(5) * 5 * 1)
 
     def test_reflective_power(self):
         z1 = DualNumber(3, 3)
 
         # int * DualNumber
-        assert (2 ** z1).real == 8
-        assert (2 ** z1).dual == np.log(2) * 2 ** 3 * 3
+        assert (2**z1).real == 8
+        assert (2**z1).dual == np.log(2) * 2**3 * 3
 
         # float * DualNumber
-        assert (2.0 ** z1).real == 8.0
-        assert (2.0 ** z1).dual == np.log(2.0) * 2.0 ** 3.0 * 3.0
+        assert (2.0**z1).real == 8.0
+        assert (2.0**z1).dual == np.log(2.0) * 2.0**3.0 * 3.0
 
     def test_negation(self):
         z1 = DualNumber(5, 5)
-         # -DualNumber
+        # -DualNumber
         assert (-z1).real == -5
         assert (-z1).dual == -5
 
