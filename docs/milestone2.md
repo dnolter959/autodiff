@@ -121,7 +121,7 @@ ad = AutoDiff(f)
 value = 2
 jacobian = ad.get_jacobian(value) # [[6]]
 
-seed_vector = [1]
+seed_vector = np.array([1])
 derivative = ad.get_derivative(value, seed_vector) # 6
 derivative = ad.get_derivative(value) # 6 (Seed vector defaults to [1] in the R -> R^m case.)
 ```
@@ -133,10 +133,10 @@ ad = AutoDiff(f)
 value = [2, 3] # Order must match the indexing of x in f definition
 jacobian = ad.get_jacobian(value) # [[4, 2]]
 
-seed_vector = [1, 0]
+seed_vector = np.array([1, 0])
 derivative = ad.get_derivative(value, seed_vector) # 4
 
-seed_vector = [0, 1]
+seed_vector = np.array([0, 1])
 derivative = ad.get_derivative(value, seed_vector) # 2
 ```
 
@@ -149,7 +149,7 @@ ad = AutoDiff([f1, f2])
 value = 2
 jacobian = ad.get_jacobian(value) # [[6], [cos(2)]]
 
-seed_vector = [1]
+seed_vector = np.array([1])
 derivative = ad.get_derivative(value, seed_vector) # [[6], [cos(2)]]
 derivative = ad.get_derivative(value) # [[6], [cos(2)]] (Seed vector defaults to [1] in the R -> R^m case.)
 ``` 
@@ -162,10 +162,10 @@ ad = AutoDiff([f1, f2])
 value = [2, 5] # Ordering specified by index of variables in f1, f2
 jacobian = ad.get_jacobian(value) # [[4, 2], [cos(2), 3]]
 
-seed_vector = [1, 0]
+seed_vector = np.array([1, 0])
 derivative = ad_class.get_derivative(value, seed_vector) # [[4], [cos(2)]]
 
-seed_vector = [-2, 1]
+seed_vector = np.array([-2, 1])
 derivative = ad_class.get_derivative(value, seed_vector) # [[-6], [-2cos(2) + 3]]
 ```
 
