@@ -100,24 +100,73 @@ We point out that the left column gives us the result of our function $f(x_1 = 1
 
 ## How to Use AutoDiff
 
-The package will include a module for an `AutoDiff` class that utilizes the core data structure, the `DualNumber` objects. The user will interact with the `AutoDiff` module, without needing to interact with the `DualNumber` class. As such, user should import the `AutoDiff` module and the elementary functions for dual numbers. The user will initialize an `AutoDiff` object with a list of lambda functions representing a vector function $\mathbf{f}$. The user can then evaluate either a directional derivative, gradient, or Jacobian. and an associated `value` at which to evalauate.For example:
+The package will include a module for an `AutoDiff` class that utilizes the core data structure, the `DualNumber` objects. The user will interact with the `AutoDiff` module, without needing to interact with the `DualNumber` class. As such, user should import the `AutoDiff` module and the elementary functions for dual numbers. The user will initialize an `AutoDiff` object with a list of lambda functions representing a vector function $\mathbf{f}$. The user can then evaluate either a directional derivative, gradient, or Jacobian. and an associated `value` at which to evaluate. Example use cases are shown below.
 
-<br> <br> 
+
+**Install** (Not yet available for pip install)
+```bash
+#TBD
+```
+
+**Imports**
 ```python
 from autodiff.auto_diff import AutoDiff
 from autodiff.utils.auto_diff_math import *
+```
 
-f1 = lambda x, y : x**2 + 2*y
-f2 = lambda x, y : sin(x) + 3*y
-f = [f1, f2]
-ad_class = AutoDiff(f)
-value = {"x": 2, "y" : 5}
-jacobian = ad_class.get_jacobian(value) # [[4, 2], [cos(2), 3]]
+**Case 1: $\mathbb{R} \rightarrow \mathbb{R}$**
+```python
+f = lambda x: x**2 + 2*x
+ad = AutoDiff(f)
+value = 2
+jacobian = ad.get_jacobian(value) # [[6]]
 
-# to get the partial derivatives w.r.t. x evaluated at given point (Both are equivalent)
-derivative = ad_class.get_derivative(value, [1, 0]) # [4, cos(2)]
-# to get the directional derivative at the seed  vector p=[-2, 1]
-derivative = ad_class.get_derivative(value, np.array([-2, 1])) # [-6, -2cos(2) + 3]
+seed_vector = [1]
+derivative = ad.get_derivative(value, seed_vector) # 6
+derivative = ad.get_derivative(value) # 6 (Seed vector defaults to [1] in the R -> R^m case.)
+```
+
+**Case 2: $\mathbb{R}^n \rightarrow \mathbb{R}$ ($n \gt 1$)**
+```python
+f = lambda x: x[0]**2 + 2*x[1]
+ad = AutoDiff(f)
+value = [2, 3] # Order must match the indexing of x in f definition
+jacobian = ad.get_jacobian(value) # [[4, 2]]
+
+seed_vector = [1, 0]
+derivative = ad.get_derivative(value, seed_vector) # 4
+
+seed_vector = [0, 1]
+derivative = ad.get_derivative(value, seed_vector) # 2
+```
+
+**Case 3: $\mathbb{R} \rightarrow \mathbb{R}^m$ ($m \gt 1$)**
+```python
+f1 = lambda x: x**2 + 2*x
+f2 = lambda x: sin(x)
+
+ad = AutoDiff([f1, f2])
+value = 2
+jacobian = ad.get_jacobian(value) # [[6], [cos(2)]]
+
+seed_vector = [1]
+derivative = ad.get_derivative(value, seed_vector) # [[6], [cos(2)]]
+derivative = ad.get_derivative(value) # [[6], [cos(2)]] (Seed vector defaults to [1] in the R -> R^m case.)
+``` 
+
+**Case 4: $\mathbb{R}^n \rightarrow \mathbb{R}^m$ ($n, m \gt 1$)**
+```python
+f1 = lambda x: x[0]**2 + 2*x[1]
+f2 = lambda x: sin(x[0]) + 3*x[1]
+ad = AutoDiff([f1, f2])
+value = [2, 5] # Ordering specified by index of variables in f1, f2
+jacobian = ad.get_jacobian(value) # [[4, 2], [cos(2), 3]]
+
+seed_vector = [1, 0]
+derivative = ad_class.get_derivative(value, seed_vector) # [[4], [cos(2)]]
+
+seed_vector = [-2, 1]
+derivative = ad_class.get_derivative(value, seed_vector) # [[-6], [-2cos(2) + 3]]
 ```
 
 ## Software Organization
