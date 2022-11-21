@@ -1,8 +1,7 @@
 """Module containing overloaded functions to handle dual numbers."""
 
 import math
-
-from .dual_numbers import DualNumber
+from autodiff.utils.dual_numbers import DualNumber
 
 
 def sin(x):
