@@ -110,6 +110,7 @@ The package will include a module for an `AutoDiff` class that utilizes the core
 
 **Imports**
 ```python
+import numpy as np
 from autodiff.auto_diff import AutoDiff
 from autodiff.utils.auto_diff_math import *
 ```
@@ -174,6 +175,7 @@ derivative = ad_class.get_derivative(value, seed_vector) # [[-6], [-2cos(2) + 3]
 - What will the directory structure look like?
 
   We plan to set up our package directory structure as the following:
+  
 ```
 team14/
     |-- src/
@@ -225,7 +227,7 @@ team14/
 
 **Overview**
 
-The package will implement Automatic Differentiation by appropriately translating variables into **dual numbers**, and then evaluating expressions containing dual numbers using the built-in order of operations defined within Python, while potentially improving the efficiency by utilizing a compuational graph to store and reuse nodes for computed values. Crucially, when we perform (binary or unary) operations in evaluating these expressions, we will do so **using only** elemental operations which we explicitly define ourselves via "operation overloading" on `DualNumber`s (an object which we define), and which obey the characteristics of dual numbers. The resulting expression will itself be a dual number, the **real** part of which represents the evaluation of the function at the provided input, and the **dual** part of which represents the derivative of the functions evaluated at the provided inputs.   
+The package implements Automatic Differentiation by appropriately translating variables into **dual numbers**, and then evaluating expressions containing dual numbers using the built-in order of operations defined within Python. Crucially, when we perform (binary or unary) operations in evaluating these expressions, we do so **using only** elemental operations which we explicitly define ourselves via "operation overloading" on `DualNumber`s (an object which we define), and which obey the characteristics of dual numbers. The resulting expression will itself be a dual number, the **real** part of which represents the evaluation of the function at the provided input, and the **dual** part of which represents the derivative of the functions evaluated at the provided inputs.   
 
 **Classes**
 
@@ -243,45 +245,84 @@ Class 1: `DualNumber`
 ```python
 class DualNumber:
     def __init__(self, real, dual=1):
-        self.real=real
-        self.dual=1
-    
+        """class DualNumber
+        A class for representing dual numbers, which are used for automatic
+        differentiation.
+        Parameters
+        ----------
+        real : float
+            The real part of the dual number.
+        dual : float, optional
+            The dual part of the dual number. Defaults to 1.
+        """
+        self.real = real
+        self.dual = dual
+
     def __add__(self, other):
-        assert isinstance(other, (DualNumber, int, float)), "Invalid input"
-        
-        if isinstance(other, (int, float)):
-            other = DualNumber(other, 0)
-
-        return DualNumber(self.real+other.real, self.dual+other.dual) 
-       
-    # the rest will follow a similar template as self.__add__()
-    def __mul__(self, other):
-        pass #TODO
-
-    def __radd__(self, other):
-        pass #TODO
-    
-    def __rmul__(self, other):
-        pass #TODO
-
-    def __pow__(self, other):
-        pass #TODO
-
-    # and more
+        """Addition operator for dual numbers.
+        Parameters
+        ----------
+        self : DualNumber
+            The first dual number.
+        other : DualNumber or float or int
+            The second dual number or a real number.
+        Returns
+        -------
+        DualNumber
+            The sum of the two dual numbers.
+        Raises
+        ------
+        TypeError
+            If the other operand is not a dual number or a real number.
+        """
+        if isinstance(other, DualNumber):
+            return DualNumber(self.real + other.real, self.dual + other.dual)
+        elif isinstance(other, (int, float)):
+            return DualNumber(self.real + other, self.dual)
+        else:
+            raise TypeError(
+                "unsupported operand type(s) for +: '{}' and '{}'".format(
+                    type(self), type(other)))
 ```
-- These methods will be carefully constructed to handle cases of, say, adding a DualNumber to a scalar (no matter the order in which they are passed).
+
+- These methods have been carefully constructed to handle cases of, say, adding a DualNumber to a scalar (no matter the order in which they are passed).
+- Currently, we overload the following operators:
+  - __add__, __radd__, __sub__, __rsub__, __mul__, __rmul__, __truediv__, __rtruediv__, __pow__, __rpow__, __neg__, __repr__, __eq__, __ne__
 
 Class 2: `AutoDiff`
 
-- Users instantiate an `AutoDiff` object with one parameter `f`, which will then become an attribute of the object `self.f`.
-  - `f` is either a *function* or *list of functions* ($f : \mathbb{R}^n \to \mathbb{R}^m$) over which to evaluate derivatives. 
-  - Example:
-    - `f1 = lambda x : x**2; f2 = lambda x, y : x + y` 
-    - `ad = AutoDiff([f1, f2])`
-  - Upon initialization the function will also check for valid input. For example, it will check the input represents valid mathematical functions.
-- The AutoDiff class will have an instance method call `get_jacobian` which takes an argument `value`, representing the point for evaluating the Jacobian matrix. The method performs forward mode AD by default (with the possibility of performing AD with reverse mode, provided the team decides to implement a reverse mode). This implementation allows automatic differentiation of functions of $\mathbb{R}^m\to\mathbb{R}^n$. 
-    - `value` is a *dictionary* (`str` : `float`), representing the value(s) at which the user seeks to evaluate the derivative.
-    - The method checks valid correspondence in variable names between functions and value names.
+- Users instantiate an `AutoDiff` object with one parameter `f`, which is assigned as an attribute of the object `self.f`.
+  - `f` is either a *function* or *list of functions* ($f : \mathbb{R}^n \to \mathbb{R}^m$) over which to evaluate derivatives.
+    - Example:
+    - `f = lambda x : x**2 + 3*x`
+    - `g = lambda x : 2x**2 - 14`
+      - `ad1 = AutoDiff(f)`
+      - `ad2 = AutoDiff([f, g])`
+    - `h = lambda x : x[0]**2 + sin(x[1])`
+    - `j = lambda x : exp(x[1]) + 4*x[0]`
+      - `ad3 = AutoDiff([h, j])`
+      - Note that in the event that a user wishes to pass a **multivariate function** (`h`, or `j` above), they must define a `lambda` function which takes a vector of input, and **index into x** appropriately within the functional expression.
+      - It is important to note that `ad = AutoDiff([h, j])` will rely on the index values to assign variables and assume consistent indexing across multiple functions
+  - Upon initialization the function also checks for valid input. For example, it will check the input represents valid mathematical functions.
+- The AutoDiff implements three important instance methods which compute derivaites. 
+
+1)`get_jacobian`
+- This takes a single argument `value`, representing the point for evaluating the Jacobian matrix. 
+- The method performs forward mode AD by default. This implementation allows automatic differentiation of functions of $\mathbb{R}^m\to\mathbb{R}^n$.
+
+2)`get_partial` which takes an argument `value`, representing the point for evaluating the Jacobian matrix. The method performs forward mode AD by default. This implementation allows automatic differentiation of functions of $\mathbb{R}^m\to\mathbb{R}^n$. 
+
+2)`get_derivative` which takes an argument `value`, representing the point for evaluating the Jacobian matrix. The method performs forward mode AD by default. This implementation allows automatic differentiation of functions of $\mathbb{R}^m\to\mathbb{R}^n$. 
+
+
+
+
+
+    - `value` is an array of `int`s or `float`s, representing the value(s) at which the user seeks to evaluate the derivative.
+      - Example:
+      - `jacobian1 = ad1.get_jacobian(3)` # 
+      - `jacobian2 = ad2.get_jacobian(3)`
+      - `jacobian3 = ad2.get_jacobian([3, 4])`
     - For each partial derivative, $\frac{\partial f_1}{\partial x}$, $x_i$ will be converted into a DualNumber object `(x_i, 1)` while other variables $x_j, j\neq i$ will be converted into `DualNumber` objects `(x_j, 0)`, such that the differentiation will be done with respect to $x_i$.
 - The class will also have an instance method called `get_derivative` which takes a point `value` and either an explicit reference to a varible to differentiate with respect to (e.g., `"x"`) or a seed vector `p` and return the specified directional derivative of `self.f` at the point `value`.
     - `get_derivative` will operate on the functions `self` and return the specified derivative
@@ -348,22 +389,42 @@ Module: `auto_diff_math.py`
 - These functions each follow the same structure: for a `DualNumber`, `a = DualNumber(real, dual)`, and a function `func`, if we pass `func(a)`, we will return another `DualNumber`, say `DualNumber(new_real, new_dual)` such that:
    - `new_real` is `func` applied to `real` 
    - `new_dual` is the derivative of `func` applied to `real` *times* `dual`
-- These functions will ultimately need to gracefully handle non-Dual numbers, by, for example, falling back to the standard implementation (e.g., `np.sin`) when passed a real number.
+- These functions gracefully handle non-Dual numbers, by, for example, falling back to the standard implementation (e.g., `np.sin`) when passed a real number.
 - By explicitly defining elemental operations in this way, we ensure that when evaluating expressions containing dual numbers, python will resolve to a final expression which is itself a dual number whose dual part represents the derivative of interest
-- Moreover, to improve efficiency of forward mode, we may overload these functions in ways such that when they are called, they also add new nodes to a graph objects that stores the elementary operations carried out for an `AutoDiff` object.
 - Here are some such functions.
 
 ```python
-import numpy as np
 import math
+from dual_numbers import DualNumber
 
-def sin(DualNumber: x):  
-    return DualNumber(np.sin(x.real), np.cos(x.real)*x.dual)
+
+def sin(x):
+    """Computes the sine of a DualNumber or a numpy array of DualNumbers.
     
-def cos(DualNumber: x):  
-    return DualNumber(np.cos(x.real), -np.sin(x.real)*x.dual)
+    Parameters
+    ----------
+    x : DualNumber or int or float
+        The value to compute the sine of.
+        
+    Returns
+    -------
+    DualNumber or int or float
+        The sine of x.
+        
+    Raises
+    ------
+    TypeError
+        If x is not a DualNumber or int or float.
     
-# ... and more
+    """
+    if isinstance(x, DualNumber):
+        return DualNumber(math.sin(x.real), math.cos(x.real) * x.dual)
+    elif isinstance(x, (int, float)):
+        return DualNumber(math.sin(x), 0)
+    else:
+        raise TypeError("sin() only accepts DualNumbers, ints, or floats.")
 ```
-
+- The following operations are implemented:
+  - sin, cos, tan, exp, log, sinh, cosh, tanh 
+  
 # Future Features
