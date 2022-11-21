@@ -184,16 +184,27 @@ team14/
     |       |   |-- __init__.py
     |       |   |-- dual_numbers.py
     |       |   |-- auto_diff_math.py
-    |       |   |-- helpers.py
-    |   |-- examples/
-    |       |-- __init__.py
-    |       |-- example_1.py
-    |       |-- ...
+    |-- .github/
+    |       |-- workflows/
+    |       |   |-- code_coverage.yml
+    |       |   |-- test.yml
     |-- tests/
+    |   |-- __init__.py
+    |   |-- check_coverage.sh
+    |   |-- run_tests.sh
+    |   |-- test_auto_diff.py
+    |   |-- test_auto_diff_math.py
+    |   |-- test_dual_numbers.py
     |-- docs/
-       |-- milestone1
+        |-- milestone1.md
+        |-- milestone1.pdf
+        |-- milestone2.md
+        |-- milestone2.pdf
+    |-- driver_script.py
     |-- LICENSE
     |-- README.md
+    |-- pyproject.toml
+
 ```
 
 - What modules do you plan on including? What is their basic functionality?
@@ -202,7 +213,6 @@ team14/
     - auto_diff.py: This module is the interface of the package. Users will initiate an AutoDiff object to carry out any necessary calculations. 
     - dual_numbers.py: The DualNumber class is defined in this module. Although users do not need to directly interact with the DualNumber objects, the AutoDiff objects carry out function calculations and differentiation using DualNumber objects.
     - auto_diff_math.py: The overload functions for auto_diff 
-    - helpers.py: Any other utility functions that do not conceptually belong in the AutoDiff class or the DualNumber class.
   - Third-party modules:
     - NumPy: used for mathematical operations in automatic differentiation.
     - Math: for mathematical constants like $\pi$ and $e$.
@@ -210,8 +220,6 @@ team14/
   - As indicated above, the test suite will be in the `tests/` directory, separated from the source files.
 - How will you distribute your package (e.g. PyPI with PEP517/518 or simply setuptools)?
   - PyPI with PEP517.
-- Other considerations?
-  - If the operations included in the `dual_numbers` module prove to be too extensive for a single file we will consider changing it into a directory and separating the dual number related operations in different modules
 
 ## Implementation
 
