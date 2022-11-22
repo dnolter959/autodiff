@@ -117,13 +117,11 @@ git clone git@code.harvard.edu:CS107/team14.git
 cd team14
 
 # Create and activate virtual environment
-python -m venv test_env
-source test_env/bin/activate
+python3 -m venv .venv
+source .venv/bin/activate
 
-# Install numpy
-cd test_env/lib/python[X.X]/site-packages
-python -m pip install numpy pytest pytest-cov
-cd ../../../..
+# Install required packages
+python3 -m pip install numpy pytest pytest-cov
 
 # Run tests
 cd tests && ./run_tests.sh pytest -v && cd ..
