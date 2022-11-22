@@ -152,7 +152,6 @@ jacobian = ad.get_jacobian(value) # [[6]]
 
 seed_vector = np.array([1])
 derivative = ad.get_derivative(value, seed_vector) # 6
-derivative = ad.get_derivative(value) # 6 (Seed vector defaults to [1] in the R -> R^m case.)
 ```
 
 **Case 2: $\mathbb{R}^n \rightarrow \mathbb{R}$ ($n \gt 1$)**
@@ -180,7 +179,6 @@ jacobian = ad.get_jacobian(value) # [[6], [cos(2)]]
 
 seed_vector = np.array([1])
 derivative = ad.get_derivative(value, seed_vector) # [[6], [cos(2)]]
-derivative = ad.get_derivative(value) # [[6], [cos(2)]] (Seed vector defaults to [1] in the R -> R^m case.)
 ``` 
 
 **Case 4: $\mathbb{R}^n \rightarrow \mathbb{R}^m$ ($n, m \gt 1$)**
