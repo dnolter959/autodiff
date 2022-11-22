@@ -206,6 +206,15 @@ class AutoDiff:
         self.curr_seed = None
         self.curr_point = point
         self.curr_jacobian = np.transpose(np.array(ret))
+        
+        # reshape Jacobian matrix 
+        # Jacobian matrix should be a row vector for scalar function with multiple input
+        if len(self.f) == 1 and isinstance(point, (list, np.ndarray)) and len(point)>1:
+            self.curr_jacobian = self.curr_jacobian.reshape(1, -1)
+        # Jacobian matrix should be a column vector for vector function with single input
+        elif (len(self.f) > 1 and 
+              (isinstance(point, (int, float)) or isinstance(point, (list, np.ndarray)) and len(point) == 1)):
+            self.curr_jacobian = self.curr_jacobian.reshape(-1, 1)
 
         return self.curr_jacobian
 
@@ -246,23 +255,41 @@ class AutoDiff:
              and compare.all()):
 
             # check if the seed is the same as last set of computed point
-            compare = self.curr_seed == seed_vector
+            compare = self.curr_seed == seed_vector_arr
             if ((isinstance(compare, bool) and compare or isinstance(compare, np.ndarray) 
                  and compare.all()) and self.curr_derivative is not None): 
                 return self.curr_derivative
 
-            elif self.curr_jacobian is not None:
-                self.curr_seed = seed_vector 
-                self.curr_derivative = np.dot(self.curr_jacobian, seed_vector)
+            if self.curr_jacobian is not None:
+                self.curr_seed = seed_vector_arr
+                self.curr_derivative = np.dot(self.curr_jacobian, seed_vector_arr.reshape(-1,1))
                 if self.curr_derivative.ndim==1 and len(self.curr_derivative)==1:
                     self.curr_derivative = self.curr_derivative[0]
                 return self.curr_derivative
 
         self.curr_jacobian = self.get_jacobian(point)
-        self.curr_seed = seed_vector
-        self.curr_derivative = np.dot(self.curr_jacobian, seed_vector)
+        self.curr_seed = seed_vector_arr
+        self.curr_derivative = np.dot(self.curr_jacobian, seed_vector_arr.reshape(-1,1))
         if self.curr_derivative.ndim==1 and len(self.curr_derivative)==1:
             self.curr_derivative = self.curr_derivative[0]
         
         return self.curr_derivative
 
+##
+f = lambda x: exp(x)*(-x**(-1/2))
+g = lambda x: cos(x)+log(x)
+x = 10
+f_p = (np.exp(x)*(1-2*x))/(2*x**(3/2))
+g_p = -np.sin(x) + 1/x
+p = np.array([-200.5])
+ad = AutoDiff([f, g])
+j=ad.get_jacobian(x)
+print(j)
+print(j.shape)
+
+f = lambda x: x[0]+x[1]
+x=np.array([5,4])
+ad2 = AutoDiff(f)
+j2=ad2.get_jacobian(x)
+print(j2)
+print(j2.shape)

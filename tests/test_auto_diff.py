@@ -157,7 +157,7 @@ class TestAutoDiff:
 
         # scalar function with m=2
         f = lambda x: x[0]*sin(x[1])
-        assert AutoDiff(f).get_jacobian(np.array([1, math.pi])) == approx(np.array([0.0, -1]))
+        assert AutoDiff(f).get_jacobian(np.array([1, math.pi])) == approx(np.array([[0.0, -1]]))
 
         # scalar function with a nested list (invalid input)
         f = lambda x: x[0]*sin(x[1])
@@ -178,7 +178,7 @@ class TestAutoDiff:
         f_p = (np.exp(x)*(1-2*x))/(2*x**(3/2))
         g_p = -np.sin(x) + 1/x
         h_p = 0
-        assert AutoDiff([f, g, h]).get_jacobian(x) == approx(np.array([f_p, g_p, h_p]))
+        assert AutoDiff([f, g, h]).get_jacobian(x) == approx(np.array([[f_p], [g_p], [h_p]]))
 
         # vector function with m=3
         f = lambda x: exp(x[1])*(-x[2]**(-1/2))
@@ -259,14 +259,23 @@ class TestAutoDiff:
         with pytest.raises(ValueError):
             d = AutoDiff([f, g]).get_derivative(x, p) 
 
-        # n=2 vector function with m=1 and len(seed)=1
+        # n=2 vector function with m=1 and scalar seed
         f = lambda x: exp(x)*(-x**(-1/2))
         g = lambda x: cos(x)+log(x)
         x = 10
         f_p = (np.exp(x)*(1-2*x))/(2*x**(3/2))
         g_p = -np.sin(x) + 1/x
         p = -200.5
-        assert AutoDiff([f, g]).get_derivative(x, p) == approx(np.dot(np.array([f_p,g_p]),p))
+        assert AutoDiff([f, g]).get_derivative(x, p) == approx(np.dot(np.array([[f_p],[g_p]]),p))
+
+        # n=2 vector function with m=1 and a seed array with length 1
+        f = lambda x: exp(x)*(-x**(-1/2))
+        g = lambda x: cos(x)+log(x)
+        x = 10
+        f_p = (np.exp(x)*(1-2*x))/(2*x**(3/2))
+        g_p = -np.sin(x) + 1/x
+        p = np.transpose(np.array([-200.5]))
+        assert AutoDiff([f, g]).get_derivative(x, p) == approx(np.dot(np.array([[f_p],[g_p]]),p.reshape(-1,1)))
 
         # n=3 vector function with m=3
         f = lambda x: exp(x[1])*(-x[2]**(-1/2))
@@ -289,11 +298,11 @@ class TestAutoDiff:
             [g_p_0, g_p_1, g_p_2],
             [h_p_0, h_p_1, h_p_2]])
         ad = AutoDiff([f, g, h])
-        assert ad.get_derivative(x, p) == approx(np.dot(res, p))
+        assert ad.get_derivative(x, p) == approx(np.dot(res, p.reshape(-1,1)))
 
         assert (np.array_equal(ad.curr_point, x) and np.array_equal(ad.curr_seed, p) and 
                 np.allclose(ad.curr_jacobian, res, atol=1e-15) and 
-                np.array_equal(ad.curr_derivative, np.dot(res, p)))
+                np.array_equal(ad.curr_derivative, np.dot(res, p.reshape(-1,1))))
 
         # same function and seed as above with new point
         x = np.array([10.2, 31, 0.055])
@@ -311,14 +320,12 @@ class TestAutoDiff:
             [g_p_0, g_p_1, g_p_2],
             [h_p_0, h_p_1, h_p_2]])
         ad = AutoDiff([f, g, h])
-        assert ad.get_derivative(x, p) == approx(np.dot(res, p))
+        assert ad.get_derivative(x, p) == approx(np.dot(res, p.reshape(-1,1)))
         assert (np.array_equal(ad.curr_point, x) and np.array_equal(ad.curr_seed, p) and 
                 np.allclose(ad.curr_jacobian, res, atol=1e-15) and 
-                np.array_equal(ad.curr_derivative, np.dot(res, p)))
+                np.array_equal(ad.curr_derivative, np.dot(res, p.reshape(-1,1))))
 
         # same function and value as above with new seed
         p = np.array([1, 1, 0])
         assert (AutoDiff([f, g, h]).get_derivative(x, p) == 
-                approx(np.dot(res, p)))
-
-                
+                approx(np.dot(res, p.reshape(-1,1))))
