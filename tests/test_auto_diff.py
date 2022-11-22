@@ -60,18 +60,16 @@ class TestAutoDiff:
 
     def test_str(self):
         # initialize with scalar function
-        g = lambda x: x[0] + x[1] + x[0] * x[1]
+        g = lambda x: x[0]+x[1]+x[0]*x[1]
         ad = AutoDiff(g)
-        assert str(ad).strip(
-        ) == "AutoDiff object of a scalar function:\nx[0]+x[1]+x[0]*x[1]"
+        assert str(ad).strip() == "AutoDiff object of a scalar function:\nx[0]+x[1]+x[0]*x[1]"
 
         # initialize with vector function
-        f = lambda x: x[0] * sin(x[1])
-        g = lambda x: x[0] + x[1] + x[0] * x[1]
-        h = lambda x: 5 * x[0]**2
-        ad = AutoDiff([f, g, h])
-        assert str(ad).strip() == (
-            "AutoDiff object of a vector function:\n" +
+        f = lambda x: x[0]*sin(x[1])
+        g = lambda x: x[0]+x[1]+x[0]*x[1]
+        h = lambda x: 5*x[0]**2
+        ad = AutoDiff([f,g,h])
+        assert str(ad).strip() == ("AutoDiff object of a vector function:\n"+
             "x[0]*sin(x[1])\nx[0]+x[1]+x[0]*x[1]\n5*x[0]**2")
 
     def test_get_value(self):
