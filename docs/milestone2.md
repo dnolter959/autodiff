@@ -428,25 +428,31 @@ der = f.get_derivative(2) # 7
 
 - We will implement reverse mode to efficiently handle the calculation of derivatives in the case of $f : \mathbb{R}^n \rightarrow \mathbb{R}^m$ where $n \gg m$. 
 
-- We will retain the same user interface in the case of reverse mode, but the user will specify an additional option, `"reverse"` when calculating derivatives. For example:
+- We will retain the same user interface methods, including `get_partial`, `get_jacobian`, and `get_derivative`, which will include an additional parameter `mode`. The default of `mode` is `"forward"` but user can specify it to be `"reverse"`. For example:
 
-```python
-f = lambda x: x[0]**2 + 3*x[1] + sin(x[2])
-ad = AutoDiff(f)
-der = f.get_derivative([1, 2, 3], [1, 0, 0], "reverse")
-```
-
-- This will require us to create a new class representing a tree structure, called `CompGraph` which will hold the computational graph associated with functional input. 
-
-- We will define the same key functions when implementing reverse mode, (`get_partial`, `get_jacobian`, and `get_derivative`); they will be defined in a separate class called `Reverse` which inherits from the `AutoDiff` class.
-
-- In fact, for simplicity, we will restructure our classes so that we have two classes inheriting from `AutoDiff`; one for forward mode called `Forward` and one for reverse mode called `Reverse`
+    ```python
+    f = lambda x: x[0]**2 + 3*x[1] + sin(x[2])
+    ad = AutoDiff(f)
+    der = f.get_derivative([1, 2, 3], [1, 0, 0], mode="reverse")
+    ```
 
 - When reverse mode is called, we will carry out the implementation by 
   1) Constructing the computational graph associated with the functional input
-  2) Performing the forward pass: compute and save partial derivatives in the tree object
-  3) Performing the reverse pass: reconstruct the chain rule by exploiting parent-child relationships dictated by the tree structure. 
+  2) Performing the forward pass: compute and save partial derivatives in the graph object
+  3) Performing the reverse pass: reconstruct the chain rule by exploiting parent-child relationships dictated by the graph structure. 
   4) Returning the specified derivative or Jacobian. 
+  
+<br>  
+
+- Specifically, our draft implementation plan is as below
+    - Create a new class representing a graph structure, called `CompGraph` which will hold the computational graph associated with functional input, storing the root of the graph and other information. 
+    - Create a `CompGraphNode` class of which the objects will be elements of a `CompGraph`. A `CompGraphNode` stores as references to its parents and the corresponding partial derivatives $\frac{\partial v_j}{\partial v_i}$.
+    - Overload all elementary operations and functions such that when each operation is carried out, a `CompGraphNode` is added to the graph. This applies to the forward pass where passing a `CompGraph` object to the passed vector function will compute and save partial derivatives in theform of `CompGraphNode` in the graph object.
+        - Additionally use a hash table to keep track of nodes that have been added to the graph to avoid repeated nodes.
+    - After forward pass is completed, using topological sort on the `CompGraph` object and start the reverse pass at end of the sorted nodes, which is the output. 
+        - Note that the constructed `CompGraph` is a directed acyclic graph, and after topo sort, if we start at the end, we can gurantee that a child node will be computed before its parent nodes.
+
+
 
 
 
