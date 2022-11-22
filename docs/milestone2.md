@@ -294,104 +294,48 @@ Class 2: `AutoDiff`
 - Users instantiate an `AutoDiff` object with one parameter `f`, which is assigned as an attribute of the object `self.f`.
   - `f` is either a *function* or *list of functions* ($f : \mathbb{R}^n \to \mathbb{R}^m$) over which to evaluate derivatives.
     - Example:
-    - `f = lambda x : x**2 + 3*x`
-    - `g = lambda x : 2x**2 - 14`
-      - `ad1 = AutoDiff(f)`
-      - `ad2 = AutoDiff([f, g])`
+    - `f = lambda x : x**2 + 3*x` | `g = lambda x : 2x**2 - 14`
+      - `ad1 = AutoDiff(f)` | `ad2 = AutoDiff([f, g])`
     - `h = lambda x : x[0]**2 + sin(x[1])`
-    - `j = lambda x : exp(x[1]) + 4*x[0]`
-      - `ad3 = AutoDiff([h, j])`
-      - Note that in the event that a user wishes to pass a **multivariate function** (`h`, or `j` above), they must define a `lambda` function which takes a vector of input, and **index into x** appropriately within the functional expression.
-      - It is important to note that `ad = AutoDiff([h, j])` will rely on the index values to assign variables and assume consistent indexing across multiple functions
+      - `ad3 = AutoDiff(h)`
+  - Note that in the event that a user wishes to pass a **multivariate function** (`h`, or `j` above), they must define a `lambda` function which takes a vector of input, and **index into x** appropriately within the functional expression.
+  - It is important to note that `ad = AutoDiff([h, j])` will rely on the index values to assign variables and assume consistent indexing across multiple functions
   - Upon initialization the function also checks for valid input. For example, it will check the input represents valid mathematical functions.
-- The AutoDiff implements three important instance methods which compute derivaites. 
+- The AutoDiff implements three important instance methods which compute derivatives. 
 
-1)`get_jacobian`
-- This takes a single argument `value`, representing the point for evaluating the Jacobian matrix. 
-- The method performs forward mode AD by default. This implementation allows automatic differentiation of functions of $\mathbb{R}^m\to\mathbb{R}^n$.
+- `get_jacobian`
+  - Computes the Jacobian matrix for a given arbitrary function `f` mapping $\mathbb{R}^m\to\mathbb{R}^n$.  - 
+  - args: 
+    - `point`; the point at which to evaluate the Jacobian matrix.
+  - The method performs forward mode AD by default. This implementation allows automatic differentiation of functions of $\mathbb{R}^m\to\mathbb{R}^n$.
+  - The order of the columns correspond to the order arguments are passed to the functions
+  - The order of the rows correspond to the index values of x (if multi-dimensional)
 
-2)`get_partial` which takes an argument `value`, representing the point for evaluating the Jacobian matrix. The method performs forward mode AD by default. This implementation allows automatic differentiation of functions of $\mathbb{R}^m\to\mathbb{R}^n$. 
+- `get_partial`
+  - Computes the vector of partial derivatives of `f` evaluated at `point`
+  - args: 
+    - `point`; the point at which to evaluate the partial derivatives matrix
+    - `var_index`; the variable index at which to evaluate partial derivatives
+  - This function is called by get_jacobian; it calculates partial derivatives needed to construct the Jacobian matrix
+  - For each partial derivative, $\frac{\partial f_1}{\partial x}$, $x_i$ will be converted into a DualNumber object `(x_i, 1)` while other variables $x_j, j\neq i$ will be converted into `DualNumber` objects `(x_j, 0)`, such that the differentiation will be done with respect to $x_i$.
 
-2)`get_derivative` which takes an argument `value`, representing the point for evaluating the Jacobian matrix. The method performs forward mode AD by default. This implementation allows automatic differentiation of functions of $\mathbb{R}^m\to\mathbb{R}^n$. 
-
-
-
-
-
-    - `value` is an array of `int`s or `float`s, representing the value(s) at which the user seeks to evaluate the derivative.
-      - Example:
-      - `jacobian1 = ad1.get_jacobian(3)` # 
-      - `jacobian2 = ad2.get_jacobian(3)`
-      - `jacobian3 = ad2.get_jacobian([3, 4])`
-    - For each partial derivative, $\frac{\partial f_1}{\partial x}$, $x_i$ will be converted into a DualNumber object `(x_i, 1)` while other variables $x_j, j\neq i$ will be converted into `DualNumber` objects `(x_j, 0)`, such that the differentiation will be done with respect to $x_i$.
-- The class will also have an instance method called `get_derivative` which takes a point `value` and either an explicit reference to a varible to differentiate with respect to (e.g., `"x"`) or a seed vector `p` and return the specified directional derivative of `self.f` at the point `value`.
-    - `get_derivative` will operate on the functions `self` and return the specified derivative
-- It will also have class methods called `get_gradient` which similarly operates on `self.f` and returns a gradient vector, provided these these methods are compatible with the AutoDiff instance attributes provided.
-- Each of these functions will compute partial derivatives by evaluating expression involving dual number using elementary operations which we explicitly define on the `DualNumbers` class (discussed below).  
-- Below is skeleton code for the `AutoDiff` class which relies upon the DualNumber objects discussed above.
-
-```python
-from utils import *
-
-class AutoDiff:
-    def __init__(self,f):
-        self._func_check(f)
-        self.f = f
-        
-        # store to improve efficiency for repeated function calls
-        self.value = None
-        self.seed = None
-        self.derivative = None
-        self.jacobian = None
-        self.gradient = None
-        
-    def _func_check(self):
-        '''check that vector function passed are valid math operations'''
-        pass #TODO
-        
-    def _var_check(self):
-        '''check that the variables correspond to those in the functions'''
-        pass #TODO
-        
-    def get_derivative(self, value, df_wrt, seed_vector = None):
-        if seed_vector !=None:
-          # TODO: Calculate derivative using seed_vector
-        else:
-          # Calculate derivative w.r.t explicitly specified variable (Sketch)
-          dual_var = { df_wrt : DualNumber(self.value[df_wrt]) }
-          other_vars = {(k, self.value[k]) for k != df_wrt)}
-          kwargs = {**dual_var, **other_vars}
-          derivative = self.f(**kwargs).dual
-          return derivative
-          
-    def get_gradient(self):
-      pass #TODO
-      
-    def get_jacobian(self, value):
-        if self.value == value and self.jacobian is not None:
-            return self.jacobian
-         
-        self._var_check()
-        jacobian = np.array()
-        for i in len(value):
-            for j in len(self.f):
-                x = DualNumber(value[i], 1)
-                # the i,j entry of the Jacobian matrix is the partial derivative of f_j on x_i
-                jacobian[i,j] = self.get_derivative(value, np.put(np.zeros(len(value), )i, 1)
-        
-        return jacobian
-```
+- `get_derivative`
+  - Computes the directional derivative evaluated at values in the direction and magnitude of seed_vector
+  - args:
+    - `point`; the point at which to evaluate the derivative
+    - `seed_vector`; a scalar or array of number defining the seed of direction
+  - This function uses the seed vector and Jacobian matrix to calculate and return a derivative for the specified `f` at `point`
 
 Module: `auto_diff_math.py`
 
-- The `DualNumber` objects are useful for implementing the automatic differentiation algorithm. However, conceptually they do not only serve the purpose of carrying out automatic differentiation. Furthermore, we also envision that the `AutoDiff` objects only perform differentiation-related operations. As a result, we include another module the overloading functions that perform mathematical operations on `DualNumber` objects.
-- We include these functions in a module which we import for use in the `AutoDiff` class defined above.
+- In addition to the operator overloading that we introduce in the `DualNumber` class, we also specify our own definitions for other elementary mathematical operations which are needed for a complete AD implementation.
+- We organize these additional overloading functions in a module which we import for use in the `AutoDiff` class defined above.
 - These functions each follow the same structure: for a `DualNumber`, `a = DualNumber(real, dual)`, and a function `func`, if we pass `func(a)`, we will return another `DualNumber`, say `DualNumber(new_real, new_dual)` such that:
    - `new_real` is `func` applied to `real` 
    - `new_dual` is the derivative of `func` applied to `real` *times* `dual`
 - These functions gracefully handle non-Dual numbers, by, for example, falling back to the standard implementation (e.g., `np.sin`) when passed a real number.
 - By explicitly defining elemental operations in this way, we ensure that when evaluating expressions containing dual numbers, python will resolve to a final expression which is itself a dual number whose dual part represents the derivative of interest
-- Here are some such functions.
+- Here is an example of such a function functions.
 
 ```python
 import math
@@ -424,7 +368,7 @@ def sin(x):
     else:
         raise TypeError("sin() only accepts DualNumbers, ints, or floats.")
 ```
-- The following operations are implemented:
+- The following operations are currently implemented:
   - sin, cos, tan, exp, log, sinh, cosh, tanh 
   
 # Future Features
