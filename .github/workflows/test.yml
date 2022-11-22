@@ -6,6 +6,7 @@ on:
       - add_unit_tests
       - interface
       - clean_autodiff
+      - m2_documentation
       - master
 
 jobs:
