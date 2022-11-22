@@ -4,8 +4,9 @@ import numpy as np
 from pytest import approx
 
 # import names to test
-from src.autodiff.auto_diff import *
-
+from autodiff.auto_diff import AutoDiff
+from autodiff.utils.dual_numbers import DualNumber
+from autodiff.utils.auto_diff_math import *
 
 class TestAutoDiff:
     
@@ -57,6 +58,45 @@ class TestAutoDiff:
         assert str(ad).strip() == ("AutoDiff object of a vector function:\n"+
             "x[0]*sin(x[1])\nx[0]+x[1]+x[0]*x[1]\n5*x[0]**2")
 
+    def test_get_value(self):
+        # scalar function with m=1
+        f = lambda x: -x+cos(x)*sin(x)+5*x**4
+        x = 1.5
+        assert AutoDiff(f).get_value(x) == -x+np.cos(x)*np.sin(x)+5*x**4
+
+        # scalar function with m=2
+        f = lambda x: x[0]*sin(x[1])
+        x = np.array([1, math.pi])
+        assert AutoDiff(f).get_value(x) == x[0]*np.sin(x[1])
+
+        # scalar function with a nested list (invalid input)
+        f = lambda x: x[0]*sin(x[1])
+        with pytest.raises(TypeError):
+            val = AutoDiff(f).get_value([1, [math.pi]])
+
+        # scalar function with 2-d array (invalid input)
+        with pytest.raises(TypeError):
+            val = AutoDiff(f).get_value(np.array([[1], [math.pi]]))
+
+        # vector function with m=1
+        f = lambda x: exp(x)*(-x**(-1/2))
+        g = lambda x: cos(x)+log(x)
+        h = lambda x: 5
+        x = 10
+        f_v = np.exp(x)*(-x**(-1/2))
+        g_v = np.cos(x)+np.log(x)
+        h_v = 5
+        assert np.array_equal(AutoDiff([f, g, h]).get_value(x), np.array([f_v, g_v, h_v]))
+
+        # vector function with m=3
+        x = np.array([-1, 10, 105.5])
+        f = lambda x: exp(x[1])*(-x[2]**(-1/2))
+        g = lambda x: cos(x[0])+log(x[1])*x[2]
+        h = lambda x: 5+x[0]
+        f_v = np.exp(x[1])*(-x[2]**(-1/2))
+        g_v = np.cos(x[0])+np.log(x[1])*x[2]
+        h_v = 5+x[0]
+        assert np.array_equal(AutoDiff([f, g, h]).get_value(x), np.array([f_v, g_v, h_v]))
 
     def test_get_partial(self):
         # scalar function with m=1
@@ -163,20 +203,26 @@ class TestAutoDiff:
                 
 
     def test_get_derivative(self):
-        # scalar function with m=1
+        # scalar function with m=1 and scalar seed
         f = lambda x: -x+cos(x)*sin(x)+5*x**4
         x = 1.5
         p = 5
-        assert AutoDiff(f).get_derivative(x, p) == np.dot(np.array([-1+20*x**3+(np.cos(x))**2-(np.sin(x))**2]),p) 
+        assert AutoDiff(f).get_derivative(x, p) == np.dot(np.array([-1+20*x**3+(np.cos(x))**2-(np.sin(x))**2]),np.array([p])) 
 
-        # scalar function with m=1 and len(seed_vector)>1
+        # scalar function with m=1 and vector seed with length 1
+        f = lambda x: -x+cos(x)*sin(x)+5*x**4
+        x = 1.5
+        p = np.array([5])
+        assert AutoDiff(f).get_derivative(x, p) == np.dot(np.array([-1+20*x**3+(np.cos(x))**2-(np.sin(x))**2]),p)
+
+        # scalar function with m=1 and seed with length>1
         f = lambda x: -x+cos(x)*sin(x)+5*x**4
         x = 1.5
         p = np.array([1, 5])
         with pytest.raises(ValueError):
             ad = AutoDiff(f).get_derivative(x, p)
 
-        # scalar function with m=2 and len(seed_vector)=2
+        # scalar function with m=2 and seed with length=2
         f = lambda x: x[0]*sin(x[1])
         x = np.array([1, math.pi])
         p = np.array([1, 5])
@@ -196,13 +242,13 @@ class TestAutoDiff:
             ad.get_derivative(x, p)
 
         # scalar function with m=1 and 2-d array seed (invalid input)
-        with pytest.raises(ValueError):
+        with pytest.raises(TypeError):
             ad = AutoDiff(f)
             x = np.array([1, math.pi])
             p = np.array([[1], [5]])
             ad.get_derivative(x, p)
 
-        # n=2 vector function with m=1 and len(seed)>1
+        # n=2 vector function with m=1 and len(seed)>1 (invalid input)
         f = lambda x: exp(x)*(-x**(-1/2))
         g = lambda x: cos(x)+log(x)
         x = 10
@@ -219,10 +265,8 @@ class TestAutoDiff:
         x = 10
         f_p = (np.exp(x)*(1-2*x))/(2*x**(3/2))
         g_p = -np.sin(x) + 1/x
-        p = np.array([-200.5])
-
-        with pytest.raises(ValueError):
-            d = AutoDiff([f, g]).get_derivative(x, p) == approx(np.dot(np.array([f_p,g_p]),p))
+        p = -200.5
+        assert AutoDiff([f, g]).get_derivative(x, p) == approx(np.dot(np.array([f_p,g_p]),p))
 
         # n=3 vector function with m=3
         f = lambda x: exp(x[1])*(-x[2]**(-1/2))
@@ -247,7 +291,7 @@ class TestAutoDiff:
         ad = AutoDiff([f, g, h])
         assert ad.get_derivative(x, p) == approx(np.dot(res, p))
 
-        assert (np.array_equal(ad.curr_values, x) and np.array_equal(ad.curr_seed, p) and 
+        assert (np.array_equal(ad.curr_point, x) and np.array_equal(ad.curr_seed, p) and 
                 np.allclose(ad.curr_jacobian, res, atol=1e-15) and 
                 np.array_equal(ad.curr_derivative, np.dot(res, p)))
 
@@ -268,7 +312,7 @@ class TestAutoDiff:
             [h_p_0, h_p_1, h_p_2]])
         ad = AutoDiff([f, g, h])
         assert ad.get_derivative(x, p) == approx(np.dot(res, p))
-        assert (np.array_equal(ad.curr_values, x) and np.array_equal(ad.curr_seed, p) and 
+        assert (np.array_equal(ad.curr_point, x) and np.array_equal(ad.curr_seed, p) and 
                 np.allclose(ad.curr_jacobian, res, atol=1e-15) and 
                 np.array_equal(ad.curr_derivative, np.dot(res, p)))
 
