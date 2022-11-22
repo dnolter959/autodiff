@@ -194,10 +194,10 @@ value = [2, 5] # Ordering specified by index of variables in f1, f2
 jacobian = ad.get_jacobian(value) # [[4, 2], [cos(2), 3]]
 
 seed_vector = np.array([1, 0])
-derivative = ad_class.get_derivative(value, seed_vector) # [[4], [cos(2)]]
+derivative = ad.get_derivative(value, seed_vector) # [[4], [cos(2)]]
 
 seed_vector = np.array([-2, 1])
-derivative = ad_class.get_derivative(value, seed_vector) # [[-6], [-2cos(2) + 3]]
+derivative = ad.get_derivative(value, seed_vector) # [[-6], [-2cos(2) + 3]]
 ```
 
 ## Software Organization
