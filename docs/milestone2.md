@@ -108,17 +108,29 @@ The package will include a module for an `AutoDiff` class that utilizes the core
 #TBD
 ```
 
-**Virtual Environment Setup** (Not yet available for pip install)
+**Virtual Environment Setup**
 ```bash
-# Create virtual environment locally
+# Clone repo locally
+mkdir test_autodiff
+cd test_autodiff
+git clone git@code.harvard.edu:CS107/team14.git
+cd team14
+
+# Create and activate virtual environment
 python -m venv test_env
+source test_env/bin/activate
 
 # Install numpy
-cd lib/pythonX.X/site_packages
-python -m pip install numpy
+cd test_env/lib/python[X.X]/site_packages
+python -m pip install numpy pytest
+cd ../../../../..
 
 # Set python path to local directory of cloned repo
-export PYTHONPATH="[local\path\to\src]":${PYTHONPATH}
+export PYTHONPATH="[local/path/to/team14/src]":${PYTHONPATH}
+
+# Run tests and code coverage
+cd test && ./run_tests.sh && cd ..
+./tests/code_coverage.sh
 
 # Run imports as noted below
 # Write driver script at root of cloned repo
@@ -304,6 +316,9 @@ class DualNumber:
 - These methods have been carefully constructed to handle cases of, say, adding a DualNumber to a scalar (no matter the order in which they are passed).
 - Currently, we overload the following operators:
   - __add__, __radd__, __sub__, __rsub__, __mul__, __rmul__, __truediv__, __rtruediv__, __pow__, __rpow__, __neg__, __repr__, __eq__, __ne__
+- We will eventually implement:
+  - lt, gt, le, ge
+  
 
 Class 2: `AutoDiff`
 
@@ -386,5 +401,8 @@ def sin(x):
 ```
 - The following operations are currently implemented:
   - sin, cos, tan, exp, log, sinh, cosh, tanh 
+- We will eventually implement:
+  - arcsin, arccos, arctan, exponentials with any base, logistic, log with any base, sqrt
+
   
 # Future Features
