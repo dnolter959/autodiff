@@ -122,18 +122,22 @@ source test_env/bin/activate
 
 # Install numpy
 cd test_env/lib/python[X.X]/site-packages
-python -m pip install numpy pytest
+python -m pip install numpy pytest pytest-cov
 cd ../../../..
 
-# Set python path to local directory of cloned repo
+# Run tests
+cd tests && ./run_tests.sh pytest -v && cd ..
+
+# Run code coverage
+./tests/check_coverage.sh pytest
+
+# set PYTHONPATH
 export PYTHONPATH="[local/path/to/team14/src]":${PYTHONPATH}
 
-# Run tests and code coverage
-cd tests && ./run_tests.sh && cd ..
-./tests/code_coverage.sh
+# Run imports and then use functions as specified below
 
-# Run imports as noted below
-# Write driver script at root of cloned repo
+# Here is an example script that imports and runs Newton's Method
+python3 driver_script.py
 ```
 
 **Imports**
