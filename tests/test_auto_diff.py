@@ -100,7 +100,7 @@ class TestAutoDiff:
         f_v = np.exp(x)*(-x**(-1/2))
         g_v = np.cos(x)+np.log(x)
         h_v = 5
-        assert np.array_equal(AutoDiff([f, g, h]).get_value(x), np.array([f_v, g_v, h_v]))
+        assert np.allclose(AutoDiff([f, g, h]).get_value(x), np.array([f_v, g_v, h_v]),atol=1e-15)
 
         # vector function with m=3
         x = np.array([-1, 10, 105.5])
@@ -110,7 +110,7 @@ class TestAutoDiff:
         f_v = np.exp(x[1])*(-x[2]**(-1/2))
         g_v = np.cos(x[0])+np.log(x[1])*x[2]
         h_v = 5+x[0]
-        assert np.array_equal(AutoDiff([f, g, h]).get_value(x), np.array([f_v, g_v, h_v]))
+        assert np.allclose(AutoDiff([f, g, h]).get_value(x), np.array([f_v, g_v, h_v]), atol=1e-15)
 
     def test_get_partial(self):
         # scalar function with m=1
