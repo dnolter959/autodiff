@@ -28,6 +28,10 @@ class TestAutoDiff:
         g = 5
         ad = AutoDiff(g)
         assert ad.f == [g]
+        assert ad.curr_seed == None
+        assert ad.curr_point == None
+        assert ad.curr_derivative == None
+        assert ad.curr_jacobian == None
 
         # initialize with list of functions 
         f = lambda x: x[0]*sin(x[1])
@@ -86,7 +90,7 @@ class TestAutoDiff:
         f_v = np.exp(x)*(-x**(-1/2))
         g_v = np.cos(x)+np.log(x)
         h_v = 5
-        assert np.array_equal(AutoDiff([f, g, h]).get_value(x), np.array([f_v, g_v, h_v]))
+        assert np.allclose(AutoDiff([f, g, h]).get_value(x), np.array([f_v, g_v, h_v]))
 
         # vector function with m=3
         x = np.array([-1, 10, 105.5])
@@ -96,7 +100,7 @@ class TestAutoDiff:
         f_v = np.exp(x[1])*(-x[2]**(-1/2))
         g_v = np.cos(x[0])+np.log(x[1])*x[2]
         h_v = 5+x[0]
-        assert np.array_equal(AutoDiff([f, g, h]).get_value(x), np.array([f_v, g_v, h_v]))
+        assert np.allclose(AutoDiff([f, g, h]).get_value(x), np.array([f_v, g_v, h_v]))
 
     def test_get_partial(self):
         # scalar function with m=1

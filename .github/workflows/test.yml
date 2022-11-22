@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - add_unit_tests
+      - interface
       - master
 
 jobs:
