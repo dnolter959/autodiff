@@ -28,6 +28,10 @@ class TestAutoDiff:
         g = 5
         ad = AutoDiff(g)
         assert ad.f == [g]
+        assert ad.curr_seed == None
+        assert ad.curr_point == None
+        assert ad.curr_derivative == None
+        assert ad.curr_jacobian == None
 
         # initialize with list of functions 
         f = lambda x: x[0]*sin(x[1])
