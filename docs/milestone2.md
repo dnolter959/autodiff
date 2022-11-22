@@ -168,6 +168,9 @@ derivative = ad.get_derivative(value, seed_vector) # [[4]]
 
 seed_vector = np.array([0, 1])
 derivative = ad.get_derivative(value, seed_vector) # [[2]]
+
+# NOTE: we ultimately will return a scalar for the above 2 values
+# but our implementation for this case is still in development
 ```
 
 **Case 3: $\mathbb{R} \rightarrow \mathbb{R}^m$ ($m \gt 1$)**
