@@ -28,10 +28,6 @@ class TestAutoDiff:
         g = 5
         ad = AutoDiff(g)
         assert ad.f == [g]
-        assert ad.curr_seed == None
-        assert ad.curr_point == None
-        assert ad.curr_derivative == None
-        assert ad.curr_jacobian == None
 
         # initialize with list of functions 
         f = lambda x: x[0]*sin(x[1])
@@ -47,6 +43,20 @@ class TestAutoDiff:
         with pytest.raises(TypeError):
             ad = AutoDiff([f, h, "a+1"])
 
+    def test_eq(self):
+        f = lambda x: x+1
+        g = lambda y: y+1
+
+        ad1 = AutoDiff(f)
+        ad2 = AutoDiff(g)
+        assert ad1==ad2
+
+        with pytest.raises(TypeError):
+            ad1 == "AutoDiff Obj"
+
+        h = lambda x: x+1+1
+        ad3 = AutoDiff(h)
+        assert ad1 != ad3
 
     def test_str(self):
         # initialize with scalar function
@@ -90,7 +100,7 @@ class TestAutoDiff:
         f_v = np.exp(x)*(-x**(-1/2))
         g_v = np.cos(x)+np.log(x)
         h_v = 5
-        assert np.allclose(AutoDiff([f, g, h]).get_value(x), np.array([f_v, g_v, h_v]))
+        assert np.array_equal(AutoDiff([f, g, h]).get_value(x), np.array([f_v, g_v, h_v]))
 
         # vector function with m=3
         x = np.array([-1, 10, 105.5])
@@ -100,7 +110,7 @@ class TestAutoDiff:
         f_v = np.exp(x[1])*(-x[2]**(-1/2))
         g_v = np.cos(x[0])+np.log(x[1])*x[2]
         h_v = 5+x[0]
-        assert np.allclose(AutoDiff([f, g, h]).get_value(x), np.array([f_v, g_v, h_v]))
+        assert np.array_equal(AutoDiff([f, g, h]).get_value(x), np.array([f_v, g_v, h_v]))
 
     def test_get_partial(self):
         # scalar function with m=1
