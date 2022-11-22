@@ -108,6 +108,22 @@ The package will include a module for an `AutoDiff` class that utilizes the core
 #TBD
 ```
 
+**Virtual Environment Setup** (Not yet available for pip install)
+```bash
+# Create virtual environment locally
+python -m venv test_env
+
+# Install numpy
+cd lib/pythonX.X/site_packages
+python -m pip install numpy
+
+# Set python path to local directory of cloned repo
+export PYTHONPATH="[local\path\to\src]":${PYTHONPATH}
+
+# Run imports as noted below
+# Write driver script at root of cloned repo
+```
+
 **Imports**
 ```python
 import numpy as np
