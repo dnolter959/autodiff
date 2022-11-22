@@ -334,7 +334,7 @@ Class 2: `AutoDiff`
   - Note that in the event that a user wishes to pass a **multivariate function** (`h`, or `j` above), they must define a `lambda` function which takes a vector of input, and **index into x** appropriately within the functional expression.
   - It is important to note that `ad = AutoDiff([h, j])` will rely on the index values to assign variables and assume consistent indexing across multiple functions
   - Upon initialization the function also checks for valid input. For example, it will check the input represents valid mathematical functions.
-- The AutoDiff implements three important instance methods which compute derivatives. 
+- The AutoDiff implements four important instance methods which compute derivatives. 
 
 - `get_jacobian`
   - Computes the Jacobian matrix for a given arbitrary function `f` mapping $\mathbb{R}^m\to\mathbb{R}^n$.  - 
@@ -358,6 +358,12 @@ Class 2: `AutoDiff`
     - `point`; the point at which to evaluate the derivative
     - `seed_vector`; a scalar or array of number defining the seed of direction
   - This function uses the seed vector and Jacobian matrix to calculate and return a derivative for the specified `f` at `point`
+
+- `get_value`
+  - Calculates the value of a function at a given point
+  - args:
+    - `point`; the point at which to evaluate the function
+
 
 Module: `auto_diff_math.py`
 
