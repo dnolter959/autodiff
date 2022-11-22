@@ -274,22 +274,3 @@ class AutoDiff:
             self.curr_derivative = self.curr_derivative[0]
         
         return self.curr_derivative
-
-##
-f = lambda x: exp(x)*(-x**(-1/2))
-g = lambda x: cos(x)+log(x)
-x = 10
-f_p = (np.exp(x)*(1-2*x))/(2*x**(3/2))
-g_p = -np.sin(x) + 1/x
-p = np.array([-200.5])
-ad = AutoDiff([f, g])
-j=ad.get_jacobian(x)
-print(j)
-print(j.shape)
-
-f = lambda x: x[0]+x[1]
-x=np.array([5,4])
-ad2 = AutoDiff(f)
-j2=ad2.get_jacobian(x)
-print(j2)
-print(j2.shape)
