@@ -121,15 +121,15 @@ python -m venv test_env
 source test_env/bin/activate
 
 # Install numpy
-cd test_env/lib/python[X.X]/site_packages
+cd test_env/lib/python[X.X]/site-packages
 python -m pip install numpy pytest
-cd ../../../../..
+cd ../../../..
 
 # Set python path to local directory of cloned repo
 export PYTHONPATH="[local/path/to/team14/src]":${PYTHONPATH}
 
 # Run tests and code coverage
-cd test && ./run_tests.sh && cd ..
+cd tests && ./run_tests.sh && cd ..
 ./tests/code_coverage.sh
 
 # Run imports as noted below
