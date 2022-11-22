@@ -406,3 +406,45 @@ def sin(x):
 
   
 # Future Features
+### 1) Default seed in `get_derivative`
+
+We will ultimately simplify our implementation of the `get_derivative` function to assign a default seed_vector of [1] in the case of $\mathbb{R} \rightarrow \mathbb{R}^m (m \ge 1)$. This way the user will be able to calculate derivatives as follows:
+
+```python
+# Current Implementation
+f = lambda x: x**2 + 3*x
+ad = AutoDiff(f)
+der = f.get_derivative(2, 1) # 7
+
+# Proposed Implementation
+f = lambda x: x**2 + 3*x
+ad = AutoDiff(f)
+der = f.get_derivative(2) # 7
+```
+
+### 2) Implement Reverse Mode
+
+- We will implement reverse mode to efficiently handle the calculation of derivatives in the case of $f : \mathbb{R}^n \rightarrow \mathbb{R}^m$ where $n \gg m$. 
+
+- We will retain the same user interface in the case of reverse mode, but the user will specify an additional option, `"reverse"` when calculating derivatives. For example:
+
+```python
+f = lambda x: x[0]**2 + 3*x[1] + sin(x[2])
+ad = AutoDiff(f)
+der = f.get_derivative([1, 2, 3], [1, 0, 0], "reverse")
+```
+
+- This will require us to create a new class representing a tree structure, called `CompGraph` which will hold the computational graph associated with functional input. 
+
+- We will define the same key functions when implementing reverse mode, (`get_partial`, `get_jacobian`, and `get_derivative`); they will be defined in a separate class called `Reverse` which inherits from the `AutoDiff` class.
+
+- In fact, for simplicity, we will restructure our classes so that we have two classes inheriting from `AutoDiff`; one for forward mode called `Forward` and one for reverse mode called `Reverse`
+
+- When reverse mode is called, we will carry out the implementation by 
+  1) Constructing the computational graph associated with the functional input
+  2) Performing the forward pass: compute and save partial derivatives in the tree object
+  3) Performing the reverse pass: reconstruct the chain rule by exploiting parent-child relationships dictated by the tree structure. 
+  4) Returning the specified derivative or Jacobian. 
+
+
+
