@@ -164,10 +164,10 @@ value = [2, 3] # Order must match the indexing of x in f definition
 jacobian = ad.get_jacobian(value) # [[4, 2]]
 
 seed_vector = np.array([1, 0])
-derivative = ad.get_derivative(value, seed_vector) # 4
+derivative = ad.get_derivative(value, seed_vector) # [[4]]
 
 seed_vector = np.array([0, 1])
-derivative = ad.get_derivative(value, seed_vector) # 2
+derivative = ad.get_derivative(value, seed_vector) # [[2]]
 ```
 
 **Case 3: $\mathbb{R} \rightarrow \mathbb{R}^m$ ($m \gt 1$)**
