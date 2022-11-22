@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=61.0", "numpy==1.21.5", "pytest==6.2.5"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -10,16 +10,13 @@ authors = [
 ]
 description = "A package to perform automatic differentiation."
 readme = "README.md"
+requires-python = ">=3.9"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
 
-[project.dependencies]
-python = "^3.7"
-numpy = "1.21.5"
-pytest = "6.2.5"
 
 [project.urls]
 "Homepage" = "https://code.harvard.edu/CS107/team14"
