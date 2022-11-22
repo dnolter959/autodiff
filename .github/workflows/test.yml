@@ -5,6 +5,7 @@ on:
     branches:
       - add_unit_tests
       - interface
+      - clean_autodiff
       - master
 
 jobs:
