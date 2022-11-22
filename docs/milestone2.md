@@ -430,7 +430,14 @@ ad = AutoDiff(f)
 der = f.get_derivative(2) # 7
 ```
 
-### 2) Implement Reverse Mode
+### 2) Integrate Sphinx Docs in Github Actions
+- We are currently documenting our code using Sphnix, and documentation is available in our `docs` folder
+- We have generated this documentation on a one-time basis, and we would like to 
+  - Ensure that current documentation is correctly generated from docstrings in our code for each of our modules
+  - Set up a Github Action to automatically re-generate documentation on push or merge to master
+  - Add a note in our README directing users to this documentation (explore hosting it on a Github Page)
+
+### 3) Implement Reverse Mode
 
 - We will implement reverse mode to efficiently handle the calculation of derivatives in the case of $f : \mathbb{R}^n \rightarrow \mathbb{R}^m$ where $n \gg m$. 
 
@@ -457,8 +464,3 @@ der = f.get_derivative(2) # 7
         - Additionally use a hash table to keep track of nodes that have been added to the graph to avoid repeated nodes.
     - After forward pass is completed, using topological sort on the `CompGraph` object and start the reverse pass at end of the sorted nodes, which is the output. 
         - Note that the constructed `CompGraph` is a directed acyclic graph, and after topo sort, if we start at the end, we can gurantee that a child node will be computed before its parent nodes.
-
-
-
-
-
