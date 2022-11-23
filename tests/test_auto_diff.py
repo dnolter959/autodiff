@@ -360,3 +360,31 @@ class TestAutoDiff:
         p = np.array([1, 1, 0])
         assert (AutoDiff([f, g, h]).get_derivative(x, p) == approx(
             np.dot(res, p.reshape(-1, 1))))
+
+    # test correct storage and calls of computed values (attributes of AutoDiff objects)
+    def test_cache(self):
+
+        f = lambda x: 1/2*x**2
+        ad = AutoDiff(f)
+        # 1)
+        assert ad.get_jacobian(1) == 1.0
+        # 2) call get_jacobian again with the same point as 1)
+        assert ad.get_jacobian(1) == 1.0
+        # 3) call get_derivative with the same point as 2)
+        assert ad.get_derivative(1, 1) == 1.0
+        # 4) call get_derivative with the same point and seed as 3)
+        assert ad.get_derivative(1, 1) == 1.0
+        # 5) call get_derivative with the same point but different seed
+        assert ad.get_derivative(1, 2) == 2.0
+        # 6) call get_jacobian again with the same point 
+        assert ad.get_jacobian(1) == 1.0
+        # 7) call get_derivative with same point as 4) but
+        assert ad.get_derivative(1, 1) == 1.0
+        # 8) call get_derivative with different point 
+        assert ad.get_derivative(2, 1) == 2.0
+        # 9) call get_jacobian with different point
+        assert ad.get_jacobian(3) == 3.0
+        # 10) call get_derivative with different point
+        assert ad.get_derivative(4, [1]) == 4.0
+
+
