@@ -192,8 +192,8 @@ class AutoDiff:
         compare = point == self.curr_point
         if ((isinstance(compare, bool) and compare
              or isinstance(compare, np.ndarray) and compare.all())
-                and self.jacobian is not None):
-            return self.jacobian
+                and self.curr_jacobian is not None):
+            return self.curr_jacobian
 
         if isinstance(point, (int, float)):
             ret = self.get_partial(point)
