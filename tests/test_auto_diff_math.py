@@ -116,3 +116,94 @@ class TestAutoDiffMath:
 
         with pytest.raises(TypeError):
             tanh("string")
+
+    def test_arcsin(self):
+        z1 = DualNumber(0.5)
+        z2 = 0.5
+
+        assert arcsin(z1).real == np.arcsin(0.5)
+        assert arcsin(z1).dual == 1 / np.sqrt(1 - 0.5**2)
+
+        assert arcsin(z2).real == np.arcsin(0.5)
+        assert arcsin(z2).dual == 0
+
+        with pytest.raises(TypeError):
+            arcsin("string")
+
+    def test_arccos(self):
+        z1 = DualNumber(0.5)
+        z2 = 0.5
+
+        assert arccos(z1).real == np.arccos(0.5)
+        assert arccos(z1).dual == -1 / np.sqrt(1 - 0.5**2)
+
+        assert arccos(z2).real == np.arccos(0.5)
+        assert arccos(z2).dual == 0
+
+        with pytest.raises(TypeError):
+            arccos("string")
+
+    def test_arctan(self):
+        z1 = DualNumber(0.5)
+        z2 = 0.5
+
+        assert arctan(z1).real == np.arctan(0.5)
+        assert arctan(z1).dual == 1 / (1 + 0.5**2)
+
+        assert arctan(z2).real == np.arctan(0.5)
+        assert arctan(z2).dual == 0
+
+        with pytest.raises(TypeError):
+            arctan("string")
+
+    def test_exp_base():
+        z1 = DualNumber(2)
+        z2 = 2
+
+        assert exp(z1, 2).real == 4
+        assert exp(z1, 2).dual == 4 * np.log(2)
+
+        assert exp(z2, 2).real == 4
+        assert exp(z2, 2).dual == 0
+
+        with pytest.raises(TypeError):
+            exp("string", 2)
+
+    def test_log_base():
+        z1 = DualNumber(4)
+        z2 = 4
+
+        assert log(z1, 2).real == 2
+        assert log(z1, 2).dual == 1 / (4 * np.log(2))
+
+        assert log(z2, 2).real == 2
+        assert log(z2, 2).dual == 0
+
+        with pytest.raises(TypeError):
+            log("string", 2)
+
+    def test_logistic():
+        z1 = DualNumber(0.5)
+        z2 = 0.5
+
+        assert logistic(z1).real == 1 / (1 + np.exp(-0.5))
+        assert logistic(z1).dual == np.exp(-0.5) / (1 + np.exp(-0.5))**2
+
+        assert logistic(z2).real == 1 / (1 + np.exp(-0.5))
+        assert logistic(z2).dual == 0
+
+        with pytest.raises(TypeError):
+            logistic("string")
+
+    def test_sqrt():
+        z1 = DualNumber(4)
+        z2 = 4
+
+        assert sqrt(z1).real == 2
+        assert sqrt(z1).dual == 1 / (2 * np.sqrt(4))
+
+        assert sqrt(z2).real == 2
+        assert sqrt(z2).dual == 0
+
+        with pytest.raises(TypeError):
+            sqrt("string")
