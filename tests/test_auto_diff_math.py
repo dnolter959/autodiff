@@ -156,19 +156,6 @@ class TestAutoDiffMath:
         with pytest.raises(TypeError):
             arctan("string")
 
-    def test_exp_base():
-        z1 = DualNumber(2)
-        z2 = 2
-
-        assert exp(z1, 2).real == 4
-        assert exp(z1, 2).dual == 4 * np.log(2)
-
-        assert exp(z2, 2).real == 4
-        assert exp(z2, 2).dual == 0
-
-        with pytest.raises(TypeError):
-            exp("string", 2)
-
     def test_log_b():
         z1 = DualNumber(4)
         z2 = 4
