@@ -117,44 +117,44 @@ class TestAutoDiffMath:
         with pytest.raises(TypeError):
             tanh("string")
 
-    def test_arcsin(self):
+    def test_asin(self):
         z1 = DualNumber(0.5)
         z2 = 0.5
 
-        assert arcsin(z1).real == np.arcsin(0.5)
-        assert arcsin(z1).dual == 1 / np.sqrt(1 - 0.5**2)
+        assert asin(z1).real == math.asin(0.5)
+        assert asin(z1).dual == 1 / np.sqrt(1 - 0.5**2)
 
-        assert arcsin(z2).real == np.arcsin(0.5)
-        assert arcsin(z2).dual == 0
+        assert asin(z2).real == math.asin(0.5)
+        assert asin(z2).dual == 0
 
         with pytest.raises(TypeError):
-            arcsin("string")
+            asin("string")
 
-    def test_arccos(self):
+    def test_acos(self):
         z1 = DualNumber(0.5)
         z2 = 0.5
 
-        assert arccos(z1).real == np.arccos(0.5)
-        assert arccos(z1).dual == -1 / np.sqrt(1 - 0.5**2)
+        assert acos(z1).real == math.acos(0.5)
+        assert acos(z1).dual == -1 / np.sqrt(1 - 0.5**2)
 
-        assert arccos(z2).real == np.arccos(0.5)
-        assert arccos(z2).dual == 0
+        assert acos(z2).real == math.acos(0.5)
+        assert acos(z2).dual == 0
 
         with pytest.raises(TypeError):
-            arccos("string")
+            acos("string")
 
-    def test_arctan(self):
+    def test_atan(self):
         z1 = DualNumber(0.5)
         z2 = 0.5
 
-        assert arctan(z1).real == np.arctan(0.5)
-        assert arctan(z1).dual == 1 / (1 + 0.5**2)
+        assert atan(z1).real == math.atan(0.5)
+        assert atan(z1).dual == 1 / (1 + 0.5**2)
 
-        assert arctan(z2).real == np.arctan(0.5)
-        assert arctan(z2).dual == 0
+        assert atan(z2).real == math.atan(0.5)
+        assert atan(z2).dual == 0
 
         with pytest.raises(TypeError):
-            arctan("string")
+            atan("string")
 
     def test_log_b():
         z1 = DualNumber(4)
