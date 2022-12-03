@@ -386,3 +386,115 @@ class DualNumber:
 
         """
         return not self.__eq__(other)
+
+    def __gt__(self, other):
+        """Greater than operator for dual numbers.
+
+        Parameters
+        ----------
+        self : DualNumber
+            The first dual number.
+        other : DualNumber
+            The second dual number.
+
+        Returns
+        -------
+        bool
+            True if self greater than other, False otherwise.
+
+        Raises
+        ------
+        TypeError
+            If the other operand is not a dual number.
+
+        """
+        if isinstance(other, DualNumber):
+            return self.real > other.real
+        else:
+            raise TypeError(
+                "unsupported operand type(s) for >: '{}' and '{}'".format(
+                    type(self), type(other)))
+
+    def __lt__(self, other):
+        """Less than operator for dual numbers.
+
+        Parameters
+        ----------
+        self : DualNumber
+            The first dual number.
+        other : DualNumber
+            The second dual number.
+
+        Returns
+        -------
+        bool
+            True if self less than other, False otherwise.
+
+        Raises
+        ------
+        TypeError
+            If the other operand is not a dual number.
+
+        """
+        if isinstance(other, DualNumber):
+            return self.real < other.real
+        else:
+            raise TypeError(
+                "unsupported operand type(s) for <: '{}' and '{}'".format(
+                    type(self), type(other)))
+
+    def __ge__(self, other):
+        """Greater than or equal to operator for dual numbers.
+
+        Parameters
+        ----------
+        self : DualNumber
+            The first dual number.
+        other : DualNumber
+            The second dual number.
+
+        Returns
+        -------
+        bool
+            True if self greater than or equal to other, False otherwise.
+
+        Raises
+        ------
+        TypeError
+            If the other operand is not a dual number.
+
+        """
+        if isinstance(other, DualNumber):
+            return self.real >= other.real
+        else:
+            raise TypeError(
+                "unsupported operand type(s) for >=: '{}' and '{}'".format(
+                    type(self), type(other)))
+
+    def __le__(self, other):
+        """Less than or equal to operator for dual numbers.
+
+        Parameters
+        ----------
+        self : DualNumber
+            The first dual number.
+        other : DualNumber
+            The second dual number.
+
+        Returns
+        -------
+        bool
+            True if self less than or equal to other, False otherwise.
+
+        Raises
+        ------
+        TypeError
+            If the other operand is not a dual number.
+
+        """
+        if isinstance(other, DualNumber):
+            return self.real <= other.real
+        else:
+            raise TypeError(
+                "unsupported operand type(s) for <=: '{}' and '{}'".format(
+                    type(self), type(other)))
