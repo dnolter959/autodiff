@@ -13,6 +13,7 @@ from autodiff.utils.auto_diff_math import *
 
 class TestAutoDiffMath:
     """Test class for dual number types"""
+
     def test_sin(self):
         z1 = DualNumber(np.pi / 4)
         z2 = np.pi / 4
