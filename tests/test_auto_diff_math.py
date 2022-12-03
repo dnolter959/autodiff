@@ -169,18 +169,18 @@ class TestAutoDiffMath:
         with pytest.raises(TypeError):
             exp("string", 2)
 
-    def test_log_base():
+    def test_log_b():
         z1 = DualNumber(4)
         z2 = 4
 
-        assert log(z1, 2).real == 2
-        assert log(z1, 2).dual == 1 / (4 * np.log(2))
+        assert log_b(z1, 2).real == 2
+        assert log_b(z1, 2).dual == 1 / (4 * np.log(2))
 
-        assert log(z2, 2).real == 2
-        assert log(z2, 2).dual == 0
+        assert log_b(z2, 2).real == 2
+        assert log_b(z2, 2).dual == 0
 
         with pytest.raises(TypeError):
-            log("string", 2)
+            log_b("string", 2)
 
     def test_logistic():
         z1 = DualNumber(0.5)
