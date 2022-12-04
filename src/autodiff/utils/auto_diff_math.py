@@ -2,7 +2,20 @@
 
 import math
 from autodiff.utils.dual_numbers import DualNumber
+from autodiff.utils.comp_graph import CompGraphNode 
 
+# def _add_to_existing_nodes(child, parent, child_func, child_val_1, child_val_2=None):
+
+#     existing_nodes = parent._exsiting_nodes
+
+#     if (function, val_1, val_2) in existing_nodes:
+#         return existing_nodes.get(child_func, child_val_1, child_val_2)
+#         node._parents += [parent]
+
+#     else:
+#         existing_nodes[(child_func, child_val_1, child_val_2)] = node
+
+#     return
 
 def sin(x):
     """Computes the sine of a DualNumber or a numpy array of DualNumbers.
@@ -23,13 +36,31 @@ def sin(x):
         If x is not a DualNumber or int or float.
     
     """
+    if isinstance(x, (int, float)):
+        return math.sin(x)
+
+    if isinstance(x, CompGraphNode):
+        if ("sin", x, None) in x._added_nodes:
+            return x._added_nodes.get(("sin", x, None))
+
+        node = CompGraphNode(math.sin(x.value), parents = [x], 
+                             partials = [math.cos(x.value)], 
+                             added_nodes = x._added_nodes)
+
+        x._added_nodes[("sin", x, None)] = node
+        return node
+
     if isinstance(x, DualNumber):
         return DualNumber(math.sin(x.real), math.cos(x.real) * x.dual)
-    elif isinstance(x, (int, float)):
-        return DualNumber(math.sin(x), 0)
-    else:
-        raise TypeError("sin() only accepts DualNumbers, ints, or floats.")
 
+    raise TypeError("sin() only accepts DualNumbers, ints, or floats.")
+
+    # if isinstance(x, DualNumber):
+    #     return DualNumber(math.sin(x.real), math.cos(x.real) * x.dual)
+    # elif isinstance(x, (int, float)):
+    #     return DualNumber(math.sin(x), 0)
+    # else:
+    #     raise TypeError("sin() only accepts DualNumbers, ints, or floats.")
 
 def cos(x):
     """Computes the cosine of a DualNumber or a numpy array of DualNumbers.
@@ -50,12 +81,32 @@ def cos(x):
         If x is not a DualNumber or int or float.
     
     """
+    if isinstance(x, (int, float)):
+        return math.cos(x)
+
+    if isinstance(x, CompGraphNode):
+        if ("sin", x, None) in x._added_nodes:
+            return x._added_nodes.get(("sin", x, None))
+
+        node = CompGraphNode(math.cos(x.value), parents = [x], 
+                             partials = [-math.sin(x.value)], 
+                             added_nodes = x._added_nodes)
+
+        x._added_nodes[("cos", x, None)] = node
+        return node
+
     if isinstance(x, DualNumber):
         return DualNumber(math.cos(x.real), -math.sin(x.real) * x.dual)
-    elif isinstance(x, (int, float)):
-        return DualNumber(math.cos(x), 0)
-    else:
-        raise TypeError("cos() only accepts DualNumbers, ints, or floats.")
+
+    raise TypeError("cos() only accepts DualNumbers, ints, or floats.")
+
+
+    # if isinstance(x, DualNumber):
+    #     return DualNumber(math.cos(x.real), -math.sin(x.real) * x.dual)
+    # elif isinstance(x, (int, float)):
+    #     return DualNumber(math.cos(x), 0)
+    # else:
+    #     raise TypeError("cos() only accepts DualNumbers, ints, or floats.")
 
 
 def tan(x):
@@ -105,12 +156,31 @@ def exp(x):
         If x is not a DualNumber or int or float.
         
     """
+    if isinstance(x, (int, float)):
+        return math.exp(x)
+
+    if isinstance(x, CompGraphNode):
+        if ("exp", x, None) in x._added_nodes:
+            return x._added_nodes.get(("exp", x, None))
+
+        node = CompGraphNode(math.exp(x.value), parents = [x], 
+                             partials=[math.exp(x.value)], 
+                             added_nodes = x._added_nodes)
+
+        x._added_nodes[("exp", x, None)] = node
+        return node
+
     if isinstance(x, DualNumber):
         return DualNumber(math.exp(x.real), math.exp(x.real) * x.dual)
-    elif isinstance(x, (int, float)):
-        return DualNumber(math.exp(x), 0)
-    else:
-        raise TypeError("exp() only accepts DualNumbers, ints, or floats.")
+
+    raise TypeError("exp() only accepts DualNumbers, ints, or floats.")
+
+    # if isinstance(x, DualNumber):
+    #     return DualNumber(math.exp(x.real), math.exp(x.real) * x.dual)
+    # elif isinstance(x, (int, float)):
+    #     return DualNumber(math.exp(x), 0)
+    # else:
+    #     raise TypeError("exp() only accepts DualNumbers, ints, or floats.")
 
 
 def log(x):
