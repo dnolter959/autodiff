@@ -113,6 +113,37 @@ def exp(x):
     else:
         raise TypeError("exp() only accepts DualNumbers, ints, or floats.")
 
+def exp_b(x, base):
+    """Computes the exponential (any base) of a DualNumber or a numpy array of DualNumbers.
+    
+    Parameters
+    ----------
+    x : DualNumber or int or float
+        The value to compute the exp of of.
+
+    base : int or float
+        The base to use.
+  
+    Returns
+    -------
+    DualNumber or int or float
+        The exponential of x with base defined
+        
+    Raises
+    ------
+    TypeError
+        If x is not a DualNumber or int or float.
+    
+    """
+    if isinstance(x, DualNumber):
+        return DualNumber(base ** x.real,
+                          math.log(base) * base**x.real * x.dual)
+    elif isinstance(x, (int, float)):
+        return DualNumber(base ** x.real, 0)
+    else:
+        raise TypeError("log() only accepts DualNumbers, ints, or floats.")
+
+
 
 def log(x):
     """Computes the natural logarithm of a DualNumber or a numpy array of DualNumbers.
@@ -154,7 +185,7 @@ def log_b(x, base):
     Returns
     -------
     DualNumber or int or float
-        The natural logarithm of x.
+        The logarithm of x with base defined
         
     Raises
     ------
@@ -164,9 +195,9 @@ def log_b(x, base):
     """
     if isinstance(x, DualNumber):
         return DualNumber(math.log(x.real)/math.log(base),
-                          x.dual / x.real)
+                          (1/x.real) * (1/math.log(base)) * x.dual)
     elif isinstance(x, (int, float)):
-        return DualNumber(math.log(x), 0)
+        return DualNumber(math.log(x.real)/math.log(base), 0)
     else:
         raise TypeError("log() only accepts DualNumbers, ints, or floats.")
 
@@ -358,3 +389,31 @@ def atan(x):
         return DualNumber(math.atan(x), 0)
     else:
         raise TypeError("atan() only accepts DualNumbers, ints, or floats.")
+
+
+def logistic(x):
+    """Computes the logistic (sigmoid) of a DualNumber or a numpy array of DualNumbers.
+        
+    Parameters
+    ----------
+    x : DualNumber or int or float
+        The value to compute the sigmoid of.
+            
+    Returns
+    -------
+    DualNumber or int or float
+        The sigmoid of x.
+            
+    Raises
+    ------
+    TypeError
+        If x is not a DualNumber or int or float.
+        
+    """
+    if isinstance(x, DualNumber):
+        return DualNumber(1/(1 + math.exp(-x.real)),
+                            (math.exp(x)/((math.exp(x) + 1) * (math.exp(x) + 1))) * x.dual)
+    elif isinstance(x, (int, float)):
+        return DualNumber(1/(1 + math.exp(-x.real)), 0)
+    else:
+        raise TypeError("logistic() only accepts DualNumbers, ints, or floats.")
