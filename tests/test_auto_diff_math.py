@@ -157,7 +157,7 @@ class TestAutoDiffMath:
         with pytest.raises(TypeError):
             atan("string")
 
-    def test_log_b():
+    def test_log_b(self):
         z1 = DualNumber(4)
         z2 = 4
 
@@ -170,7 +170,7 @@ class TestAutoDiffMath:
         with pytest.raises(TypeError):
             log_b("string", 2)
 
-    def test_exp_b():
+    def test_exp_b(self):
         z1 = DualNumber(2)
         z2 = 2
 
@@ -183,7 +183,7 @@ class TestAutoDiffMath:
         with pytest.raises(TypeError):
             exp_b("string", 2)
 
-    def test_sqrt():
+    def test_sqrt(self):
         z1 = DualNumber(4)
         z2 = 4
 
@@ -196,7 +196,7 @@ class TestAutoDiffMath:
         with pytest.raises(TypeError):
             sqrt("string")
 
-    def test_logistic():
+    def test_logistic(self):
         z1 = DualNumber(0)
         z2 = 0
 
