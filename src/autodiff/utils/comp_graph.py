@@ -127,6 +127,7 @@ class CompGraphNode:
             return node
 
         elif isinstance(other, (int, float)):
+            self._added_nodes[("sub", self, other)] = node
             return CompGraphNode(self.value - other, parents = [self], 
                                  partials = [1], added_nodes = self._added_nodes)
         else:
