@@ -170,6 +170,19 @@ class TestAutoDiffMath:
         with pytest.raises(TypeError):
             log_b("string", 2)
 
+    def test_exp_b():
+        z1 = DualNumber(2)
+        z2 = 2
+
+        assert exp_b(z1, 2).real == 4
+        assert exp_b(z1, 2).dual == 2 * np.log(2)
+
+        assert exp_b(z2, 2).real == 4
+        assert exp_b(z2, 2).dual == 0
+
+        with pytest.raises(TypeError):
+            exp_b("string", 2)
+
     def test_sqrt():
         z1 = DualNumber(4)
         z2 = 4
@@ -182,3 +195,16 @@ class TestAutoDiffMath:
 
         with pytest.raises(TypeError):
             sqrt("string")
+
+    def test_logistic():
+        z1 = DualNumber(0)
+        z2 = 0
+
+        assert logistic(z1).real == 0.5
+        assert logistic(z1).dual == 0.25
+
+        assert logistic(z2).real == 0.5
+        assert logistic(z2).dual == 0
+
+        with pytest.raises(TypeError):
+            logistic("string")
