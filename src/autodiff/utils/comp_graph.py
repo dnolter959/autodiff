@@ -25,6 +25,8 @@ class CompGraphNode:
 
         # dict of existing nodes identified by function (as str) and 
         # the passed values
+        if added_nodes is None:
+                added_nodes = {}
         self._added_nodes = added_nodes
 
     def __add__(self, other):
