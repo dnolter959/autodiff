@@ -175,7 +175,7 @@ class TestAutoDiffMath:
         z2 = 2
 
         assert exp_b(z1, 2).real == 4
-        assert exp_b(z1, 2).dual == 2 * np.log(2)
+        assert exp_b(z1, 2).dual == 4 * np.log(2)
 
         assert exp_b(z2, 2).real == 4
         assert exp_b(z2, 2).dual == 0
