@@ -114,6 +114,36 @@ def exp(x):
         raise TypeError("exp() only accepts DualNumbers, ints, or floats.")
 
 
+def exp_b(x, base):
+    """Computes the exponential (any base) of a DualNumber or a numpy array of DualNumbers.
+    
+    Parameters
+    ----------
+    x : DualNumber or int or float
+        The value to compute the exp of of.
+
+    base : int or float
+        The base to use.
+  
+    Returns
+    -------
+    DualNumber or int or float
+        The exponential of x with base defined
+        
+    Raises
+    ------
+    TypeError
+        If x is not a DualNumber or int or float.
+    
+    """
+    if isinstance(x, DualNumber):
+        return DualNumber(base**x.real, math.log(base) * base**x.real * x.dual)
+    elif isinstance(x, (int, float)):
+        return DualNumber(base**x.real, 0)
+    else:
+        raise TypeError("log() only accepts DualNumbers, ints, or floats.")
+
+
 def log(x):
     """Computes the natural logarithm of a DualNumber or a numpy array of DualNumbers.
     
@@ -137,6 +167,38 @@ def log(x):
         return DualNumber(math.log(x.real), x.dual / x.real)
     elif isinstance(x, (int, float)):
         return DualNumber(math.log(x), 0)
+    else:
+        raise TypeError("log() only accepts DualNumbers, ints, or floats.")
+
+
+def log_b(x, base):
+    """Computes the logarithm (any base) of a DualNumber or a numpy array of DualNumbers.
+    
+    Parameters
+    ----------
+    x : DualNumber or int or float
+        The value to compute the logarithm of.
+
+    base : int or float
+        The base to use.
+  
+    Returns
+    -------
+    DualNumber or int or float
+        The logarithm of x with base defined
+        
+    Raises
+    ------
+    TypeError
+        If x is not a DualNumber or int or float.
+    
+    """
+    if isinstance(x, DualNumber):
+        return DualNumber(
+            math.log(x.real) / math.log(base),
+            (1 / x.real) * (1 / math.log(base)) * x.dual)
+    elif isinstance(x, (int, float)):
+        return DualNumber(math.log(x.real) / math.log(base), 0)
     else:
         raise TypeError("log() only accepts DualNumbers, ints, or floats.")
 
@@ -221,3 +283,145 @@ def tanh(x):
         return DualNumber(math.tanh(x), 0)
     else:
         raise TypeError("tanh() only accepts DualNumbers, ints, or floats.")
+
+
+def sqrt(x):
+    """Computes the square root of a DualNumber or a numpy array of DualNumbers.
+        
+    Parameters
+    ----------
+    x : DualNumber or int or float
+        The value to compute the square root of.
+            
+    Returns
+    -------
+    DualNumber or int or float
+        The sqrt of x.
+            
+    Raises
+    ------
+    TypeError
+        If x is not a DualNumber or int or float.
+        
+    """
+    if isinstance(x, DualNumber):
+        return DualNumber(math.sqrt(x.real),
+                          (0.5 / math.sqrt(x.real)) * x.dual)
+    elif isinstance(x, (int, float)):
+        return DualNumber(math.sqrt(x), 0)
+    else:
+        raise TypeError("sqrt() only accepts DualNumbers, ints, or floats.")
+
+
+def asin(x):
+    """Computes the arcsine of a DualNumber or a numpy array of DualNumbers.
+        
+    Parameters
+    ----------
+    x : DualNumber or int or float
+        The value to compute the arcsine of.
+            
+    Returns
+    -------
+    DualNumber or int or float
+        The arcsine of x.
+            
+    Raises
+    ------
+    TypeError
+        If x is not a DualNumber or int or float.
+        
+    """
+    if isinstance(x, DualNumber):
+        return DualNumber(math.asin(x.real),
+                          (1 / math.sqrt(1 - x.real**2)) * x.dual)
+    elif isinstance(x, (int, float)):
+        return DualNumber(math.asin(x), 0)
+    else:
+        raise TypeError("asin() only accepts DualNumbers, ints, or floats.")
+
+
+def acos(x):
+    """Computes the arccosine of a DualNumber or a numpy array of DualNumbers.
+        
+    Parameters
+    ----------
+    x : DualNumber or int or float
+        The value to compute the arccosine of.
+            
+    Returns
+    -------
+    DualNumber or int or float
+        The arccosine of x.
+            
+    Raises
+    ------
+    TypeError
+        If x is not a DualNumber or int or float.
+        
+    """
+    if isinstance(x, DualNumber):
+        return DualNumber(math.acos(x.real),
+                          -1 * (1 / math.sqrt(1 - x.real**2)) * x.dual)
+    elif isinstance(x, (int, float)):
+        return DualNumber(math.acos(x), 0)
+    else:
+        raise TypeError("acos() only accepts DualNumbers, ints, or floats.")
+
+
+def atan(x):
+    """Computes the arctan of a DualNumber or a numpy array of DualNumbers.
+        
+    Parameters
+    ----------
+    x : DualNumber or int or float
+        The value to compute the arctangent of.
+            
+    Returns
+    -------
+    DualNumber or int or float
+        The arctangent of x.
+            
+    Raises
+    ------
+    TypeError
+        If x is not a DualNumber or int or float.
+        
+    """
+    if isinstance(x, DualNumber):
+        return DualNumber(math.atan(x.real), 1 / (1 + x.real**2) * x.dual)
+    elif isinstance(x, (int, float)):
+        return DualNumber(math.atan(x), 0)
+    else:
+        raise TypeError("atan() only accepts DualNumbers, ints, or floats.")
+
+
+def logistic(x):
+    """Computes the logistic (sigmoid) of a DualNumber or a numpy array of DualNumbers.
+        
+    Parameters
+    ----------
+    x : DualNumber or int or float
+        The value to compute the sigmoid of.
+            
+    Returns
+    -------
+    DualNumber or int or float
+        The sigmoid of x.
+            
+    Raises
+    ------
+    TypeError
+        If x is not a DualNumber or int or float.
+        
+    """
+    if isinstance(x, DualNumber):
+        return DualNumber(1 / (1 + math.exp(-x.real)),
+                          (math.exp(x.real) /
+                           ((math.exp(x.real) + 1) *
+                            (math.exp(x.real) + 1))) * x.dual)
+    elif isinstance(x, (int, float)):
+        return DualNumber(1 / (1 + math.exp(-x.real)), 0)
+    else:
+        raise TypeError(
+            "logistic() only accepts DualNumbers, ints, or floats.")
