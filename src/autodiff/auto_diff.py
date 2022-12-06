@@ -3,7 +3,7 @@ import inspect
 import numpy as np
 import re
 from typing import Callable, Union
-from toposort import toposort, toposort_flatten
+from toposort import toposort_flatten
 
 from autodiff.utils.dual_numbers import DualNumber
 from autodiff.utils.comp_graph import CompGraphNode
@@ -56,11 +56,13 @@ class AutoDiff:
 
         self.f = f
 
-        # store the last computed point
-        self.curr_point = None
-        self.curr_seed = None
-        self.curr_derivative = None
-        self.curr_jacobian = None
+        # store the computed output for the last input 
+        self.point = None
+        self.seed = None
+        self.derivative = None
+        self.jacobian = None
+
+        self.computational_graph = None
 
     def __str__(self):
         """ returns a description of the functions"""
@@ -198,24 +200,37 @@ class AutoDiff:
         """
         self._check_vector(point)
 
-        # compare = point == self.curr_point
+        # compare = point == self.point
         # if ((isinstance(compare, bool) and compare
         #      or isinstance(compare, np.ndarray) and compare.all())
-        #         and self.curr_jacobian is not None):
-        #     return self.curr_jacobian
+        #         and self.jacobian is not None):
+        #     return self.jacobian
 
-        self.curr_derivative = None
-        self.curr_seed = None
-        self.curr_point = point
+        self.derivative = None
+        self.seed = None
+        self.point = point
 
         if mode in ["forward", "f"]:
-            self.curr_jacobian = self._get_jacobian_forward(point)
+            jacobian = self._get_jacobian_forward(point)
         elif mode in ["reverse", "r"]:
-            self.curr_jacobian = self._get_jacobian_reverse(point)
+            jacobian = self._get_jacobian_reverse(point)
         else:
             raise ValueError("Invalid mode")
 
-        return self.curr_jacobian
+        # reshape Jacobian matrix
+        # Jacobian matrix should be a row vector for scalar function with multiple input
+        if len(self.f) == 1 and isinstance(
+                point, (list, np.ndarray)) and len(point) > 1:
+            jacobian = jacobian.reshape(1, -1)
+        # Jacobian matrix should be a column vector for vector function with single input
+        elif (len(self.f) > 1
+              and (isinstance(point, (int, float))
+                   or isinstance(point,
+                                 (list, np.ndarray)) and len(point) == 1)):
+            jacobian = jacobian.reshape(-1, 1)
+
+        self.jacobian = jacobian
+        return self.jacobian
         
     def _get_jacobian_forward(self, point: Union[int, float, list, np.ndarray]):
         
@@ -236,19 +251,6 @@ class AutoDiff:
             ret = [ret]
 
         jacobian = np.transpose(np.array(ret))
-
-        # reshape Jacobian matrix
-        # Jacobian matrix should be a row vector for scalar function with multiple input
-        if len(self.f) == 1 and isinstance(
-                point, (list, np.ndarray)) and len(point) > 1:
-            jacobian = jacobian.reshape(1, -1)
-        # Jacobian matrix should be a column vector for vector function with single input
-        elif (len(self.f) > 1
-              and (isinstance(point, (int, float))
-                   or isinstance(point,
-                                 (list, np.ndarray)) and len(point) == 1)):
-            jacobian = jacobian.reshape(-1, 1)
-
         return jacobian
 
     def _get_jacobian_reverse(self, point: Union[int, float, list, np.ndarray]):
@@ -256,7 +258,7 @@ class AutoDiff:
         assert isinstance(point, (int, float, list, np.ndarray))
         
         jacobian = []
-        self.added_nodes = []
+        self.computational_graph = []
 
         for func in self.f:
             # forward pass
@@ -264,48 +266,53 @@ class AutoDiff:
 
             # convert input to CompGraphNodes
             if isinstance(point, (int, float)):
-                nodes = CompGraphNode(point, added_nodes=added_nodes)
+                input_nodes = CompGraphNode(point, added_nodes=added_nodes)
             elif isinstance(point, np.ndarray):
-                nodes = [CompGraphNode(p.item(), added_nodes=added_nodes) for p in point]
+                input_nodes = [CompGraphNode(p.item(), added_nodes=added_nodes) for p in point]
             else:
-                nodes = [CompGraphNode(p, added_nodes=added_nodes) for p in point]
+                input_nodes = [CompGraphNode(p, added_nodes=added_nodes) for p in point]
 
-            output_node = func(nodes)
+            output_node = func(input_nodes)
 
             # reverse pass
-            if isinstance(nodes, CompGraphNode):
-                nodes = [nodes]
+            if isinstance(input_nodes, CompGraphNode):
+                input_nodes = [input_nodes]
 
-            # build adjacency list (a dictionary) for topo sort 
-            # the xs do not have parents
-            adj_list = {n : set() for n in nodes}
-
+            # build adjacency list (a dictionary) for toposort 
+            # the inputs do not have parents
+            adj_list = {n : set() for n in input_nodes}
+            
+            # add intermediate nodes to the adjacency list
             for node in added_nodes.values():
                 adj_list[node] = set(node.parents)
             
-            # topo sort 
+            # toposort the computational graph 
             sorted_list = toposort_flatten(adj_list)
 
             # set last node's adjoint
-            # sorted_list[len(sorted_list)-1].adjoint = 1
             output_node.adjoint = 1
-
+            
+            # compute adjoint for each node
             for node in reversed(sorted_list):
-                
-                if node.parents is not None:
-                    for i in range(len(node.parents)):
-                        
-                        parent = node.parents[i]
-                        partial = node.partials [i]
+                if node.parents is not None and node.partials is not None:
+                    for parent, partial in zip(node.parents, node.partials):
                         parent.adjoint += node.adjoint * partial
 
-            self.added_nodes += [added_nodes]
-            jacobian += [np.array([n.adjoint for n in nodes])]
+
+            # the chain-rule incorporated partial is stored as the input nodes adjoint
+            jacobian += [np.array([node.adjoint for node in input_nodes])]
+            # store computational_graph
+            self.computational_graph += [adj_list]
         
-        return np.array(jacobian)
+        jacobian = np.array(jacobian)
+        if jacobian.size == 1:
+            jacobian = jacobian.flatten()
+
+        return jacobian
 
     def get_derivative(self, point: Union[int, float, list, np.ndarray],
-                       seed_vector: Union[int, float, list, np.ndarray]):
+                       seed_vector: Union[int, float, list, np.ndarray], 
+                       mode = "forward"):
         """ calculate the directional derivative given point and the seed vector
 
         Positional arguments: 
@@ -336,48 +343,71 @@ class AutoDiff:
             raise ValueError("Dimension mismatch")
 
         # check if the point are the same as last set of computed point
-        compare = self.curr_point == point
+        compare = self.point == point
         if (isinstance(compare, bool) and compare
                 or isinstance(compare, np.ndarray) and compare.all()):
 
             # check if the seed is the same as last set of computed point
-            compare = self.curr_seed == seed_vector_arr
+            compare = self.seed == seed_vector_arr
             if ((isinstance(compare, bool) and compare
                  or isinstance(compare, np.ndarray) and compare.all())
-                    and self.curr_derivative is not None):
-                return self.curr_derivative
+                    and self.derivative is not None):
+                return self.derivative
 
-            if self.curr_jacobian is not None:
-                self.curr_seed = seed_vector_arr
-                self.curr_derivative = np.dot(self.curr_jacobian,
-                                              seed_vector_arr.reshape(-1, 1))
-                if self.curr_derivative.ndim == 1 and len(
-                        self.curr_derivative) == 1:
-                    self.curr_derivative = self.curr_derivative[0]
-                return self.curr_derivative
+        self.jacobian = self.get_jacobian(point, mode)
+        self.seed = seed_vector_arr
 
-        self.curr_jacobian = self.get_jacobian(point)
-        self.curr_seed = seed_vector_arr
-        self.curr_derivative = np.dot(self.curr_jacobian,
-                                      seed_vector_arr.reshape(-1, 1))
-        if self.curr_derivative.ndim == 1 and len(self.curr_derivative) == 1:
-            self.curr_derivative = self.curr_derivative[0]
+        derivative = np.dot(self.jacobian, seed_vector_arr.reshape(-1, 1))
 
-        return self.curr_derivative
+        if derivative.ndim == 1 and len(derivative) == 1:
+            derivative = derivative[0]
+
+        if derivative.size == 1:
+            derivative = derivative.flatten()[0]
+        
+        self.derivative = derivative
+        return self.derivative
 
 ##
 
-f = lambda x: sin(x+5) - cos(x) + exp(-x) + sin(10)
+f = lambda x: sin(x+5)*x - cos(x+5) + exp(-x) 
 ad = AutoDiff(f)
+seed = 1
 print(f"forward mode output\n {ad.get_jacobian(1, mode='f')}")
 print(f"reverse mode output\n {ad.get_jacobian(1, mode='r')}")
+print(f"derivative output\n {ad.get_derivative(1, seed, mode='r')}")
+##
+# f = lambda x: sin(x+5)*x - cos(x+5)
+# ad = AutoDiff(f)
+# seed = 1
+# print(f"forward mode output\n {ad.get_jacobian(1, mode='f')}")
+# print(f"reverse mode output\n {ad.get_jacobian(1, mode='r')}")
+# for k,v in ad.computational_graph[0].items():
+#     print("value")
+#     print( k.value )
+#     print("parents")
+#     if v is None:
+#         print(v)
+#     if v is not None:
+#         for p in v:
+#             print( p.value )
+#     print()
+##
+f = lambda x: sin(x+5) - cos(x) + exp(-x) + sin(10)
+g = lambda x: 15*x - x*x
+ad = AutoDiff([f,g])
+print(f"forward mode output\n {ad.get_jacobian(1, mode='f')}")
+print(f"reverse mode output\n {ad.get_jacobian(1, mode='r')}")
+print(f"derivative output\n {ad.get_derivative(1, seed, mode='r')}")
 
 ##
 f = lambda x: sin(x[0]+5) - cos(x[1]) + exp(-x[0]) + sin(10)
 ad = AutoDiff(f)
 x = np.array([1, 2, 3])
+seed = np.array([2, -1, 0])
 print(f"forward mode output\n {ad.get_jacobian(x, mode='f')}")
 print(f"reverse mode output\n {ad.get_jacobian(x, mode='r')}")
+print(f"derivative output\n {ad.get_derivative(x, seed, mode='r')}")
 
 ##
 f = lambda x: sin(x[0]-x[1]) + exp(-x[0])*x[0]
@@ -391,6 +421,7 @@ f = lambda x: sin(x[0]-x[1]) + exp(-x[0])*x[0]
 g = lambda x: sin(x[2]+5) - cos(x[1]) + exp(-x[1]) + sin(10)-2*x[0]*x[2]
 ad = AutoDiff([f,g])
 x = np.array([1, 2, -0.5])
+seed = np.array([2, -1, 0])
 print(f"forward mode output\n {ad.get_jacobian(x, mode='f')}")
 print(f"reverse mode output\n {ad.get_jacobian(x, mode='r')}")
->>>>>>> 01179d1 (implemented reverse mode with a few functions supported)
+print(f"derivative output\n {ad.get_derivative(x, seed, mode='r')}")
