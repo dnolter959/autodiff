@@ -5,6 +5,7 @@ import numpy as np
 
 
 class DualNumber:
+
     def __init__(self, real, dual=1):
         """class DualNumber
 

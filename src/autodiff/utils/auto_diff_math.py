@@ -113,6 +113,7 @@ def exp(x):
     else:
         raise TypeError("exp() only accepts DualNumbers, ints, or floats.")
 
+
 def exp_b(x, base):
     """Computes the exponential (any base) of a DualNumber or a numpy array of DualNumbers.
     
@@ -136,13 +137,11 @@ def exp_b(x, base):
     
     """
     if isinstance(x, DualNumber):
-        return DualNumber(base ** x.real,
-                          math.log(base) * base**x.real * x.dual)
+        return DualNumber(base**x.real, math.log(base) * base**x.real * x.dual)
     elif isinstance(x, (int, float)):
-        return DualNumber(base ** x.real, 0)
+        return DualNumber(base**x.real, 0)
     else:
         raise TypeError("log() only accepts DualNumbers, ints, or floats.")
-
 
 
 def log(x):
@@ -171,6 +170,7 @@ def log(x):
     else:
         raise TypeError("log() only accepts DualNumbers, ints, or floats.")
 
+
 def log_b(x, base):
     """Computes the logarithm (any base) of a DualNumber or a numpy array of DualNumbers.
     
@@ -194,12 +194,14 @@ def log_b(x, base):
     
     """
     if isinstance(x, DualNumber):
-        return DualNumber(math.log(x.real)/math.log(base),
-                          (1/x.real) * (1/math.log(base)) * x.dual)
+        return DualNumber(
+            math.log(x.real) / math.log(base),
+            (1 / x.real) * (1 / math.log(base)) * x.dual)
     elif isinstance(x, (int, float)):
-        return DualNumber(math.log(x.real)/math.log(base), 0)
+        return DualNumber(math.log(x.real) / math.log(base), 0)
     else:
         raise TypeError("log() only accepts DualNumbers, ints, or floats.")
+
 
 def sinh(x):
     """Computes the hyperbolic sine of a DualNumber or a numpy array of DualNumbers.
@@ -282,6 +284,7 @@ def tanh(x):
     else:
         raise TypeError("tanh() only accepts DualNumbers, ints, or floats.")
 
+
 def sqrt(x):
     """Computes the square root of a DualNumber or a numpy array of DualNumbers.
         
@@ -308,6 +311,7 @@ def sqrt(x):
         return DualNumber(math.sqrt(x), 0)
     else:
         raise TypeError("sqrt() only accepts DualNumbers, ints, or floats.")
+
 
 def asin(x):
     """Computes the arcsine of a DualNumber or a numpy array of DualNumbers.
@@ -336,6 +340,7 @@ def asin(x):
     else:
         raise TypeError("asin() only accepts DualNumbers, ints, or floats.")
 
+
 def acos(x):
     """Computes the arccosine of a DualNumber or a numpy array of DualNumbers.
         
@@ -363,6 +368,7 @@ def acos(x):
     else:
         raise TypeError("acos() only accepts DualNumbers, ints, or floats.")
 
+
 def atan(x):
     """Computes the arctan of a DualNumber or a numpy array of DualNumbers.
         
@@ -383,8 +389,7 @@ def atan(x):
         
     """
     if isinstance(x, DualNumber):
-        return DualNumber(math.atan(x.real),
-                          1 / (1 + x.real **2 )  * x.dual)
+        return DualNumber(math.atan(x.real), 1 / (1 + x.real**2) * x.dual)
     elif isinstance(x, (int, float)):
         return DualNumber(math.atan(x), 0)
     else:
@@ -411,9 +416,12 @@ def logistic(x):
         
     """
     if isinstance(x, DualNumber):
-        return DualNumber(1/(1 + math.exp(-x.real)),
-                            (math.exp(x)/((math.exp(x) + 1) * (math.exp(x) + 1))) * x.dual)
+        return DualNumber(1 / (1 + math.exp(-x.real)),
+                          (math.exp(x.real) /
+                           ((math.exp(x.real) + 1) *
+                            (math.exp(x.real) + 1))) * x.dual)
     elif isinstance(x, (int, float)):
-        return DualNumber(1/(1 + math.exp(-x.real)), 0)
+        return DualNumber(1 / (1 + math.exp(-x.real)), 0)
     else:
-        raise TypeError("logistic() only accepts DualNumbers, ints, or floats.")
+        raise TypeError(
+            "logistic() only accepts DualNumbers, ints, or floats.")
