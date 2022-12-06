@@ -377,21 +377,11 @@ print(f"forward mode output\n {ad.get_jacobian(1, mode='f')}")
 print(f"reverse mode output\n {ad.get_jacobian(1, mode='r')}")
 print(f"derivative output\n {ad.get_derivative(1, seed, mode='r')}")
 ##
-# f = lambda x: sin(x+5)*x - cos(x+5)
-# ad = AutoDiff(f)
-# seed = 1
-# print(f"forward mode output\n {ad.get_jacobian(1, mode='f')}")
-# print(f"reverse mode output\n {ad.get_jacobian(1, mode='r')}")
-# for k,v in ad.computational_graph[0].items():
-#     print("value")
-#     print( k.value )
-#     print("parents")
-#     if v is None:
-#         print(v)
-#     if v is not None:
-#         for p in v:
-#             print( p.value )
-#     print()
+f = lambda x: x*sin(x+5)*x - cos(x+5)
+ad = AutoDiff(f)
+seed = 1
+print(f"forward mode output\n {ad.get_jacobian(1, mode='f')}")
+print(f"reverse mode output\n {ad.get_jacobian(1, mode='r')}")
 ##
 f = lambda x: sin(x+5) - cos(x) + exp(-x) + sin(10)
 g = lambda x: 15*x - x*x

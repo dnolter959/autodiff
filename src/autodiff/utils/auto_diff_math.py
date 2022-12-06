@@ -85,8 +85,8 @@ def cos(x):
         return math.cos(x)
 
     if isinstance(x, CompGraphNode):
-        if ("sin", x, None) in x._added_nodes:
-            return x._added_nodes.get(("sin", x, None))
+        if ("cos", x, None) in x._added_nodes:
+            return x._added_nodes.get(("cos", x, None))
 
         node = CompGraphNode(math.cos(x.value), parents = [x], 
                              partials = [-math.sin(x.value)], 
