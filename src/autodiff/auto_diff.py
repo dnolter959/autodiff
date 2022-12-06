@@ -370,48 +370,69 @@ class AutoDiff:
 
 ##
 
-f = lambda x: sin(x+5)*x - cos(x+5) + exp(-x) 
+# f = lambda x: sin(x+5)*x - cos(x+5) + exp(-x) 
+# ad = AutoDiff(f)
+# seed = 1
+# print(f"forward mode output\n {ad.get_jacobian(1, mode='f')}")
+# print(f"reverse mode output\n {ad.get_jacobian(1, mode='r')}")
+# print(f"derivative output\n {ad.get_derivative(1, seed, mode='r')}")
+# ##
+# f = lambda x: x*sin(x+5)*x - cos(x+5)
+# ad = AutoDiff(f)
+# seed = 1
+# print(f"forward mode output\n {ad.get_jacobian(1, mode='f')}")
+# print(f"reverse mode output\n {ad.get_jacobian(1, mode='r')}")
+# ##
+# f = lambda x: sin(x+5) - cos(x) + exp(-x) + sin(10)
+# g = lambda x: 15*x - x*x
+# ad = AutoDiff([f,g])
+# print(f"forward mode output\n {ad.get_jacobian(1, mode='f')}")
+# print(f"reverse mode output\n {ad.get_jacobian(1, mode='r')}")
+# print(f"derivative output\n {ad.get_derivative(1, seed, mode='r')}")
+
+# ##
+# f = lambda x: sin(x[0]+5) - cos(x[1]) + exp(-x[0]) + sin(10)
+# ad = AutoDiff(f)
+# x = np.array([1, 2, 3])
+# seed = np.array([2, -1, 0])
+# print(f"forward mode output\n {ad.get_jacobian(x, mode='f')}")
+# print(f"reverse mode output\n {ad.get_jacobian(x, mode='r')}")
+# print(f"derivative output\n {ad.get_derivative(x, seed, mode='r')}")
+
+# ##
+# f = lambda x: sin(x[0]-x[1]) + exp(-x[0])*x[0]
+# ad = AutoDiff(f)
+# x = np.array([1, 2])
+# print(f"forward mode output\n {ad.get_jacobian(x, mode='f')}")
+# print(f"reverse mode output\n {ad.get_jacobian(x, mode='r')}")
+
+# ##
+# f = lambda x: sin(x[0]-x[1]) + exp(-x[0])*x[0]
+# g = lambda x: sin(x[2]+5) - cos(x[1]) + exp(-x[1]) + sin(10)-2*x[0]*x[2]
+# ad = AutoDiff([f,g])
+# x = np.array([1, 2, -0.5])
+# seed = np.array([2, -1, 0])
+# print(f"forward mode output\n {ad.get_jacobian(x, mode='f')}")
+# print(f"reverse mode output\n {ad.get_jacobian(x, mode='r')}")
+# print(f"derivative output\n {ad.get_derivative(x, seed, mode='r')}")
+
+f = lambda x: sin(x+5)*x - cos(x+5) + exp(-x) + log(x)
 ad = AutoDiff(f)
 seed = 1
 print(f"forward mode output\n {ad.get_jacobian(1, mode='f')}")
 print(f"reverse mode output\n {ad.get_jacobian(1, mode='r')}")
 print(f"derivative output\n {ad.get_derivative(1, seed, mode='r')}")
-##
-f = lambda x: x*sin(x+5)*x - cos(x+5)
+
+f = lambda x: sin(x+5)*x - cos(x+5) + exp(-x) + sinh(x)
 ad = AutoDiff(f)
 seed = 1
 print(f"forward mode output\n {ad.get_jacobian(1, mode='f')}")
 print(f"reverse mode output\n {ad.get_jacobian(1, mode='r')}")
-##
-f = lambda x: sin(x+5) - cos(x) + exp(-x) + sin(10)
-g = lambda x: 15*x - x*x
-ad = AutoDiff([f,g])
+print(f"derivative output\n {ad.get_derivative(1, seed, mode='r')}")
+
+f = lambda x: sin(x+5)*x - cos(x+5) + exp(-x) + tanh(x)
+ad = AutoDiff(f)
+seed = 1
 print(f"forward mode output\n {ad.get_jacobian(1, mode='f')}")
 print(f"reverse mode output\n {ad.get_jacobian(1, mode='r')}")
 print(f"derivative output\n {ad.get_derivative(1, seed, mode='r')}")
-
-##
-f = lambda x: sin(x[0]+5) - cos(x[1]) + exp(-x[0]) + sin(10)
-ad = AutoDiff(f)
-x = np.array([1, 2, 3])
-seed = np.array([2, -1, 0])
-print(f"forward mode output\n {ad.get_jacobian(x, mode='f')}")
-print(f"reverse mode output\n {ad.get_jacobian(x, mode='r')}")
-print(f"derivative output\n {ad.get_derivative(x, seed, mode='r')}")
-
-##
-f = lambda x: sin(x[0]-x[1]) + exp(-x[0])*x[0]
-ad = AutoDiff(f)
-x = np.array([1, 2])
-print(f"forward mode output\n {ad.get_jacobian(x, mode='f')}")
-print(f"reverse mode output\n {ad.get_jacobian(x, mode='r')}")
-
-##
-f = lambda x: sin(x[0]-x[1]) + exp(-x[0])*x[0]
-g = lambda x: sin(x[2]+5) - cos(x[1]) + exp(-x[1]) + sin(10)-2*x[0]*x[2]
-ad = AutoDiff([f,g])
-x = np.array([1, 2, -0.5])
-seed = np.array([2, -1, 0])
-print(f"forward mode output\n {ad.get_jacobian(x, mode='f')}")
-print(f"reverse mode output\n {ad.get_jacobian(x, mode='r')}")
-print(f"derivative output\n {ad.get_derivative(x, seed, mode='r')}")
