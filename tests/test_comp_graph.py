@@ -21,7 +21,7 @@ class TestCompGraphNode:
         assert node.partials is None
         assert len(node._added_nodes) == 0
 
-        node2 = CompGraphNode(5, parents = [node], partials = [2], adjoint = 1)
+        node2 = CompGraphNode(5, parents=[node], partials=[2], adjoint=1)
 
         assert node2.value == 5
         assert node2.adjoint == 1
@@ -32,13 +32,13 @@ class TestCompGraphNode:
             CompGraphNode("string")
 
         with pytest.raises(AssertionError):
-            CompGraphNode(2, parents = [node, "string"])
+            CompGraphNode(2, parents=[node, "string"])
 
         with pytest.raises(AssertionError):
-            CompGraphNode(2, partials = [node])
+            CompGraphNode(2, partials=[node])
 
         with pytest.raises(AssertionError):
-            CompGraphNode(2, partials = [5], parents = [node, node2])
+            CompGraphNode(2, partials=[5], parents=[node, node2])
 
     def test_addition(self):
         node = CompGraphNode(2)
@@ -68,7 +68,7 @@ class TestCompGraphNode:
         assert len(node5.parents) == 1
         assert len(node5.partials) == 1
         assert len(node5._added_nodes.keys()) == 2
-        
+
         assert node5._added_nodes[("add", node, 3)] == node4
 
         # Handle Non-Supported Types (String)
@@ -280,16 +280,17 @@ class TestCompGraphNode:
         node2 = CompGraphNode(5)
 
         # CompGraphNode ** CompGraphNode
-        node3 = node ** node2
+        node3 = node**node2
         assert node3.value == 32
         assert node3.adjoint == 0
         assert len(node3.parents) == 2
         assert len(node3.partials) == 2
-        assert node3.partials[0] == 5 * 16 and node3.partials[1] == 32 * np.log(2)
+        assert node3.partials[0] == 5 * 16 and node3.partials[
+            1] == 32 * np.log(2)
         assert len(node3._added_nodes) == 0
 
         # CompGraphNode ** int
-        node4 = node ** 3
+        node4 = node**3
         assert node4.value == 8
         assert node4.adjoint == 0
         assert len(node4.parents) == 1
@@ -298,7 +299,7 @@ class TestCompGraphNode:
         assert len(node4._added_nodes.keys()) == 1
 
         # CompGraphNode ** float
-        node5 = node ** 3.0
+        node5 = node**3.0
         assert node5.value == 8
         assert node5.adjoint == 0
         assert len(node5.parents) == 1
@@ -309,14 +310,14 @@ class TestCompGraphNode:
 
         # Handle Non-Supported Types (String)
         with pytest.raises(TypeError):
-            node ** "string"
-            "string" ** node
+            node**"string"
+            "string"**node
 
     def test_reflective_pow(self):
         node = CompGraphNode(2)
 
         # int ** CompGraphNode
-        node2 = 3 ** node
+        node2 = 3**node
         assert node2.value == 9
         assert node2.adjoint == 0
         assert len(node2.parents) == 1
@@ -324,7 +325,7 @@ class TestCompGraphNode:
         assert len(node2._added_nodes) == 0
 
         # float ** CompGraphNode
-        node3 = 3.0 ** node
+        node3 = 3.0**node
         assert node3.value == 9
         assert node3.adjoint == 0
         assert len(node3.parents) == 1
@@ -360,7 +361,7 @@ class TestCompGraphNode:
 
         with pytest.raises(TypeError):
             node == 2
-    
+
     def test_not_equal(self):
         node = CompGraphNode(2)
         node2 = CompGraphNode(2)
@@ -375,7 +376,7 @@ class TestCompGraphNode:
     def test_less_than(self):
         node = CompGraphNode(2)
         node2 = node + 3
-        node3 = 2*node2
+        node3 = 2 * node2
 
         assert node2 < node
         assert node3 < node2
