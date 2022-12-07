@@ -70,6 +70,7 @@ class TestCompGraphNode:
         assert len(node5._added_nodes.keys()) == 2
 
         assert node5._added_nodes[("add", node, 3)] == node4
+        assert id(node5) == id(node4)
 
         # Handle Non-Supported Types (String)
         with pytest.raises(TypeError):
@@ -97,6 +98,7 @@ class TestCompGraphNode:
         assert len(node3._added_nodes.keys()) == 1
 
         assert node3._added_nodes[("add", node, 3)] == node2
+        assert id(node2) == id(node3)
 
     def test_subtraction(self):
         node = CompGraphNode(2)
@@ -128,6 +130,7 @@ class TestCompGraphNode:
         assert len(node5._added_nodes.keys()) == 1
 
         assert node5._added_nodes[("sub", node, 3)] == node4
+        assert id(node5) == id(node4)
 
         # Handle Non-Supported Types (String)
         with pytest.raises(TypeError):
@@ -155,6 +158,7 @@ class TestCompGraphNode:
         assert len(node3._added_nodes.keys()) == 2
 
         assert node3._added_nodes[("sub", 3, node)] == node2
+        assert id(node2) == id(node3)
 
     def test_mul(self):
         node = CompGraphNode(2)
@@ -187,6 +191,7 @@ class TestCompGraphNode:
         assert len(node5._added_nodes.keys()) == 2
 
         assert node5._added_nodes[("mul", node, 3)] == node4
+        assert id(node5) == id(node4)
 
         # Handle Non-Supported Types (String)
         with pytest.raises(TypeError):
@@ -214,6 +219,7 @@ class TestCompGraphNode:
         assert len(node3._added_nodes.keys()) == 1
 
         assert node3._added_nodes[("mul", node, 3)] == node2
+        assert id(node2) == id(node3)
 
     def test_div(self):
         node = CompGraphNode(2)
@@ -246,6 +252,7 @@ class TestCompGraphNode:
         assert len(node5._added_nodes.keys()) == 2
 
         assert node5._added_nodes[("div", node, 3)] == node4
+        assert id(node5) == id(node4)
 
         # Handle Non-Supported Types (String)
         with pytest.raises(TypeError):
@@ -274,6 +281,7 @@ class TestCompGraphNode:
         assert len(node3._added_nodes.keys()) == 1
 
         assert node3._added_nodes[("div", 3, node)] == node2
+        assert id(node2) == id(node3)
 
     def test_pow(self):
         node = CompGraphNode(2)
@@ -307,6 +315,7 @@ class TestCompGraphNode:
         assert len(node5._added_nodes.keys()) == 2
 
         assert node5._added_nodes[("pow", node, 3)] == node4
+        assert id(node5) == id(node4)
 
         # Handle Non-Supported Types (String)
         with pytest.raises(TypeError):
@@ -334,6 +343,7 @@ class TestCompGraphNode:
         assert len(node3._added_nodes.keys()) == 1
 
         assert node3._added_nodes[("pow", 3, node)] == node2
+        assert id(node2) == id(node3)
 
     def test_neg(self):
         node = CompGraphNode(2)
