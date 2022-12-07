@@ -1,40 +1,27 @@
-"""Module containing overloaded functions to handle dual numbers."""
+"""Module containing overloaded functions to handle dual numbers and computational graph nodes."""
 
 import math
 import numpy as np
 from autodiff.utils.dual_numbers import DualNumber
 from autodiff.utils.comp_graph import CompGraphNode 
 
-# def _add_to_existing_nodes(child, parent, child_func, child_val_1, child_val_2=None):
-
-#     existing_nodes = parent._exsiting_nodes
-
-#     if (function, val_1, val_2) in existing_nodes:
-#         return existing_nodes.get(child_func, child_val_1, child_val_2)
-#         node._parents += [parent]
-
-#     else:
-#         existing_nodes[(child_func, child_val_1, child_val_2)] = node
-
-#     return
-
 def sin(x):
-    """Computes the sine of a DualNumber or a numpy array of DualNumbers.
+    """Computes the sine of a real number, a DualNumber object, or a CompGraphNode object.
     
     Parameters
     ----------
-    x : DualNumber or int or float
+    x : int, float, DualNumber, or CompGraphNode
         The value to compute the sine of.
         
     Returns
     -------
-    DualNumber or int or float
+    int, float, DualNumber, or CompGraphNode
         The sine of x.
         
     Raises
     ------
     TypeError
-        If x is not a DualNumber or int or float.
+        If x is not a int, float, DualNumber, or CompGraphNode
     
     """
     if isinstance(x, (int, float)):
@@ -54,32 +41,26 @@ def sin(x):
     if isinstance(x, DualNumber):
         return DualNumber(math.sin(x.real), math.cos(x.real) * x.dual)
 
-    raise TypeError("sin() only accepts DualNumbers, ints, or floats.")
+    raise TypeError("sin() only accepts int, float, DualNumber, or CompGraphNode.")
 
-    # if isinstance(x, DualNumber):
-    #     return DualNumber(math.sin(x.real), math.cos(x.real) * x.dual)
-    # elif isinstance(x, (int, float)):
-    #     return DualNumber(math.sin(x), 0)
-    # else:
-    #     raise TypeError("sin() only accepts DualNumbers, ints, or floats.")
 
 def cos(x):
-    """Computes the cosine of a DualNumber or a numpy array of DualNumbers.
-    
+    """Computes the cosine of a real number, a DualNumber object, or a CompGraphNode object.    
+
     Parameters
     ----------
-    x : DualNumber or int or float
+    x : int, float, DualNumber, or CompGraphNode
         The value to compute the cosine of.
         
     Returns
     -------
-    DualNumber or int or float
+    int, float, DualNumber, or CompGraphNode
         The cosine of x.
         
     Raises
     ------
     TypeError
-        If x is not a DualNumber or int or float.
+        If x is not a int, float, DualNumber, or CompGraphNode
     
     """
     if isinstance(x, (int, float)):
@@ -99,34 +80,26 @@ def cos(x):
     if isinstance(x, DualNumber):
         return DualNumber(math.cos(x.real), -math.sin(x.real) * x.dual)
 
-    raise TypeError("cos() only accepts DualNumbers, ints, or floats.")
-
-
-    # if isinstance(x, DualNumber):
-    #     return DualNumber(math.cos(x.real), -math.sin(x.real) * x.dual)
-    # elif isinstance(x, (int, float)):
-    #     return DualNumber(math.cos(x), 0)
-    # else:
-    #     raise TypeError("cos() only accepts DualNumbers, ints, or floats.")
+    raise TypeError("cos() only accepts int, float, DualNumber, or CompGraphNode.")
 
 
 def tan(x):
-    """Computes the tangent of a DualNumber or a numpy array of DualNumbers.
+    """Computes the tangent of a real number, a DualNumber object, or a CompGraphNode object.
         
     Parameters
     ----------
-    x : DualNumber or int or float
+    x : int, float, DualNumber, or CompGraphNode
         The value to compute the tangent of.
             
     Returns
     -------
-    DualNumber or int or float
+    int, float, DualNumber, or CompGraphNode
         The tangent of x.
             
     Raises
     ------
     TypeError
-        If x is not a DualNumber or int or float.
+        If x is not a int, float, DualNumber, or CompGraphNode
         
     """
     if isinstance(x, (int, float)):
@@ -146,26 +119,26 @@ def tan(x):
     if isinstance(x, DualNumber):
         return DualNumber(math.tan(x.real),
                           (1 / (math.cos(x.real)**2)) * x.dual)
-    raise TypeError("tan() only accepts DualNumbers, ints, or floats.")
+    raise TypeError("tan() only accepts int, float, DualNumber, or CompGraphNode.")
 
 
 def exp(x):
-    """Computes the exponential of a DualNumber or a numpy array of DualNumbers.
+    """Computes the exponential of a real number, a DualNumber object, or a CompGraphNode object.
         
     Parameters
     ----------
-    x : DualNumber or int or float
+    x : int, float, DualNumber, or CompGraphNode
         The value to compute the exponential of.
             
     Returns
     -------
-    DualNumber or int or float
+    int, float, DualNumber, or CompGraphNode
         The exponential of x.
             
     Raises
     ------
     TypeError
-        If x is not a DualNumber or int or float.
+        If x is not a int, float, DualNumber, or CompGraphNode
         
     """
     if isinstance(x, (int, float)):
@@ -185,65 +158,65 @@ def exp(x):
     if isinstance(x, DualNumber):
         return DualNumber(math.exp(x.real), math.exp(x.real) * x.dual)
 
-    raise TypeError("exp() only accepts DualNumbers, ints, or floats.")
+    raise TypeError("exp() only accepts int, float, DualNumber, or CompGraphNode.")
 
 def exp_b(x, base):
-    """Computes the exponential (any base) of a DualNumber or a numpy array of DualNumbers.
+    """Computes the exponential (any base) of a real number, a DualNumber object, or a CompGraphNode object.
     
     Parameters
     ----------
-    x : DualNumber or int or float
+    x : int, float, DualNumber, or CompGraphNode
         The value to compute the exp of of.
     base : int or float
         The base to use.
   
     Returns
     -------
-    DualNumber or int or float
+    int, float, DualNumber, or CompGraphNode
         The exponential of x with base defined
         
     Raises
     ------
     TypeError
-        If x is not a DualNumber or int or float.
+        If x is not a int, float, DualNumber, or CompGraphNode
     
     """
     if isinstance(x, (int, float)):
         return base**x.real
 
     if isinstance(x, CompGraphNode):
-        if ("exp_b", x, None) in x._added_nodes:
-            return x._added_nodes.get(("exp_b", x, None))
+        if ("exp_b", x, base) in x._added_nodes:
+            return x._added_nodes.get(("exp_b", x, base))
 
         node = CompGraphNode(base**x.value, parents = [x], 
                              partials=[math.log(base) * base**x.value], 
                              added_nodes = x._added_nodes)
 
-        x._added_nodes[("exp_b", x, None)] = node
+        x._added_nodes[("exp_b", x, base)] = node
         return node        
 
     if isinstance(x, DualNumber):
         return DualNumber(base**x.real, math.log(base) * base**x.real * x.dual)
 
-    raise TypeError("log() only accepts DualNumbers, ints, or floats.")
+    raise TypeError("log() only accepts int, float, DualNumber, or CompGraphNode.")
 
 def log(x):
-    """Computes the natural logarithm of a DualNumber or a numpy array of DualNumbers.
+    """Computes the natural logarithm of a real number, a DualNumber object, or a CompGraphNode object.
     
     Parameters
     ----------
-    x : DualNumber or int or float
+    x : int, float, DualNumber, or CompGraphNode
         The value to compute the natural logarithm of.
         
     Returns
     -------
-    DualNumber or int or float
+    int, float, DualNumber, or CompGraphNode
         The natural logarithm of x.
         
     Raises
     ------
     TypeError
-        If x is not a DualNumber or int or float.
+        If x is not a int, float, DualNumber, or CompGraphNode
     
     """
     if isinstance(x, (int, float)):
@@ -263,42 +236,45 @@ def log(x):
     if isinstance(x, DualNumber):
         return DualNumber(math.log(x.real), x.dual / x.real)
 
-    raise TypeError("log() only accepts DualNumbers, ints, or floats.")
+    raise TypeError("log() only accepts int, float, DualNumber, or CompGraphNode.")
 
 def log_b(x, base):
-    """Computes the logarithm (any base) of a DualNumber or a numpy array of DualNumbers.
+    """Computes the logarithm (any base) of a real number, a DualNumber object, or a CompGraphNode object.
     
     Parameters
     ----------
-    x : DualNumber or int or float
+    x : int, float, DualNumber, or CompGraphNode
         The value to compute the logarithm of.
     base : int or float
         The base to use.
   
     Returns
     -------
-    DualNumber or int or float
+    int, float, DualNumber, or CompGraphNode
         The logarithm of x with base defined
         
     Raises
     ------
     TypeError
-        If x is not a DualNumber or int or float.
+        If x is not a int, float, DualNumber, or CompGraphNode
     
     """
+    if not isinstance(base, (int, float)):
+        raise TypeError("log_b() only accepts int or float as base.")
+
     if isinstance(x, (int, float)):
         return math.log(x.real) / math.log(base)
 
     if isinstance(x, CompGraphNode):
-        if ("log_b", x, None) in x._added_nodes:
-            return x._added_nodes.get(("log_b", x, None))
+        if ("log_b", x, base) in x._added_nodes:
+            return x._added_nodes.get(("log_b", x, base))
 
         node = CompGraphNode(math.log(x.value) / math.log(base), 
                              parents = [x], 
                              partials=[(1 / x.value) * (1 / math.log(base))], 
                              added_nodes = x._added_nodes)
 
-        x._added_nodes[("log_b", x, None)] = node
+        x._added_nodes[("log_b", x, base)] = node
         return node    
 
     if isinstance(x, DualNumber):
@@ -306,25 +282,25 @@ def log_b(x, base):
             math.log(x.real) / math.log(base),
             (1 / x.real) * (1 / math.log(base)) * x.dual)
 
-    raise TypeError("log() only accepts DualNumbers, ints, or floats.")
+    raise TypeError("log() only accepts int, float, DualNumber, or CompGraphNode.")
 
 def sinh(x):
-    """Computes the hyperbolic sine of a DualNumber or a numpy array of DualNumbers.
+    """Computes the hyperbolic sine of a real number, a DualNumber object, or a CompGraphNode object.
     
     Parameters
     ----------
-    x : DualNumber or int or float
+    x : int, float, DualNumber, or CompGraphNode
         The value to compute the hyperbolic sine of.
         
     Returns
     -------
-    DualNumber or int or float
+    int, float, DualNumber, or CompGraphNode
         The hyperbolic sine (sinh) of x.
         
     Raises
     ------
     TypeError
-        If x is not a DualNumber or int or float.
+        If x is not a int, float, DualNumber, or CompGraphNode
     
     """
     if isinstance(x, (int, float)):
@@ -344,26 +320,26 @@ def sinh(x):
     if isinstance(x, DualNumber):
         return DualNumber(math.sinh(x.real), math.cosh(x.real) * x.dual)
 
-    raise TypeError("sinh() only accepts DualNumbers, ints, or floats.")
+    raise TypeError("sinh() only accepts int, float, DualNumber, or CompGraphNode.")
 
 
 def cosh(x):
-    """Computes the hyperbolic cosine of a DualNumber or a numpy array of DualNumbers.
+    """Computes the hyperbolic cosine of a real number, a DualNumber object, or a CompGraphNode object.
     
     Parameters
     ----------
-    x : DualNumber or int or float
+    x : int, float, DualNumber, or CompGraphNode
         The value to compute the hyperbolic cosine of.
         
     Returns
     -------
-    DualNumber or int or float
+    int, float, DualNumber, or CompGraphNode
         The hyperbolic cosine (cosh) of x.
         
     Raises
     ------
     TypeError
-        If x is not a DualNumber or int or float.
+        If x is not a int, float, DualNumber, or CompGraphNode
     
     """
 
@@ -384,26 +360,26 @@ def cosh(x):
     if isinstance(x, DualNumber):
         return DualNumber(math.cosh(x.real), math.sinh(x.real) * x.dual)
 
-    raise TypeError("cosh() only accepts DualNumbers, ints, or floats.")
+    raise TypeError("cosh() only accepts int, float, DualNumber, or CompGraphNode.")
 
 
 def tanh(x):
-    """Computes the hyperbolic tangent of a DualNumber or a numpy array of DualNumbers.
+    """Computes the hyperbolic tangent of a real number, a DualNumber object, or a CompGraphNode object.
     
     Parameters
     ----------
-    x : DualNumber or int or float
+    x : int, float, DualNumber, or CompGraphNode
         The value to compute the hyperbolic tangent of.
         
     Returns
     -------
-    DualNumber or int or float
+    int, float, DualNumber, or CompGraphNode
         The hyperbolic tangent (cosh) of x.
         
     Raises
     ------
     TypeError
-        If x is not a DualNumber or int or float.
+        If x is not a int, float, DualNumber, or CompGraphNode
     
     """
     if isinstance(x, (int, float)):
@@ -424,25 +400,25 @@ def tanh(x):
         return DualNumber(math.tanh(x.real), 
                           (1/(math.cosh(x.real)**2) * x.dual))
 
-    raise TypeError("tanh() only accepts DualNumbers, ints, or floats.")
+    raise TypeError("tanh() only accepts int, float, DualNumber, or CompGraphNode.")
 
 def sqrt(x):
-    """Computes the square root of a DualNumber or a numpy array of DualNumbers.
+    """Computes the square root of a real number, a DualNumber object, or a CompGraphNode object.
         
     Parameters
     ----------
-    x : DualNumber or int or float
+    x : int, float, DualNumber, or CompGraphNode
         The value to compute the square root of.
             
     Returns
     -------
-    DualNumber or int or float
+    int, float, DualNumber, or CompGraphNode
         The sqrt of x.
             
     Raises
     ------
     TypeError
-        If x is not a DualNumber or int or float.
+        If x is not a int, float, DualNumber, or CompGraphNode
         
     """
     if isinstance(x, (int, float)):
@@ -463,26 +439,26 @@ def sqrt(x):
         return DualNumber(math.sqrt(x.real),
                           (0.5 / math.sqrt(x.real)) * x.dual)
 
-    raise TypeError("sqrt() only accepts DualNumbers, ints, or floats.")
+    raise TypeError("sqrt() only accepts int, float, DualNumber, or CompGraphNode.")
 
 
 def asin(x):
-    """Computes the arcsine of a DualNumber or a numpy array of DualNumbers.
+    """Computes the arcsine of a real number, a DualNumber object, or a CompGraphNode object.
         
     Parameters
     ----------
-    x : DualNumber or int or float
+    x : int, float, DualNumber, or CompGraphNode
         The value to compute the arcsine of.
             
     Returns
     -------
-    DualNumber or int or float
+    int, float, DualNumber, or CompGraphNode
         The arcsine of x.
             
     Raises
     ------
     TypeError
-        If x is not a DualNumber or int or float.
+        If x is not a int, float, DualNumber, or CompGraphNode
         
     """
 
@@ -510,26 +486,26 @@ def asin(x):
         return DualNumber(np.arcsin(x.real),
                           (1 / np.sqrt(1 - (x.real**2))) * x.dual)
 
-    raise TypeError("asin() only accepts DualNumbers, ints, or floats.")
+    raise TypeError("asin() only accepts int, float, DualNumber, or CompGraphNode.")
 
 
 def acos(x):
-    """Computes the arccosine of a DualNumber or a numpy array of DualNumbers.
+    """Computes the arccosine of a real number, a DualNumber object, or a CompGraphNode object.
         
     Parameters
     ----------
-    x : DualNumber or int or float
+    x : int, float, DualNumber, or CompGraphNode
         The value to compute the arccosine of.
             
     Returns
     -------
-    DualNumber or int or float
+    int, float, DualNumber, or CompGraphNode
         The arccosine of x.
             
     Raises
     ------
     TypeError
-        If x is not a DualNumber or int or float.
+        If x is not a int, float, DualNumber, or CompGraphNode
         
     """
     if isinstance(x, (int, float)):
@@ -556,26 +532,26 @@ def acos(x):
         return DualNumber(math.acos(x.real),
                           -1 * (1 / math.sqrt(1 - x.real**2)) * x.dual)
 
-    raise TypeError("acos() only accepts DualNumbers, ints, or floats.")
+    raise TypeError("acos() only accepts int, float, DualNumber, or CompGraphNode.")
 
 
 def atan(x):
-    """Computes the arctan of a DualNumber or a numpy array of DualNumbers.
+    """Computes the arctan of a real number, a DualNumber object, or a CompGraphNode object.
         
     Parameters
     ----------
-    x : DualNumber or int or float
+    x : int, float, DualNumber, or CompGraphNode
         The value to compute the arctangent of.
             
     Returns
     -------
-    DualNumber or int or float
+    int, float, DualNumber, or CompGraphNode
         The arctangent of x.
             
     Raises
     ------
     TypeError
-        If x is not a DualNumber or int or float.
+        If x is not a int, float, DualNumber, or CompGraphNode
         
     """
     if isinstance(x, (int, float)):
@@ -594,27 +570,27 @@ def atan(x):
 
     if isinstance(x, DualNumber):
         return DualNumber(math.atan(x.real), 1 / (1 + x.real**2) * x.dual)
-    raise TypeError("atan() only accepts DualNumbers, ints, or floats.")
+    raise TypeError("atan() only accepts int, float, DualNumber, or CompGraphNode.")
 
 
 def logistic(x):
-    """Computes the logistic (sigmoid) of a DualNumber or a numpy array of DualNumbers.
+    """Computes the logistic (sigmoid) of a real number, a DualNumber object, or a CompGraphNode object.
         
     Parameters
     ----------
-    x : DualNumber or int or float
+    x : int, float, DualNumber, or CompGraphNode
         The value to compute the sigmoid of.
             
     Returns
     -------
-    DualNumber or int or float
+    int, float, DualNumber, or CompGraphNode
         The sigmoid of x.
             
     Raises
     ------
     TypeError
-        If x is not a DualNumber or int or float.
-        
+        If x is not a int, float, DualNumber, or CompGraphNode
+
     """
     if isinstance(x, (int, float)):
         return 1 / (1 + math.exp(-x.real))
@@ -639,4 +615,4 @@ def logistic(x):
                             (math.exp(x.real) + 1))) * x.dual)
 
     raise TypeError(
-            "logistic() only accepts DualNumbers, ints, or floats.")
+            "logistic() only accepts int, float, DualNumber, or CompGraphNode.")

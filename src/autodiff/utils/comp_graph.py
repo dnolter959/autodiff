@@ -263,7 +263,13 @@ class CompGraphNode:
         -------
 
         """
-        return other.parents is None or self in other.parents
+        if isinstance(other, CompGraphNode):
+            return other.parents is None or self in other.parents
+
+        raise TypeError(
+                "unsupported operand type(s) for +: '{}' and '{}'".format(
+                type(self), type(other)))
+
 
     def __gt__(self, other):
         """

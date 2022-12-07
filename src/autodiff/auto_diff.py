@@ -1,4 +1,3 @@
-##
 import inspect
 import numpy as np
 import re
@@ -17,10 +16,10 @@ class AutoDiff:
     Attributes
     ----------
     f: list of functions 
-    curr_point: stores the most recent point evaluated at 
-    curr_seed: stores the most recent seed vector
-    curr_derivative: stores the most recent directional derivative computed
-    curr_jacobian: stores the most recent Jacobian matrix computed
+    point: stores the most recent point evaluated at 
+    seed: stores the most recent seed vector
+    jacobian: stores the most recent Jacobian matrix computed
+    derivative: stores the most recent directional derivative computed
 
     Methods
     -------
@@ -30,19 +29,30 @@ class AutoDiff:
     get_partial(self, point, var_index = None):
         Computes the partial derivatives evaluated at the given point 
 
-    get_jacobian(self, point):
+    get_jacobian(self, point, mode="forward"):
         Computes the Jacobian matrix evaluated at the given point
 
-    get_derivative(self, point, seed_vector):
+    get_derivative(self, point, seed_vector, mode="forward"):
         Computes the directional derivative evaluated at the point in the direction and 
         magnitude of seed_vector
     """
+
     def __init__(self, f: Union[list, Callable, int, float]):
         """
-        Constructs attributes for an AutoDiff object.
+        Constructs an AutoDiff object.
 
-        Positional arguments:
-        f: single or a sequence of mathematical functions
+        Parameters
+        ----------
+        f: a single or a list of mathematical functions
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        TypeError
+            If f is not a Callable, a list of Callables, or a real number
         """
 
         # convert to list for ease of processing
@@ -65,7 +75,7 @@ class AutoDiff:
         self.computational_graph = None
 
     def __str__(self):
-        """ returns a description of the functions"""
+        """ returns a description of the functions contained in the AutoDiff object """
 
         if len(self.f) < 1:
             return None
@@ -107,11 +117,12 @@ class AutoDiff:
     def _check_vector(self, vector):
         """ confirm that the passed vector is numeric and is either 1 or 2-D 
         
-        Positional arguments: 
-        vector: scalar or sequence of numbers
+        Parameters
+        ----------
+        vector: a single or sequence of numbers
         """
-        assert isinstance(
-            vector, (int, float, list, np.ndarray)), "Invalid input value type"
+        if not isinstance(vector, (int, float, list, np.ndarray)):
+            raise TypeError("Invalid input type")
 
         if isinstance(vector, list):
             if sum([not isinstance(v, (int, float)) for v in vector]) > 0:
@@ -128,32 +139,67 @@ class AutoDiff:
     def get_value(self, point: Union[int, float, list, np.ndarray]):
         """ evaluate f at point
 
-        Positional arguments: 
-        point: scalar or sequence of numeric values for the functions to evaluate at
+        Parameters
+        ----------
+        point: int, float, list, or numpy ndarray 
+            a single or a sequence of numbers defining the point for the functions to evaluate at
 
-        Return: the function value at point 
+        Returns
+        -------
+        int, float, numpy ndarray 
+            the function evaluated at point 
+
+        Raises
+        ------
+        TypeError
+            If point is not an int, float, list, or numpy ndarray or has incorrect dimension
         """
 
         self._check_vector(point)
 
         if len(self.f) == 1:
-            return self.f[0](point).real
+            if isinstance(self.f[0], (int, float)):
+                return self.f[0](point).real
+        
+        values = []
+        for func in self.f:
+            val = func(point)
+            assert isinstance(val, (int, float, DualNumber, CompGraphNode)), "invalid function value" 
 
-        return [func(point).real for func in self.f]
+            if isinstance(val, (int, float)):
+                values += [val]
+            elif isinstance(val, DualNumber):
+                values += [val.real]
+            else:
+                values += [val.value]
+        
+        if len(values)==1:
+            return values[0]
+        return values
 
     def get_partial(self,
                     point: Union[int, float, list, np.ndarray],
                     var_index: int = None):
-        """ obtain partial derivative with respect to a variable, specified by the index in 
-            the sequence if there is a sequence of variables
+        """ obtain partial derivative with respect to a coordinate, specified by the index corresponding to 
+            that coordinate in the point sequence; forward mode is employed for this method
 
-        Positional arguments: 
-        point: scalar or sequence of numeric values for the functions to evaluate at
+        Parameters
+        ----------
+        point: int, float, list, or numpy ndarray
+            a single or a sequence of numbers defining the point for the functions to evaluate at
+        var_index: int
+            index of variable in the sequence to partially differentiate with respect to, default is None; 
+            if the point is a scalar, var_index is ignored
 
-        Keyword arguments:
-        var_index: index of variable in the sequence to partially differentiate with respect to
+        Returns
+        -------
+            int, float, numpy ndarray
+            the partial derivative evaluated at the point of values
 
-        Return: the partial derivative evaluated at the point of values
+        Raises
+        ------
+        TypeError
+            If point is not an int, float, list, or numpy ndarray or has incorrect dimension
         """
 
         assert var_index is None or isinstance(var_index, int)
@@ -180,7 +226,7 @@ class AutoDiff:
                 ret = np.append(ret, 0)
             elif isinstance(func(point_dual), (int, float)):
                 ret = np.append(ret, 0)
-            else:
+            elif isinstance(func(point_dual), DualNumber):
                 ret = np.append(ret, func(point_dual).dual)
 
         # return as a scalar if there is only 1 input
@@ -190,14 +236,26 @@ class AutoDiff:
         return ret
 
     def get_jacobian(self, point: Union[int, float, list, np.ndarray], mode="forward"):
-        """ the passed list of variables match those in the vector function
-            and their point are not None
+        """ compute the Jacobian matrix evaluated at point using the specified mode
         
-        Positional arguments: 
-        point: a scalar or array of numbers defining the point for evaluation
+        Parameters
+        ----------
+        point: int, float, list, or numpy ndarray
+            a single or a sequence of numbers defining the point for the functions to evaluate at
+        mode: {"forward", "f", "reverse", "r"}
+            option to perform automatic differentiation using forward or reverse mode; default is "forward"
 
-        Return: the Jacobian matrix as an array
+        Returns
+        -------
+        numpy ndarray 
+            the Jacobian matrix as an array
+
+        Raises
+        ------
+        TypeError
+            If point is not an int, float, list, or numpy ndarray or has incorrect dimension
         """
+
         self._check_vector(point)
 
         # compare = point == self.point
@@ -233,7 +291,8 @@ class AutoDiff:
         return self.jacobian
         
     def _get_jacobian_forward(self, point: Union[int, float, list, np.ndarray]):
-        
+        """ computes the Jacobian matrix using forward mode """
+
         assert isinstance(point, (int, float, list, np.ndarray))
 
         if isinstance(point, (int, float)):
@@ -244,6 +303,7 @@ class AutoDiff:
 
             ret = []
             for i in range(len(point)):
+                # append the partial derivatives computed for each coordinate
                 ret += [self.get_partial(point, var_index=i)]
 
         # Jacobian should always be returned as matrices
@@ -254,7 +314,8 @@ class AutoDiff:
         return jacobian
 
     def _get_jacobian_reverse(self, point: Union[int, float, list, np.ndarray]):
-
+        """ computes the Jacobian matrix using reverse mode """
+        
         assert isinstance(point, (int, float, list, np.ndarray))
         
         jacobian = []
@@ -315,12 +376,29 @@ class AutoDiff:
                        mode = "forward"):
         """ calculate the directional derivative given point and the seed vector
 
-        Positional arguments: 
-        point: a scalar or array of numbers defining the point for evaluation
-        seed_vector: a scalar or array of number defining the seed of direction
+        Parameters
+        ----------
+        point: int, float, list, or numpy ndarray
+            a single or a sequence of numbers defining the point for the functions to evaluate at
+        seed_vector: int, float, list, or numpy ndarray
+            a single or a sequence of numbers defining the seed of direction
+        mode: {"forward", "f", "reverse", "r"}
+            option to perform automatic differentiation using forward or reverse mode; default is "forward"
 
-        Return: the directional derivative based on the seed
+        Returns
+        -------
+        int, float, or numpy ndarray
+            the directional derivative based on the seed
+
+        Raises 
+        ------
+        TypeError
+            If point or seed_vector is not an int, float, list, or numpy ndarray or has incorrect dimension
+        
+        ValueError 
+            If mode is not one of the accepted strings
         """
+
         self._check_vector(point)
         self._check_vector(seed_vector)
 
@@ -367,93 +445,3 @@ class AutoDiff:
         
         self.derivative = derivative
         return self.derivative
-
-##
-
-# f = lambda x: sin(x+5)*x - cos(x+5) + exp(-x) 
-# ad = AutoDiff(f)
-# seed = 1
-# print(f"forward mode output\n {ad.get_jacobian(1, mode='f')}")
-# print(f"reverse mode output\n {ad.get_jacobian(1, mode='r')}")
-# print(f"derivative output\n {ad.get_derivative(1, seed, mode='r')}")
-# ##
-# f = lambda x: x*sin(x+5)*x - cos(x+5)
-# ad = AutoDiff(f)
-# seed = 1
-# print(f"forward mode output\n {ad.get_jacobian(1, mode='f')}")
-# print(f"reverse mode output\n {ad.get_jacobian(1, mode='r')}")
-# ##
-# f = lambda x: sin(x+5) - cos(x) + exp(-x) + sin(10)
-# g = lambda x: 15*x - x*x
-# ad = AutoDiff([f,g])
-# print(f"forward mode output\n {ad.get_jacobian(1, mode='f')}")
-# print(f"reverse mode output\n {ad.get_jacobian(1, mode='r')}")
-# print(f"derivative output\n {ad.get_derivative(1, seed, mode='r')}")
-
-# ##
-# f = lambda x: sin(x[0]+5) - cos(x[1]) + exp(-x[0]) + sin(10)
-# ad = AutoDiff(f)
-# x = np.array([1, 2, 3])
-# seed = np.array([2, -1, 0])
-# print(f"forward mode output\n {ad.get_jacobian(x, mode='f')}")
-# print(f"reverse mode output\n {ad.get_jacobian(x, mode='r')}")
-# print(f"derivative output\n {ad.get_derivative(x, seed, mode='r')}")
-
-# ##
-# f = lambda x: sin(x[0]-x[1]) + exp(-x[0])*x[0]
-# ad = AutoDiff(f)
-# x = np.array([1, 2])
-# print(f"forward mode output\n {ad.get_jacobian(x, mode='f')}")
-# print(f"reverse mode output\n {ad.get_jacobian(x, mode='r')}")
-
-# ##
-# f = lambda x: sin(x[0]-x[1]) + exp(-x[0])*x[0]
-# g = lambda x: sin(x[2]+5) - cos(x[1]) + exp(-x[1]) + sin(10)-2*x[0]*x[2]
-# ad = AutoDiff([f,g])
-# x = np.array([1, 2, -0.5])
-# seed = np.array([2, -1, 0])
-# print(f"forward mode output\n {ad.get_jacobian(x, mode='f')}")
-# print(f"reverse mode output\n {ad.get_jacobian(x, mode='r')}")
-# print(f"derivative output\n {ad.get_derivative(x, seed, mode='r')}")
-
-f = lambda x: sin(x+5)*x - cos(x+5) + exp(-x) + log_b(x,3)
-ad = AutoDiff(f)
-seed = 1
-print(f"forward mode output\n {ad.get_jacobian(1, mode='f')}")
-print(f"reverse mode output\n {ad.get_jacobian(1, mode='r')}")
-print(f"derivative output\n {ad.get_derivative(1, seed, mode='r')}")
-
-f = lambda x: sin(x+5)*x - cos(x+5) + exp(-x) + sinh(x)
-ad = AutoDiff(f)
-seed = 1
-print(f"forward mode output\n {ad.get_jacobian(1, mode='f')}")
-print(f"reverse mode output\n {ad.get_jacobian(1, mode='r')}")
-print(f"derivative output\n {ad.get_derivative(1, seed, mode='r')}")
-
-f = lambda x: sin(x+5)*x - cos(x+5) + exp(-x) + exp_b(x, 3)
-ad = AutoDiff(f)
-seed = 1
-print(f"forward mode output\n {ad.get_jacobian(1, mode='f')}")
-print(f"reverse mode output\n {ad.get_jacobian(1, mode='r')}")
-print(f"derivative output\n {ad.get_derivative(1, seed, mode='r')}")
-
-f = lambda x: sin(x+5)*x - cos(x) + logistic(-x) + exp_b(x, 3)
-ad = AutoDiff(f)
-seed = 1
-print(f"forward mode output\n {ad.get_jacobian(1, mode='f')}")
-print(f"reverse mode output\n {ad.get_jacobian(1, mode='r')}")
-print(f"derivative output\n {ad.get_derivative(1, seed, mode='r')}")
-
-f = lambda x: asin(x) + acos(x+0.5)
-ad = AutoDiff(f)
-seed = 1
-print(f"forward mode output\n {ad.get_jacobian(-0.9, mode='f')}")
-print(f"reverse mode output\n {ad.get_jacobian(-0.9, mode='r')}")
-print(f"derivative output\n {ad.get_derivative(-0.9, seed, mode='r')}")
-
-# f = lambda x: asin(x) + acos(x+0.5)
-# ad = AutoDiff(f)
-# seed = 1
-# print(f"forward mode output\n {ad.get_jacobian(-1.1, mode='f')}")
-# print(f"reverse mode output\n {ad.get_jacobian(-1.1, mode='r')}")
-# print(f"derivative output\n {ad.get_derivative(-1.1, seed, mode='r')}")
