@@ -8,6 +8,7 @@ from autodiff.utils.dual_numbers import DualNumber
 from autodiff.utils.comp_graph import CompGraphNode
 from autodiff.utils.auto_diff_math import *
 
+
 class AutoDiff:
     """ A class to perform automatic differentiation on scalar and vector functions 
 
@@ -36,7 +37,6 @@ class AutoDiff:
         Computes the directional derivative evaluated at the point in the direction and 
         magnitude of seed_vector
     """
-
     def __init__(self, f: Union[list, Callable, int, float]):
         """
         Constructs an AutoDiff object.
@@ -66,7 +66,7 @@ class AutoDiff:
 
         self.f = f
 
-        # store the computed output for the last input 
+        # store the computed output for the last input
         self.point = None
         self.seed = None
         self.derivative = None
@@ -129,7 +129,8 @@ class AutoDiff:
                 raise TypeError("Invalid input type")
 
         if isinstance(vector, np.ndarray):
-            if sum([not isinstance(v.item(), (int, float)) for v in vector]) > 0:
+            if sum([not isinstance(v.item(), (int, float))
+                    for v in vector]) > 0:
                 raise TypeError("Invalid input type")
             if vector.ndim != 1:
                 raise TypeError("Invalid input array dimension")
@@ -160,11 +161,12 @@ class AutoDiff:
         if len(self.f) == 1:
             if isinstance(self.f[0], (int, float)):
                 return self.f[0](point).real
-        
+
         values = []
         for func in self.f:
             val = func(point)
-            assert isinstance(val, (int, float, DualNumber, CompGraphNode)), "invalid function value" 
+            assert isinstance(val, (int, float, DualNumber,
+                                    CompGraphNode)), "invalid function value"
 
             if isinstance(val, (int, float)):
                 values += [val]
@@ -172,8 +174,8 @@ class AutoDiff:
                 values += [val.real]
             else:
                 values += [val.value]
-        
-        if len(values)==1:
+
+        if len(values) == 1:
             return values[0]
         return values
 
@@ -210,8 +212,8 @@ class AutoDiff:
             point_dual = DualNumber(point, 1)
         elif isinstance(point, np.ndarray):
             point_dual = np.array([
-                DualNumber(v.item(), 1) if ind == var_index else DualNumber(v.item(), 0)
-                for ind, v in enumerate(point)
+                DualNumber(v.item(), 1) if ind == var_index else DualNumber(
+                    v.item(), 0) for ind, v in enumerate(point)
             ])
         else:
             # the variable to differentiate w.r.t. has a dual part of 1
@@ -235,7 +237,9 @@ class AutoDiff:
         # return as an array
         return ret
 
-    def get_jacobian(self, point: Union[int, float, list, np.ndarray], mode="forward"):
+    def get_jacobian(self,
+                     point: Union[int, float, list, np.ndarray],
+                     mode="forward"):
         """ compute the Jacobian matrix evaluated at point using the specified mode
         
         Parameters
@@ -289,8 +293,9 @@ class AutoDiff:
 
         self.jacobian = jacobian
         return self.jacobian
-        
-    def _get_jacobian_forward(self, point: Union[int, float, list, np.ndarray]):
+
+    def _get_jacobian_forward(self, point: Union[int, float, list,
+                                                 np.ndarray]):
         """ computes the Jacobian matrix using forward mode """
 
         assert isinstance(point, (int, float, list, np.ndarray))
@@ -313,11 +318,12 @@ class AutoDiff:
         jacobian = np.transpose(np.array(ret))
         return jacobian
 
-    def _get_jacobian_reverse(self, point: Union[int, float, list, np.ndarray]):
+    def _get_jacobian_reverse(self, point: Union[int, float, list,
+                                                 np.ndarray]):
         """ computes the Jacobian matrix using reverse mode """
-        
+
         assert isinstance(point, (int, float, list, np.ndarray))
-        
+
         jacobian = []
         self.computational_graph = []
 
@@ -329,9 +335,14 @@ class AutoDiff:
             if isinstance(point, (int, float)):
                 input_nodes = CompGraphNode(point, added_nodes=added_nodes)
             elif isinstance(point, np.ndarray):
-                input_nodes = [CompGraphNode(p.item(), added_nodes=added_nodes) for p in point]
+                input_nodes = [
+                    CompGraphNode(p.item(), added_nodes=added_nodes)
+                    for p in point
+                ]
             else:
-                input_nodes = [CompGraphNode(p, added_nodes=added_nodes) for p in point]
+                input_nodes = [
+                    CompGraphNode(p, added_nodes=added_nodes) for p in point
+                ]
 
             output_node = func(input_nodes)
 
@@ -339,41 +350,41 @@ class AutoDiff:
             if isinstance(input_nodes, CompGraphNode):
                 input_nodes = [input_nodes]
 
-            # build adjacency list (a dictionary) for toposort 
+            # build adjacency list (a dictionary) for toposort
             # the inputs do not have parents
-            adj_list = {n : set() for n in input_nodes}
-            
+            adj_list = {n: set() for n in input_nodes}
+
             # add intermediate nodes to the adjacency list
             for node in added_nodes.values():
                 adj_list[node] = set(node.parents)
-            
-            # toposort the computational graph 
+
+            # toposort the computational graph
             sorted_list = toposort_flatten(adj_list)
 
             # set last node's adjoint
             output_node.adjoint = 1
-            
+
             # compute adjoint for each node
             for node in reversed(sorted_list):
                 if node.parents is not None and node.partials is not None:
                     for parent, partial in zip(node.parents, node.partials):
                         parent.adjoint += node.adjoint * partial
 
-
             # the chain-rule incorporated partial is stored as the input nodes adjoint
             jacobian += [np.array([node.adjoint for node in input_nodes])]
             # store computational_graph
             self.computational_graph += [adj_list]
-        
+
         jacobian = np.array(jacobian)
         if jacobian.size == 1:
             jacobian = jacobian.flatten()
 
         return jacobian
 
-    def get_derivative(self, point: Union[int, float, list, np.ndarray],
-                       seed_vector: Union[int, float, list, np.ndarray], 
-                       mode = "forward"):
+    def get_derivative(self,
+                       point: Union[int, float, list, np.ndarray],
+                       seed_vector: Union[int, float, list, np.ndarray],
+                       mode="forward"):
         """ calculate the directional derivative given point and the seed vector
 
         Parameters
@@ -442,6 +453,6 @@ class AutoDiff:
 
         if derivative.size == 1:
             derivative = derivative.flatten()[0]
-        
+
         self.derivative = derivative
         return self.derivative

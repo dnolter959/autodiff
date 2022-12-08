@@ -3,7 +3,8 @@
 import math
 import numpy as np
 from autodiff.utils.dual_numbers import DualNumber
-from autodiff.utils.comp_graph import CompGraphNode 
+from autodiff.utils.comp_graph import CompGraphNode
+
 
 def sin(x):
     """Computes the sine of a real number, a DualNumber object, or a CompGraphNode object.
@@ -31,9 +32,10 @@ def sin(x):
         if ("sin", x, None) in x._added_nodes:
             return x._added_nodes.get(("sin", x, None))
 
-        node = CompGraphNode(math.sin(x.value), parents = [x], 
-                             partials = [math.cos(x.value)], 
-                             added_nodes = x._added_nodes)
+        node = CompGraphNode(math.sin(x.value),
+                             parents=[x],
+                             partials=[math.cos(x.value)],
+                             added_nodes=x._added_nodes)
 
         x._added_nodes[("sin", x, None)] = node
         return node
@@ -41,7 +43,8 @@ def sin(x):
     if isinstance(x, DualNumber):
         return DualNumber(math.sin(x.real), math.cos(x.real) * x.dual)
 
-    raise TypeError("sin() only accepts int, float, DualNumber, or CompGraphNode.")
+    raise TypeError(
+        "sin() only accepts int, float, DualNumber, or CompGraphNode.")
 
 
 def cos(x):
@@ -70,9 +73,10 @@ def cos(x):
         if ("cos", x, None) in x._added_nodes:
             return x._added_nodes.get(("cos", x, None))
 
-        node = CompGraphNode(math.cos(x.value), parents = [x], 
-                             partials = [-math.sin(x.value)], 
-                             added_nodes = x._added_nodes)
+        node = CompGraphNode(math.cos(x.value),
+                             parents=[x],
+                             partials=[-math.sin(x.value)],
+                             added_nodes=x._added_nodes)
 
         x._added_nodes[("cos", x, None)] = node
         return node
@@ -80,7 +84,8 @@ def cos(x):
     if isinstance(x, DualNumber):
         return DualNumber(math.cos(x.real), -math.sin(x.real) * x.dual)
 
-    raise TypeError("cos() only accepts int, float, DualNumber, or CompGraphNode.")
+    raise TypeError(
+        "cos() only accepts int, float, DualNumber, or CompGraphNode.")
 
 
 def tan(x):
@@ -109,9 +114,10 @@ def tan(x):
         if ("tan", x, None) in x._added_nodes:
             return x._added_nodes.get(("tan", x, None))
 
-        node = CompGraphNode(math.tan(x.value), parents = [x], 
-                             partials = [1/ (math.cos(x.value)**2)], 
-                             added_nodes = x._added_nodes)
+        node = CompGraphNode(math.tan(x.value),
+                             parents=[x],
+                             partials=[1 / (math.cos(x.value)**2)],
+                             added_nodes=x._added_nodes)
 
         x._added_nodes[("tan", x, None)] = node
         return node
@@ -119,7 +125,8 @@ def tan(x):
     if isinstance(x, DualNumber):
         return DualNumber(math.tan(x.real),
                           (1 / (math.cos(x.real)**2)) * x.dual)
-    raise TypeError("tan() only accepts int, float, DualNumber, or CompGraphNode.")
+    raise TypeError(
+        "tan() only accepts int, float, DualNumber, or CompGraphNode.")
 
 
 def exp(x):
@@ -148,9 +155,10 @@ def exp(x):
         if ("exp", x, None) in x._added_nodes:
             return x._added_nodes.get(("exp", x, None))
 
-        node = CompGraphNode(math.exp(x.value), parents = [x], 
-                             partials=[math.exp(x.value)], 
-                             added_nodes = x._added_nodes)
+        node = CompGraphNode(math.exp(x.value),
+                             parents=[x],
+                             partials=[math.exp(x.value)],
+                             added_nodes=x._added_nodes)
 
         x._added_nodes[("exp", x, None)] = node
         return node
@@ -158,7 +166,9 @@ def exp(x):
     if isinstance(x, DualNumber):
         return DualNumber(math.exp(x.real), math.exp(x.real) * x.dual)
 
-    raise TypeError("exp() only accepts int, float, DualNumber, or CompGraphNode.")
+    raise TypeError(
+        "exp() only accepts int, float, DualNumber, or CompGraphNode.")
+
 
 def exp_b(x, base):
     """Computes the exponential (any base) of a real number, a DualNumber object, or a CompGraphNode object.
@@ -188,17 +198,20 @@ def exp_b(x, base):
         if ("exp_b", x, base) in x._added_nodes:
             return x._added_nodes.get(("exp_b", x, base))
 
-        node = CompGraphNode(base**x.value, parents = [x], 
-                             partials=[math.log(base) * base**x.value], 
-                             added_nodes = x._added_nodes)
+        node = CompGraphNode(base**x.value,
+                             parents=[x],
+                             partials=[math.log(base) * base**x.value],
+                             added_nodes=x._added_nodes)
 
         x._added_nodes[("exp_b", x, base)] = node
-        return node        
+        return node
 
     if isinstance(x, DualNumber):
         return DualNumber(base**x.real, math.log(base) * base**x.real * x.dual)
 
-    raise TypeError("log() only accepts int, float, DualNumber, or CompGraphNode.")
+    raise TypeError(
+        "log() only accepts int, float, DualNumber, or CompGraphNode.")
+
 
 def log(x):
     """Computes the natural logarithm of a real number, a DualNumber object, or a CompGraphNode object.
@@ -226,9 +239,10 @@ def log(x):
         if ("log", x, None) in x._added_nodes:
             return x._added_nodes.get(("log", x, None))
 
-        node = CompGraphNode(math.log(x.value), parents = [x], 
-                             partials=[1/x.value], 
-                             added_nodes = x._added_nodes)
+        node = CompGraphNode(math.log(x.value),
+                             parents=[x],
+                             partials=[1 / x.value],
+                             added_nodes=x._added_nodes)
 
         x._added_nodes[("log", x, None)] = node
         return node
@@ -236,7 +250,9 @@ def log(x):
     if isinstance(x, DualNumber):
         return DualNumber(math.log(x.real), x.dual / x.real)
 
-    raise TypeError("log() only accepts int, float, DualNumber, or CompGraphNode.")
+    raise TypeError(
+        "log() only accepts int, float, DualNumber, or CompGraphNode.")
+
 
 def log_b(x, base):
     """Computes the logarithm (any base) of a real number, a DualNumber object, or a CompGraphNode object.
@@ -269,20 +285,22 @@ def log_b(x, base):
         if ("log_b", x, base) in x._added_nodes:
             return x._added_nodes.get(("log_b", x, base))
 
-        node = CompGraphNode(math.log(x.value) / math.log(base), 
-                             parents = [x], 
-                             partials=[(1 / x.value) * (1 / math.log(base))], 
-                             added_nodes = x._added_nodes)
+        node = CompGraphNode(math.log(x.value) / math.log(base),
+                             parents=[x],
+                             partials=[(1 / x.value) * (1 / math.log(base))],
+                             added_nodes=x._added_nodes)
 
         x._added_nodes[("log_b", x, base)] = node
-        return node    
+        return node
 
     if isinstance(x, DualNumber):
         return DualNumber(
             math.log(x.real) / math.log(base),
             (1 / x.real) * (1 / math.log(base)) * x.dual)
 
-    raise TypeError("log() only accepts int, float, DualNumber, or CompGraphNode.")
+    raise TypeError(
+        "log() only accepts int, float, DualNumber, or CompGraphNode.")
+
 
 def sinh(x):
     """Computes the hyperbolic sine of a real number, a DualNumber object, or a CompGraphNode object.
@@ -310,17 +328,19 @@ def sinh(x):
         if ("sinh", x, None) in x._added_nodes:
             return x._added_nodes.get(("sinh", x, None))
 
-        node = CompGraphNode(math.sinh(x.value), parents = [x], 
-                             partials=[math.cosh(x.value)], 
-                             added_nodes = x._added_nodes)
+        node = CompGraphNode(math.sinh(x.value),
+                             parents=[x],
+                             partials=[math.cosh(x.value)],
+                             added_nodes=x._added_nodes)
 
         x._added_nodes[("sinh", x, None)] = node
-        return node    
-    
+        return node
+
     if isinstance(x, DualNumber):
         return DualNumber(math.sinh(x.real), math.cosh(x.real) * x.dual)
 
-    raise TypeError("sinh() only accepts int, float, DualNumber, or CompGraphNode.")
+    raise TypeError(
+        "sinh() only accepts int, float, DualNumber, or CompGraphNode.")
 
 
 def cosh(x):
@@ -350,17 +370,19 @@ def cosh(x):
         if ("cosh", x, None) in x._added_nodes:
             return x._added_nodes.get(("cosh", x, None))
 
-        node = CompGraphNode(math.cosh(x.value), parents = [x], 
-                             partials=[math.sinh(x.value)], 
-                             added_nodes = x._added_nodes)
+        node = CompGraphNode(math.cosh(x.value),
+                             parents=[x],
+                             partials=[math.sinh(x.value)],
+                             added_nodes=x._added_nodes)
 
         x._added_nodes[("cosh", x, None)] = node
-        return node    
-    
+        return node
+
     if isinstance(x, DualNumber):
         return DualNumber(math.cosh(x.real), math.sinh(x.real) * x.dual)
 
-    raise TypeError("cosh() only accepts int, float, DualNumber, or CompGraphNode.")
+    raise TypeError(
+        "cosh() only accepts int, float, DualNumber, or CompGraphNode.")
 
 
 def tanh(x):
@@ -389,18 +411,21 @@ def tanh(x):
         if ("tanh", x, None) in x._added_nodes:
             return x._added_nodes.get(("tanh", x, None))
 
-        node = CompGraphNode(math.tanh(x.value), parents = [x], 
-                             partials=[1/(math.cosh(x.value)**2)], 
-                             added_nodes = x._added_nodes)
+        node = CompGraphNode(math.tanh(x.value),
+                             parents=[x],
+                             partials=[1 / (math.cosh(x.value)**2)],
+                             added_nodes=x._added_nodes)
 
         x._added_nodes[("tanh", x, None)] = node
-        return node    
-    
-    if isinstance(x, DualNumber):
-        return DualNumber(math.tanh(x.real), 
-                          (1/(math.cosh(x.real)**2) * x.dual))
+        return node
 
-    raise TypeError("tanh() only accepts int, float, DualNumber, or CompGraphNode.")
+    if isinstance(x, DualNumber):
+        return DualNumber(math.tanh(x.real),
+                          (1 / (math.cosh(x.real)**2) * x.dual))
+
+    raise TypeError(
+        "tanh() only accepts int, float, DualNumber, or CompGraphNode.")
+
 
 def sqrt(x):
     """Computes the square root of a real number, a DualNumber object, or a CompGraphNode object.
@@ -423,23 +448,25 @@ def sqrt(x):
     """
     if isinstance(x, (int, float)):
         return math.sqrt(x)
-    
+
     if isinstance(x, CompGraphNode):
         if ("sqrt", x, None) in x._added_nodes:
             return x._added_nodes.get(("sqrt", x, None))
 
-        node = CompGraphNode(math.sqrt(x.value), parents = [x], 
-                             partials=[0.5/math.sqrt(x.value)], 
-                             added_nodes = x._added_nodes)
+        node = CompGraphNode(math.sqrt(x.value),
+                             parents=[x],
+                             partials=[0.5 / math.sqrt(x.value)],
+                             added_nodes=x._added_nodes)
 
         x._added_nodes[("sqrt", x, None)] = node
-        return node    
-    
+        return node
+
     if isinstance(x, DualNumber):
         return DualNumber(math.sqrt(x.real),
                           (0.5 / math.sqrt(x.real)) * x.dual)
 
-    raise TypeError("sqrt() only accepts int, float, DualNumber, or CompGraphNode.")
+    raise TypeError(
+        "sqrt() only accepts int, float, DualNumber, or CompGraphNode.")
 
 
 def asin(x):
@@ -473,12 +500,13 @@ def asin(x):
         if ("asin", x, None) in x._added_nodes:
             return x._added_nodes.get(("asin", x, None))
 
-        node = CompGraphNode(math.asin(x.value), parents = [x], 
-                             partials=[(1 / math.sqrt(1 - (x.value**2))) ], 
-                             added_nodes = x._added_nodes)
+        node = CompGraphNode(math.asin(x.value),
+                             parents=[x],
+                             partials=[(1 / math.sqrt(1 - (x.value**2)))],
+                             added_nodes=x._added_nodes)
 
         x._added_nodes[("asin", x, None)] = node
-        return node        
+        return node
 
     if isinstance(x, DualNumber):
         if x.real > 1 or x.real < -1:
@@ -486,7 +514,8 @@ def asin(x):
         return DualNumber(np.arcsin(x.real),
                           (1 / np.sqrt(1 - (x.real**2))) * x.dual)
 
-    raise TypeError("asin() only accepts int, float, DualNumber, or CompGraphNode.")
+    raise TypeError(
+        "asin() only accepts int, float, DualNumber, or CompGraphNode.")
 
 
 def acos(x):
@@ -519,9 +548,10 @@ def acos(x):
         if ("acos", x, None) in x._added_nodes:
             return x._added_nodes.get(("acos", x, None))
 
-        node = CompGraphNode(math.acos(x.value), parents = [x], 
-                             partials=[-1 * (1 / math.sqrt(1 - x.value**2))], 
-                             added_nodes = x._added_nodes)
+        node = CompGraphNode(math.acos(x.value),
+                             parents=[x],
+                             partials=[-1 * (1 / math.sqrt(1 - x.value**2))],
+                             added_nodes=x._added_nodes)
 
         x._added_nodes[("acos", x, None)] = node
         return node
@@ -532,7 +562,8 @@ def acos(x):
         return DualNumber(math.acos(x.real),
                           -1 * (1 / math.sqrt(1 - x.real**2)) * x.dual)
 
-    raise TypeError("acos() only accepts int, float, DualNumber, or CompGraphNode.")
+    raise TypeError(
+        "acos() only accepts int, float, DualNumber, or CompGraphNode.")
 
 
 def atan(x):
@@ -561,16 +592,18 @@ def atan(x):
         if ("atan", x, None) in x._added_nodes:
             return x._added_nodes.get(("atan", x, None))
 
-        node = CompGraphNode(math.atan(x.value), parents = [x], 
-                             partials=[1 / (1 + x.value**2)], 
-                             added_nodes = x._added_nodes)
+        node = CompGraphNode(math.atan(x.value),
+                             parents=[x],
+                             partials=[1 / (1 + x.value**2)],
+                             added_nodes=x._added_nodes)
 
         x._added_nodes[("atan", x, None)] = node
         return node
 
     if isinstance(x, DualNumber):
         return DualNumber(math.atan(x.real), 1 / (1 + x.real**2) * x.dual)
-    raise TypeError("atan() only accepts int, float, DualNumber, or CompGraphNode.")
+    raise TypeError(
+        "atan() only accepts int, float, DualNumber, or CompGraphNode.")
 
 
 def logistic(x):
@@ -599,11 +632,12 @@ def logistic(x):
         if ("logistic", x, None) in x._added_nodes:
             return x._added_nodes.get(("logistic", x, None))
 
-        node = CompGraphNode(1 / (1 + math.exp(-x.value)), parents = [x], 
+        node = CompGraphNode(1 / (1 + math.exp(-x.value)),
+                             parents=[x],
                              partials=[(math.exp(x.value) /
-                           ((math.exp(x.value) + 1) *
-                            (math.exp(x.value) + 1)))], 
-                             added_nodes = x._added_nodes)
+                                        ((math.exp(x.value) + 1) *
+                                         (math.exp(x.value) + 1)))],
+                             added_nodes=x._added_nodes)
 
         x._added_nodes[("logistic", x, None)] = node
         return node
@@ -615,4 +649,4 @@ def logistic(x):
                             (math.exp(x.real) + 1))) * x.dual)
 
     raise TypeError(
-            "logistic() only accepts int, float, DualNumber, or CompGraphNode.")
+        "logistic() only accepts int, float, DualNumber, or CompGraphNode.")
