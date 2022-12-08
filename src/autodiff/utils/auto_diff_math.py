@@ -49,7 +49,6 @@ def sin(x):
 
 def cos(x):
     """Computes the cosine of a real number, a DualNumber object, or a CompGraphNode object.    
-
     Parameters
     ----------
     x : int, float, DualNumber, or CompGraphNode
@@ -623,7 +622,6 @@ def logistic(x):
     ------
     TypeError
         If x is not a int, float, DualNumber, or CompGraphNode
-
     """
     if isinstance(x, (int, float)):
         return 1 / (1 + math.exp(-x.real))

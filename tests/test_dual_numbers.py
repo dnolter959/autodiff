@@ -13,6 +13,7 @@ from autodiff.utils.dual_numbers import DualNumber
 
 class TestDualNumber:
     """Test class for dual number types"""
+
     def test_init(self):
         z1 = DualNumber(2, 1)
         assert z1.real == 2
@@ -222,3 +223,59 @@ class TestDualNumber:
         with pytest.raises(TypeError):
             z1 != 2
             z1 != 2.0
+
+    def test_greater_than(self):
+        z1 = DualNumber(3, 2)
+        z2 = DualNumber(2, 1)
+        z3 = DualNumber(4, 2)
+
+        # DualNumber > DualNumber
+        assert z1 > z2
+        assert not (z1 > z3)
+
+        # Handle Int/Float Comparisons
+        with pytest.raises(TypeError):
+            z1 > 2
+            z1 > 2.0
+
+    def test_less_than(self):
+        z1 = DualNumber(3, 2)
+        z2 = DualNumber(2, 1)
+        z3 = DualNumber(4, 2)
+
+        # DualNumber < DualNumber
+        assert z2 < z1
+        assert not (z3 < z1)
+
+        # Handle Int/Float Comparisons
+        with pytest.raises(TypeError):
+            z1 < 2
+            z1 < 2.0
+
+    def test_greater_than_or_equal(self):
+        z1 = DualNumber(3, 2)
+        z2 = DualNumber(3, 1)
+        z3 = DualNumber(4, 2)
+
+        # DualNumber >= DualNumber
+        assert z1 >= z2
+        assert not (z2 >= z3)
+
+        # Handle Int/Float Comparisons
+        with pytest.raises(TypeError):
+            z1 >= 2
+            z1 >= 2.0
+
+    def test_less_than_or_equal(self):
+        z1 = DualNumber(3, 2)
+        z2 = DualNumber(3, 1)
+        z3 = DualNumber(4, 2)
+
+        # DualNumber <= DualNumber
+        assert z1 <= z2
+        assert not (z3 <= z2)
+
+        # Handle Int/Float Comparisons
+        with pytest.raises(TypeError):
+            z1 <= 2
+            z1 <= 2.0
