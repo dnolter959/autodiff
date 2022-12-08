@@ -64,7 +64,7 @@ class TestAutoDiff:
         g = lambda x: x[0] + x[1] + x[0] * x[1]
         ad = AutoDiff(g)
         assert str(ad).strip(
-        ) == "s:\nx[0] + x[1] + x[0] * x[1]"
+        ) == "AutoDiff object of a scalar function:\nx[0] + x[1] + x[0] * x[1]"
 
         # initialize with vector function
         f = lambda x: x[0] * sin(x[1])
