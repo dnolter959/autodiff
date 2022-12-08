@@ -1,3 +1,5 @@
+import numpy as np
+
 class CompGraphNode:
     def __init__(self,
                  value,
@@ -57,7 +59,6 @@ class CompGraphNode:
             If the other operand is not a node or a real number.
 
         """
-
         if ("add", self, other) in self._added_nodes:
             return self._added_nodes.get(("add", self, other))
 
@@ -129,25 +130,26 @@ class CompGraphNode:
         if ("sub", self, other) in self._added_nodes:
             return self._added_nodes.get(("sub", self, other))
 
-        if isinstance(other, CompGraphNode):
-            node = CompGraphNode(self.value - other.value,
-                                 parents=[self, other],
-                                 partials=[1, -1],
-                                 added_nodes=self._added_nodes)
+        if isinstance(other, (CompGraphNode, int, float)):
+            if isinstance(other, CompGraphNode):
+                node = CompGraphNode(self.value - other.value,
+                                     parents=[self, other],
+                                     partials=[1, -1],
+                                     added_nodes=self._added_nodes)
 
+            else:
+                node = CompGraphNode(self.value - other,
+                                     parents=[self],
+                                     partials=[1],
+                                     added_nodes=self._added_nodes)
+
+            # add to existing nodes
             self._added_nodes[("sub", self, other)] = node
             return node
 
-        elif isinstance(other, (int, float)):
-            self._added_nodes[("sub", self, other)] = node
-            return CompGraphNode(self.value - other,
-                                 parents=[self],
-                                 partials=[1],
-                                 added_nodes=self._added_nodes)
-        else:
-            raise TypeError(
-                "unsupported operand type(s) for +: '{}' and '{}'".format(
-                    type(self), type(other)))
+        raise TypeError(
+            "unsupported operand type(s) for +: '{}' and '{}'".format(
+                type(self), type(other)))
 
     def __rsub__(self, other):
         """Reflexive subtraction operator for nodes.
@@ -342,7 +344,7 @@ class CompGraphNode:
                                      parents=[self, other],
                                      partials=[
                                        other.value * self.value**(other.value - 1),
-                                       self.value**other.value * math.log(self.value)
+                                       self.value**other.value * np.log(self.value)
                                      ],
                                      added_nodes=self._added_nodes)
 
@@ -362,7 +364,7 @@ class CompGraphNode:
 
         return node
 
-    def __rpow__(self):
+    def __rpow__(self, other):
         """Reflexive power operator for nodes.
 
         Parameters
@@ -415,10 +417,22 @@ class CompGraphNode:
         return node
 
     def __repr__(self):
+        """Representation of a node.
+
+        Parameters
+        ----------
+        self : DualNumber
+            The dual number.
+        Returns
+        -------
+        str
+            The representation of the dual number.
+        """
+        return "CompGraphNode({})".format(self.value)
 
     # for toposort comparison
     def __lt__(self, other):
-        """
+        """Less than operator for nodes.
 
         Parameters
         ----------
@@ -427,6 +441,8 @@ class CompGraphNode:
 
         Returns
         -------
+        bool
+            True if self less than other, False otherwise.
 
         """
         if isinstance(other, CompGraphNode):
@@ -437,15 +453,19 @@ class CompGraphNode:
                 type(self), type(other)))
 
     def __gt__(self, other):
-        """
+        """Greater than operator for nodes.
 
         Parameters
         ----------
         self : CompGraphNode
-            The node.
-
+            The first node.
+        other : CompGraphNode
+            The second node.
+ 
         Returns
         -------
+        bool
+            True if self greater than other, False otherwise.
 
         """
         return other < self
