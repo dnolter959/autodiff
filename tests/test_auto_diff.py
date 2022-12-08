@@ -10,6 +10,7 @@ from autodiff.utils.auto_diff_math import *
 
 
 class TestAutoDiff:
+
     def test_construction(self):
         # initialize with None
         with pytest.raises(TypeError):
@@ -60,16 +61,18 @@ class TestAutoDiff:
 
     def test_str(self):
         # initialize with scalar function
-        g = lambda x: x[0]+x[1]+x[0]*x[1]
+        g = lambda x: x[0] + x[1] + x[0] * x[1]
         ad = AutoDiff(g)
-        assert str(ad).strip() == "AutoDiff object of a scalar function:\nx[0]+x[1]+x[0]*x[1]"
+        assert str(ad).strip(
+        ) == "AutoDiff object of a scalar function:\nx[0]+x[1]+x[0]*x[1]"
 
         # initialize with vector function
-        f = lambda x: x[0]*sin(x[1])
-        g = lambda x: x[0]+x[1]+x[0]*x[1]
-        h = lambda x: 5*x[0]**2
-        ad = AutoDiff([f,g,h])
-        assert str(ad).strip() == ("AutoDiff object of a vector function:\n"+
+        f = lambda x: x[0] * sin(x[1])
+        g = lambda x: x[0] + x[1] + x[0] * x[1]
+        h = lambda x: 5 * x[0]**2
+        ad = AutoDiff([f, g, h])
+        assert str(ad).strip() == (
+            "AutoDiff object of a vector function:\n" +
             "x[0]*sin(x[1])\nx[0]+x[1]+x[0]*x[1]\n5*x[0]**2")
 
     def test_get_value(self):
@@ -329,11 +332,10 @@ class TestAutoDiff:
         ad = AutoDiff([f, g, h])
         assert ad.get_derivative(x, p) == approx(np.dot(res, p.reshape(-1, 1)))
 
-        assert (np.array_equal(ad.curr_point, x)
-                and np.array_equal(ad.curr_seed, p)
-                and np.allclose(ad.curr_jacobian, res, atol=1e-15)
-                and np.array_equal(ad.curr_derivative,
-                                   np.dot(res, p.reshape(-1, 1))))
+        assert (np.array_equal(ad.point, x) and np.array_equal(ad.seed, p)
+                and np.allclose(ad.jacobian, res, atol=1e-15)
+                and np.array_equal(ad.derivative, np.dot(
+                    res, p.reshape(-1, 1))))
 
         # same function and seed as above with new point
         x = np.array([10.2, 31, 0.055])
@@ -350,11 +352,10 @@ class TestAutoDiff:
                         [h_p_0, h_p_1, h_p_2]])
         ad = AutoDiff([f, g, h])
         assert ad.get_derivative(x, p) == approx(np.dot(res, p.reshape(-1, 1)))
-        assert (np.array_equal(ad.curr_point, x)
-                and np.array_equal(ad.curr_seed, p)
-                and np.allclose(ad.curr_jacobian, res, atol=1e-15)
-                and np.array_equal(ad.curr_derivative,
-                                   np.dot(res, p.reshape(-1, 1))))
+        assert (np.array_equal(ad.point, x) and np.array_equal(ad.seed, p)
+                and np.allclose(ad.jacobian, res, atol=1e-15)
+                and np.array_equal(ad.derivative, np.dot(
+                    res, p.reshape(-1, 1))))
 
         # same function and value as above with new seed
         p = np.array([1, 1, 0])
@@ -364,7 +365,7 @@ class TestAutoDiff:
     # test correct storage and calls of computed values (attributes of AutoDiff objects)
     def test_cache(self):
 
-        f = lambda x: 1/2*x**2
+        f = lambda x: 1 / 2 * x**2
         ad = AutoDiff(f)
         # 1)
         assert ad.get_jacobian(1) == 1.0
@@ -376,15 +377,13 @@ class TestAutoDiff:
         assert ad.get_derivative(1, 1) == 1.0
         # 5) call get_derivative with the same point but different seed
         assert ad.get_derivative(1, 2) == 2.0
-        # 6) call get_jacobian again with the same point 
+        # 6) call get_jacobian again with the same point
         assert ad.get_jacobian(1) == 1.0
         # 7) call get_derivative with same point as 4) but
         assert ad.get_derivative(1, 1) == 1.0
-        # 8) call get_derivative with different point 
+        # 8) call get_derivative with different point
         assert ad.get_derivative(2, 1) == 2.0
         # 9) call get_jacobian with different point
         assert ad.get_jacobian(3) == 3.0
         # 10) call get_derivative with different point
         assert ad.get_derivative(4, [1]) == 4.0
-
-
