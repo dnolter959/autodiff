@@ -430,7 +430,7 @@ class AutoDiff:
         """
 
         # handle default seed_vector
-        if seed_vector == None:
+        if seed_vector is None:
             default_seed_vector = True
             seed_vector = 1
         else:
