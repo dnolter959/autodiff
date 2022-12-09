@@ -203,6 +203,25 @@ class TestAutoDiffMath:
         with pytest.raises(TypeError):
             asin("string")
 
+        with pytest.raises(ValueError):
+            asin(-1.5)
+
+        with pytest.raises(ValueError):
+            asin(1.5)
+
+        with pytest.raises(ValueError):
+            asin(DualNumber(-1.5))
+
+        with pytest.raises(ValueError):
+            asin(DualNumber(1.5))
+
+        with pytest.raises(ValueError):
+            asin(CompGraphNode(-1.5))
+
+        with pytest.raises(ValueError):
+            asin(CompGraphNode(1.5))
+
+
     def test_acos(self):
         z1 = DualNumber(0.5)
         z2 = 0.5
@@ -223,6 +242,25 @@ class TestAutoDiffMath:
 
         with pytest.raises(TypeError):
             acos("string")
+
+        with pytest.raises(ValueError):
+            acos(-1.5)
+
+        with pytest.raises(ValueError):
+            acos(1.5)
+
+        with pytest.raises(ValueError):
+            acos(DualNumber(-1.5))
+
+        with pytest.raises(ValueError):
+            acos(DualNumber(1.5))
+
+        with pytest.raises(ValueError):
+            acos(CompGraphNode(-1.5))
+
+        with pytest.raises(ValueError):
+            acos(CompGraphNode(1.5))
+
 
     def test_atan(self):
         z1 = DualNumber(0.5)
@@ -265,6 +303,9 @@ class TestAutoDiffMath:
 
         with pytest.raises(TypeError):
             log_b("string", 2)
+
+        with pytest.raises(TypeError):
+            log_b(z1, "string")
 
     def test_exp_b(self):
         z1 = DualNumber(2)

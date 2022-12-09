@@ -59,7 +59,20 @@ class TestAutoDiff:
         ad3 = AutoDiff(h)
         assert ad1 != ad3
 
+        ad4 = AutoDiff([f,h])
+        assert ad1 != ad4
+
     def test_str(self):
+        # change f attribute of AD object directly
+        f = lambda x: x+1
+        ad = AutoDiff([f])
+        ad.f = None
+        assert str(ad) == ""
+        ad.f = f
+        assert str(ad) == ""
+        ad.f = []
+        assert str(ad) == ""
+
         # initialize with scalar function
         g = lambda x: x[0] + x[1] + x[0] * x[1]
         ad = AutoDiff(g)
@@ -76,6 +89,23 @@ class TestAutoDiff:
             "x[0] * sin(x[1])\nx[0] + x[1] + x[0] * x[1]\n5 * x[0]**2")
 
     def test_get_value(self):
+        # scalar constant function with m=1
+        f = 3
+        x = 1.5
+        assert AutoDiff(f).get_value(x) == 3
+
+        # scalar constant function specified as lambda function with m=1
+        f = lambda x: 3
+        x = 1.5
+        assert AutoDiff(f).get_value(x) == 3
+
+        # vector constant function with m=1
+        f = 3
+        g = 2
+        x = 1.5
+        compare = AutoDiff([f,g]).get_value(x) == np.array([3, 2])
+        assert compare.all()
+
         # scalar function with m=1
         f = lambda x: -x + cos(x) * sin(x) + 5 * x**4
         x = 1.5
@@ -106,7 +136,7 @@ class TestAutoDiff:
         h_v = 5
         assert np.allclose(AutoDiff([f, g, h]).get_value(x),
                            np.array([f_v, g_v, h_v]),
-                           atol=1e-15)
+                           rtol=1e-15, atol=1e-15)
 
         # vector function with m=3
         x = np.array([-1, 10, 105.5])
@@ -118,7 +148,7 @@ class TestAutoDiff:
         h_v = 5 + x[0]
         assert np.allclose(AutoDiff([f, g, h]).get_value(x),
                            np.array([f_v, g_v, h_v]),
-                           atol=1e-15)
+                           rtol=1e-15, atol=1e-15)
 
     def test_get_partial(self):
         # scalar function with m=1
@@ -127,9 +157,27 @@ class TestAutoDiff:
         assert AutoDiff(f).get_partial(
             x) == -1 + 20 * x**3 + (np.cos(x))**2 - (np.sin(x))**2
 
-        # scalar function with m=2
+        # scalar constant function with m=1
+        f = 2
+        x = 1.5
+        assert AutoDiff(f).get_partial(
+            x) == 0
+
+        # scalar constant function with m=1
+        f = lambda x: 2
+        x = 1.5
+        assert AutoDiff(f).get_partial(
+            x) == 0
+
+        # scalar function with constant return with m=1
+        f = lambda x: sin(10)
+        x = 1.5
+        assert AutoDiff(f).get_partial(
+            x) == 0
+
+        # scalar function with m=2 passed as list
         f = lambda x: x[0] * sin(x[1])
-        assert (AutoDiff(f).get_partial(np.array([1, math.pi]), 0)
+        assert (AutoDiff(f).get_partial([1, math.pi], 0)
                 == approx(0.0) and AutoDiff(f).get_partial(
                     np.array([1, math.pi]), 1) == approx(-1))
 
@@ -177,6 +225,27 @@ class TestAutoDiff:
                 and AutoDiff([f, g, h]).get_partial(x, 2) == approx(
                     np.array([f_p_2, g_p_2, h_p_2])))
 
+        # vector function with m=3 passed as list
+        f = lambda x: exp(x[1]) * (-x[2]**(-1 / 2))
+        g = lambda x: cos(x[0]) + log(x[1]) * x[2]
+        h = lambda x: 5 + x[0]
+        x = [-1, 10, 105.5]
+        f_p_0 = 0
+        g_p_0 = -np.sin(x[0])
+        h_p_0 = 1
+        f_p_1 = -np.exp(x[1]) / x[2]**(1 / 2)
+        g_p_1 = x[2] / x[1]
+        h_p_1 = 0
+        f_p_2 = np.exp(x[1]) / (2 * x[2]**(3 / 2))
+        g_p_2 = np.log(x[1])
+        h_p_2 = 0
+        assert (AutoDiff([f, g, h]).get_partial(x, 0) == approx(
+            np.array([f_p_0, g_p_0, h_p_0]))
+                and AutoDiff([f, g, h]).get_partial(x, 1) == approx(
+                    np.array([f_p_1, g_p_1, h_p_1]))
+                and AutoDiff([f, g, h]).get_partial(x, 2) == approx(
+                    np.array([f_p_2, g_p_2, h_p_2])))
+
     def test_get_jacobian(self):
         # scalar function with m=1
         f = lambda x: -x + cos(x) * sin(x) + 5 * x**4
@@ -187,6 +256,11 @@ class TestAutoDiff:
         # scalar function with m=2
         f = lambda x: x[0] * sin(x[1])
         assert AutoDiff(f).get_jacobian(np.array([1, math.pi])) == approx(
+            np.array([[0.0, -1]]))
+
+        # scalar function with m=2 passed as list
+        f = lambda x: x[0] * sin(x[1])
+        assert AutoDiff(f).get_jacobian([1, math.pi]) == approx(
             np.array([[0.0, -1]]))
 
         # scalar function with a nested list (invalid input)
@@ -230,6 +304,26 @@ class TestAutoDiff:
                         [h_p_0, h_p_1, h_p_2]])
         assert AutoDiff([f, g, h]).get_jacobian(x) == approx(res)
 
+        # vector function with m=3 passed as list
+        f = lambda x: exp(x[1]) * (-x[2]**(-1 / 2))
+        g = lambda x: cos(x[0]) + log(x[1]) * x[2]
+        h = lambda x: 5 + x[0]
+        x = [-1, 10, 105.5]
+        f_p_0 = 0
+        g_p_0 = -np.sin(x[0])
+        h_p_0 = 1
+        f_p_1 = -np.exp(x[1]) / x[2]**(1 / 2)
+        g_p_1 = x[2] / x[1]
+        h_p_1 = 0
+        f_p_2 = np.exp(x[1]) / (2 * x[2]**(3 / 2))
+        g_p_2 = np.log(x[1])
+        h_p_2 = 0
+
+        res = np.array([[f_p_0, f_p_1, f_p_2], [g_p_0, g_p_1, g_p_2],
+                        [h_p_0, h_p_1, h_p_2]])
+        assert AutoDiff([f, g, h]).get_jacobian(x) == approx(res)
+
+
     def test_get_derivative(self):
         # scalar function with m=1 and default_seed
         f = lambda x: -x + cos(x) * sin(x) + 5 * x**4
@@ -253,6 +347,20 @@ class TestAutoDiff:
         assert AutoDiff(f).get_derivative(x, p) == np.dot(
             np.array([-1 + 20 * x**3 + (np.cos(x))**2 - (np.sin(x))**2]), p)
 
+        # scalar function with m=1 passed as vector and seed with lengths 1
+        f = lambda x: -x[0] + cos(x[0]) * sin(x[0]) + 5 * x[0]**4
+        x = np.array([1.5])
+        p = np.array([5])
+        assert AutoDiff(f).get_derivative(x, p) == np.array([np.dot(
+            np.array([-1 + 20 * x**3 + (np.cos(x))**2 - (np.sin(x))**2]), p)])
+
+        # scalar function with m=1 passed as vector and default seed
+        f = lambda x: -x + cos(x) * sin(x) + 5 * x**4
+        x = 1.5
+        p = np.array([1])
+        assert AutoDiff(f).get_derivative(x) == np.dot(
+            np.array([-1 + 20 * x**3 + (np.cos(x))**2 - (np.sin(x))**2]), p)
+
         # scalar function with m=1 and seed with length>1
         f = lambda x: -x + cos(x) * sin(x) + 5 * x**4
         x = 1.5
@@ -264,6 +372,19 @@ class TestAutoDiff:
         f = lambda x: x[0] * sin(x[1])
         x = np.array([1, math.pi])
         p = np.array([1, 5])
+        assert AutoDiff(f).get_derivative(x, p) == approx(
+            np.dot(np.array([0.0, -1]), p))
+
+        # scalar function with m=2 and default seed
+        f = lambda x: x[0] * sin(x[1])
+        x = np.array([1, math.pi])
+        with pytest.raises(ValueError):
+            AutoDiff(f).get_derivative(x)
+
+        # scalar function with m=2 and seed with length=2, passed as lists
+        f = lambda x: x[0] * sin(x[1])
+        x = [1, math.pi]
+        p = [1, 5]
         assert AutoDiff(f).get_derivative(x, p) == approx(
             np.dot(np.array([0.0, -1]), p))
 
@@ -340,7 +461,7 @@ class TestAutoDiff:
         assert ad.get_derivative(x, p) == approx(np.dot(res, p.reshape(-1, 1)))
 
         assert (np.array_equal(ad.point, x) and np.array_equal(ad.seed, p)
-                and np.allclose(ad.jacobian, res, atol=1e-15)
+                and np.allclose(ad.jacobian, res, rtol=1e-15, atol=1e-15)
                 and np.array_equal(ad.derivative, np.dot(
                     res, p.reshape(-1, 1))))
 
@@ -360,7 +481,7 @@ class TestAutoDiff:
         ad = AutoDiff([f, g, h])
         assert ad.get_derivative(x, p) == approx(np.dot(res, p.reshape(-1, 1)))
         assert (np.array_equal(ad.point, x) and np.array_equal(ad.seed, p)
-                and np.allclose(ad.jacobian, res, atol=1e-15)
+                and np.allclose(ad.jacobian, res, rtol=1e-15, atol=1e-15)
                 and np.array_equal(ad.derivative, np.dot(
                     res, p.reshape(-1, 1))))
 
