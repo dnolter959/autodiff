@@ -596,3 +596,17 @@ der = f.get_derivative(2) # 7
   - Set up a Github Action to automatically re-generate documentation on push or merge to master
   - Add a note in our README directing users to this documentation (explore hosting it on a Github Page)
 
+# Broader Impact and Inclusivity Statement
+
+
+## Broader Impact
+
+Automatic differentiation has wide usage in science and engineering due to its efficient calculation of gradient to machine precision. A notable example is its application in neural networks, serving as the foundation of backpropagation. Such usage has been adopted by various fields. For example, automatic differentiation-powered deep convolutional neural network has been used in noval medical research to identify diseases such as Glaucoma and thyroid scintigram. These methods, along with other innovatie machine learning techniques introduced to the medical and life sciences fields have profound impact on public health and well-being.
+
+However, any algorithms that facilitate machine learning applications also augment the negative impact associated with these applications. To use the filed of medicine as an example again, while machine learning has been shown to be helpful, one should be extremely cautious about the role of algorithims in, say, medical diagnoses. Complete reliance on machine learning or artificial intelligence, regardless of how powerful they seem thanks to clever algorithms like automatic differentiation, can be extremely dangeours. 
+
+
+## Software Inclusivity
+The future development of this software package for any additional features, such as higher order derivatives, will aim to be open and inclusive. The current contecnt of this software package is contributed equally by all members of our team with diverse backgrounds and experiences, and reflects equal appreiciation and respect towards the diverse knowledge and expertise associated with these backgrounds. We hope that any future development continue to uphoad these values while being open to the braoder community. Specifically, we welcome everyone's contribution regardless of their background and the review of contributions, conducted by all members of the team, will be based on nothing else but the quality of the content. 
+
+
