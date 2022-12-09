@@ -174,8 +174,8 @@ class TestDualNumber:
         z3 = DualNumber(1, 0)
         assert (z1**z2).real == 5
         assert (z1**z2).dual == (5**0) * (1 * 5 + np.log(5) * 5 * 1)
-        assert (z1 ** z3).real == 5
-        assert (z1 ** z3).dual == 1 * 5 ** (1 -1) * 5
+        assert (z3**z1).real == 1
+        assert (z3**z1).dual == 5 * 1 ** (5 -1) * 0
 
 
     def test_reflective_power(self):
