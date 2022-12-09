@@ -326,7 +326,7 @@ class AutoDiff:
 
         jacobian = []
         self.computational_graph = []
-        
+
         # for creating an array of 0s in case of constant function or function returning constants
         if isinstance(point, (int, float)):
             shape = (1, )
@@ -351,7 +351,8 @@ class AutoDiff:
                     ]
                 else:
                     input_nodes = [
-                        CompGraphNode(p, added_nodes=added_nodes) for p in point
+                        CompGraphNode(p, added_nodes=added_nodes)
+                        for p in point
                     ]
 
                 output_node = func(input_nodes)
@@ -382,11 +383,14 @@ class AutoDiff:
                     # compute adjoint for each node
                     for node in reversed(sorted_list):
                         if node.parents is not None and node.partials is not None:
-                            for parent, partial in zip(node.parents, node.partials):
+                            for parent, partial in zip(node.parents,
+                                                       node.partials):
                                 parent.adjoint += node.adjoint * partial
 
                     # the chain-rule incorporated partial is stored as the input nodes adjoint
-                    jacobian += [np.array([node.adjoint for node in input_nodes])]
+                    jacobian += [
+                        np.array([node.adjoint for node in input_nodes])
+                    ]
                     # store computational_graph
                     self.computational_graph += [adj_list]
 
