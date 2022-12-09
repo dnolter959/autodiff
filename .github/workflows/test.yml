@@ -1,13 +1,6 @@
 name: Test workflow
 
-on:
-  push:
-    branches:
-      - add_unit_tests
-      - interface
-      - clean_autodiff
-      - m2_documentation
-      - master
+on: [push]
 
 jobs:
   cleanup:
