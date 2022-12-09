@@ -359,7 +359,7 @@ class AutoDiff:
                 adj_list[node] = set(node.parents)
 
             # toposort the computational graph
-            sorted_list = toposort_flatten(adj_list)
+            sorted_list = toposort_flatten(adj_list, sort=False)
 
             # set last node's adjoint
             output_node.adjoint = 1
