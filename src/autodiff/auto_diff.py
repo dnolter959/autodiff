@@ -262,11 +262,11 @@ class AutoDiff:
 
         self._check_vector(point)
 
-        # compare = point == self.point
-        # if ((isinstance(compare, bool) and compare
-        #      or isinstance(compare, np.ndarray) and compare.all())
-        #         and self.jacobian is not None):
-        #     return self.jacobian
+        compare = point == self.point
+        if ((isinstance(compare, bool) and compare
+             or isinstance(compare, np.ndarray) and compare.all())
+                and self.jacobian is not None):
+            return self.jacobian
 
         self.derivative = None
         self.seed = None
@@ -326,54 +326,69 @@ class AutoDiff:
 
         jacobian = []
         self.computational_graph = []
+        
+        # for creating an array of 0s in case of constant function or function returning constants
+        if isinstance(point, (int, float)):
+            shape = (1, )
+        else:
+            shape = (len(point), )
 
         for func in self.f:
-            # forward pass
-            added_nodes = {}
+            if isinstance(func, (int, float)):
+                jacobian += [np.zeros(shape)]
 
-            # convert input to CompGraphNodes
-            if isinstance(point, (int, float)):
-                input_nodes = CompGraphNode(point, added_nodes=added_nodes)
-            elif isinstance(point, np.ndarray):
-                input_nodes = [
-                    CompGraphNode(p.item(), added_nodes=added_nodes)
-                    for p in point
-                ]
             else:
-                input_nodes = [
-                    CompGraphNode(p, added_nodes=added_nodes) for p in point
-                ]
+                # forward pass
+                added_nodes = {}
 
-            output_node = func(input_nodes)
+                # convert input to CompGraphNodes
+                if isinstance(point, (int, float)):
+                    input_nodes = CompGraphNode(point, added_nodes=added_nodes)
+                elif isinstance(point, np.ndarray):
+                    input_nodes = [
+                        CompGraphNode(p.item(), added_nodes=added_nodes)
+                        for p in point
+                    ]
+                else:
+                    input_nodes = [
+                        CompGraphNode(p, added_nodes=added_nodes) for p in point
+                    ]
 
-            # reverse pass
-            if isinstance(input_nodes, CompGraphNode):
-                input_nodes = [input_nodes]
+                output_node = func(input_nodes)
 
-            # build adjacency list (a dictionary) for toposort
-            # the inputs do not have parents
-            adj_list = {n: set() for n in input_nodes}
+                if isinstance(output_node, (int, float)):
+                    jacobian += [np.zeros(shape)]
+                    self.computational_graph += [None]
 
-            # add intermediate nodes to the adjacency list
-            for node in added_nodes.values():
-                adj_list[node] = set(node.parents)
+                else:
+                    # reverse pass
+                    if isinstance(input_nodes, CompGraphNode):
+                        input_nodes = [input_nodes]
 
-            # toposort the computational graph
-            sorted_list = toposort_flatten(adj_list, sort=False)
+                    # build adjacency list (a dictionary) for toposort
+                    # the inputs do not have parents
+                    adj_list = {n: set() for n in input_nodes}
 
-            # set last node's adjoint
-            output_node.adjoint = 1
+                    # add intermediate nodes to the adjacency list
+                    for node in added_nodes.values():
+                        adj_list[node] = set(node.parents)
 
-            # compute adjoint for each node
-            for node in reversed(sorted_list):
-                if node.parents is not None and node.partials is not None:
-                    for parent, partial in zip(node.parents, node.partials):
-                        parent.adjoint += node.adjoint * partial
+                    # toposort the computational graph
+                    sorted_list = toposort_flatten(adj_list, sort=False)
 
-            # the chain-rule incorporated partial is stored as the input nodes adjoint
-            jacobian += [np.array([node.adjoint for node in input_nodes])]
-            # store computational_graph
-            self.computational_graph += [adj_list]
+                    # set last node's adjoint
+                    output_node.adjoint = 1
+
+                    # compute adjoint for each node
+                    for node in reversed(sorted_list):
+                        if node.parents is not None and node.partials is not None:
+                            for parent, partial in zip(node.parents, node.partials):
+                                parent.adjoint += node.adjoint * partial
+
+                    # the chain-rule incorporated partial is stored as the input nodes adjoint
+                    jacobian += [np.array([node.adjoint for node in input_nodes])]
+                    # store computational_graph
+                    self.computational_graph += [adj_list]
 
         jacobian = np.array(jacobian)
         if jacobian.size == 1:

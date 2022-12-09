@@ -1,3 +1,5 @@
+import numpy as np
+
 class CompGraphNode:
     def __init__(self,
                  value,
@@ -57,7 +59,6 @@ class CompGraphNode:
             If the other operand is not a node or a real number.
 
         """
-
         if ("add", self, other) in self._added_nodes:
             return self._added_nodes.get(("add", self, other))
 
@@ -83,7 +84,7 @@ class CompGraphNode:
                 type(self), type(other)))
 
     def __radd__(self, other):
-        """Addition operator for nodes.
+        """Reflexive addition operator for nodes.
 
         Parameters
         ----------
@@ -129,28 +130,29 @@ class CompGraphNode:
         if ("sub", self, other) in self._added_nodes:
             return self._added_nodes.get(("sub", self, other))
 
-        if isinstance(other, CompGraphNode):
-            node = CompGraphNode(self.value - other.value,
-                                 parents=[self, other],
-                                 partials=[1, -1],
-                                 added_nodes=self._added_nodes)
+        if isinstance(other, (CompGraphNode, int, float)):
+            if isinstance(other, CompGraphNode):
+                node = CompGraphNode(self.value - other.value,
+                                     parents=[self, other],
+                                     partials=[1, -1],
+                                     added_nodes=self._added_nodes)
 
+            else:
+                node = CompGraphNode(self.value - other,
+                                     parents=[self],
+                                     partials=[1],
+                                     added_nodes=self._added_nodes)
+
+            # add to existing nodes
             self._added_nodes[("sub", self, other)] = node
             return node
 
-        elif isinstance(other, (int, float)):
-            self._added_nodes[("sub", self, other)] = node
-            return CompGraphNode(self.value - other,
-                                 parents=[self],
-                                 partials=[1],
-                                 added_nodes=self._added_nodes)
-        else:
-            raise TypeError(
-                "unsupported operand type(s) for +: '{}' and '{}'".format(
-                    type(self), type(other)))
+        raise TypeError(
+            "unsupported operand type(s) for +: '{}' and '{}'".format(
+                type(self), type(other)))
 
     def __rsub__(self, other):
-        """Subtraction operator for nodes.
+        """Reflexive subtraction operator for nodes.
 
         Parameters
         ----------
@@ -171,32 +173,6 @@ class CompGraphNode:
 
         """
         return other + (-self)
-
-    def __neg__(self):
-        """Negation operator for dual numbers.
-
-        Parameters
-        ----------
-        self : CompGraphNode
-            The node.
-
-        Returns
-        -------
-        CompGraphNode
-            The negated node.
-
-        """
-        if ("neg", self, None) in self._added_nodes:
-            return self._added_nodes.get(("neg", self, None))
-
-        node = CompGraphNode(-self.value,
-                             parents=[self],
-                             partials=[-1],
-                             added_nodes=self._added_nodes)
-
-        self._added_nodes[("neg", self, None)] = node
-
-        return node
 
     def __mul__(self, other):
         """Multiplication operator for nodes.
@@ -245,7 +221,7 @@ class CompGraphNode:
                 type(self), type(other)))
 
     def __rmul__(self, other):
-        """Multiplication operator for nodes.
+        """Reflexive multiplication operator for nodes.
 
         Parameters
         ----------
@@ -267,28 +243,157 @@ class CompGraphNode:
         """
         return self * other
 
-    # for toposort comparison
-    def __lt__(self, other):
-        """
+
+    def __truediv__(self, other):
+        """Division operator for nodes.
 
         Parameters
         ----------
         self : CompGraphNode
-            The node.
+            The first node.
+        other : CompGraphNode or float or int
+            The second node or a real number.
 
         Returns
         -------
+        CompGraphNode
+            The quotient of the two nodes.
 
+        Raises
+        ------
+        TypeError
+            If the other operand is not a node or a real number.
         """
-        if isinstance(other, CompGraphNode):
-            return other.parents is None or self in other.parents
+
+        if ("div", self, other) in self._added_nodes:
+            return self._added_nodes.get(("div", self, other))
+
+        if isinstance(other, (CompGraphNode, int, float)):
+            if isinstance(other, CompGraphNode):
+                node = CompGraphNode(self.value / other.value,
+                                     parents=[self, other],
+                                     partials=[1/other.value, -self.value/other.value**2],
+                                     added_nodes=self._added_nodes)
+
+            else:
+                node = CompGraphNode(self.value / other,
+                                     parents=[self],
+                                     partials=[1/other],
+                                     added_nodes=self._added_nodes)
+
+            # add to existing nodes
+            self._added_nodes[("div", self, other)] = node
+            return node
 
         raise TypeError(
             "unsupported operand type(s) for +: '{}' and '{}'".format(
                 type(self), type(other)))
 
-    def __gt__(self, other):
+        return node
+
+    def __rtruediv__(self, other):
+        """Reflexive division operator for nodes.
+
+        Parameters
+        ----------
+        self : CompGraphNode
+            The first real number.
+        other : CompGraphNode or float or int
+            The second node.
+
+        Returns
+        -------
+        CompGraphNode
+            The quotient of the two nodes.
+
+        Raises
+        ------
+        TypeError
+            If the other operand is not a node or a real number.
         """
+
+        return other * (self**-1)
+
+    def __pow__(self, other):
+        """Power operator for nodes.
+
+        Parameters
+        ----------
+        self : CompGraphNode
+            The first node.
+        other : CompGraphNode or float or int
+            The second node or real number.
+
+        Returns
+        -------
+        CompGraphNode
+            The power of two nodes.
+
+        Raises
+        ------
+        TypeError
+            If the other operand is not a node or a real number.
+        """
+
+        if ("pow", self, other) in self._added_nodes:
+            return self._added_nodes.get(("pow", self, other))
+
+        if isinstance(other, (CompGraphNode, int, float)):
+            if isinstance(other, CompGraphNode):
+                node = CompGraphNode(self.value**other.value,
+                                     parents=[self, other],
+                                     partials=[
+                                       other.value * self.value**(other.value - 1),
+                                       self.value**other.value * np.log(self.value)
+                                     ],
+                                     added_nodes=self._added_nodes)
+
+            else:
+                node = CompGraphNode(self.value**other,
+                                     parents=[self],
+                                     partials=[other * self.value**(other - 1)],
+                                     added_nodes=self._added_nodes)
+
+            # add to existing nodes
+            self._added_nodes[("pow", self, other)] = node
+            return node
+
+        raise TypeError(
+            "unsupported operand type(s) for +: '{}' and '{}'".format(
+                type(self), type(other)))
+
+        return node
+
+    def __rpow__(self, other):
+        """Reflexive power operator for nodes.
+
+        Parameters
+        ----------
+        self : CompGraphNode
+            The first real number.
+        other : CompGraphNode or float or int
+            The second node.
+
+        Returns
+        -------
+        CompGraphNode
+            The power of two nodes.
+
+        Raises
+        ------
+        TypeError
+            If the other operand is not a node or a real number.
+        """
+        node = CompGraphNode(other**self.value,
+                                     parents=[self],
+                                     partials=[other**self.value*np.log(other)],
+                                     added_nodes=self._added_nodes)
+
+        self._added_nodes[("rpow", self, other)] = node
+        return node
+
+    def __neg__(self):
+        """Negation operator for nodes.
 
         Parameters
         ----------
@@ -297,6 +402,32 @@ class CompGraphNode:
 
         Returns
         -------
+        CompGraphNode
+            The negated node.
 
         """
-        return other < self
+        if ("neg", self, None) in self._added_nodes:
+            return self._added_nodes.get(("neg", self, None))
+
+        node = CompGraphNode(-self.value,
+                             parents=[self],
+                             partials=[-1],
+                             added_nodes=self._added_nodes)
+
+        self._added_nodes[("neg", self, None)] = node
+
+        return node
+
+    def __repr__(self):
+        """Representation of a node.
+
+        Parameters
+        ----------
+        self : DualNumber
+            The dual number.
+        Returns
+        -------
+        str
+            The representation of the dual number.
+        """
+        return "CompGraphNode({})".format(self.value)
