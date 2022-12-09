@@ -278,7 +278,7 @@ class CompGraphNode:
             else:
                 node = CompGraphNode(self.value / other,
                                      parents=[self],
-                                     partials=[-self.value/other**2],
+                                     partials=[1/other],
                                      added_nodes=self._added_nodes)
 
             # add to existing nodes
@@ -355,7 +355,7 @@ class CompGraphNode:
                                      added_nodes=self._added_nodes)
 
             # add to existing nodes
-            self._added_nodes[("div", self, other)] = node
+            self._added_nodes[("pow", self, other)] = node
             return node
 
         raise TypeError(
@@ -384,10 +384,12 @@ class CompGraphNode:
         TypeError
             If the other operand is not a node or a real number.
         """
-        node = CompGraphNode(self.value**other,
+        node = CompGraphNode(other**self.value,
                                      parents=[self],
-                                     partials=[other * self.value**(other - 1)],
+                                     partials=[other**self.value*np.log(other)],
                                      added_nodes=self._added_nodes)
+
+        self._added_nodes[("rpow", self, other)] = node
         return node
 
     def __neg__(self):
@@ -429,43 +431,3 @@ class CompGraphNode:
             The representation of the dual number.
         """
         return "CompGraphNode({})".format(self.value)
-
-    # for toposort comparison
-    def __lt__(self, other):
-        """Less than operator for nodes.
-
-        Parameters
-        ----------
-        self : CompGraphNode
-            The node.
-
-        Returns
-        -------
-        bool
-            True if self less than other, False otherwise.
-
-        """
-        if isinstance(other, CompGraphNode):
-            return other.parents is None or self in other.parents
-
-        raise TypeError(
-            "unsupported operand type(s) for +: '{}' and '{}'".format(
-                type(self), type(other)))
-
-    def __gt__(self, other):
-        """Greater than operator for nodes.
-
-        Parameters
-        ----------
-        self : CompGraphNode
-            The first node.
-        other : CompGraphNode
-            The second node.
- 
-        Returns
-        -------
-        bool
-            True if self greater than other, False otherwise.
-
-        """
-        return other < self
