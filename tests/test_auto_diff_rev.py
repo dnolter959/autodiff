@@ -10,7 +10,6 @@ from autodiff.utils.auto_diff_math import *
 
 
 class TestAutoDiffReverse:
-
     def test_init(self):
         # test initialization
         x = AutoDiff(lambda x: x**2 - 2 * x)
@@ -42,25 +41,25 @@ class TestAutoDiffReverse:
     def test_get_jacobian(self):
         f = lambda x: -x + cos(x) * sin(x) + 5 * x**4
         x = 1.5
-        assert AutoDiff(f).get_jacobian(x, "r") == np.array(
+        assert AutoDiff(f).get_jacobian(x, mode="r") == np.array(
             [-1 + 20 * x**3 + (np.cos(x))**2 - (np.sin(x))**2])
 
         # scalar function with m=2
         f = lambda x: x[0] * sin(x[1])
         assert AutoDiff(f).get_jacobian(np.array([1, math.pi]),
-                                        "reverse") == approx(
+                                        mode="reverse") == approx(
                                             np.array([[0.0, -1]]))
 
         # scalar function with a nested list (invalid input)
         f = lambda x: x[0] * sin(x[1])
         with pytest.raises(TypeError):
             ad = AutoDiff(f)
-            ad.get_jacobian([1, [math.pi]], "r")
+            ad.get_jacobian([1, [math.pi]], mode="r")
 
         # scalar function with 2-d array (invalid input)
         with pytest.raises(TypeError):
             ad = AutoDiff(f)
-            ad.get_jacobian(np.array([[1], [math.pi]]), "r")
+            ad.get_jacobian(np.array([[1], [math.pi]]), mode="r")
 
         # vector function with m=1
         f = lambda x: exp(x) * (-x**(-1 / 2))
@@ -70,7 +69,7 @@ class TestAutoDiffReverse:
         f_p = (np.exp(x) * (1 - 2 * x)) / (2 * x**(3 / 2))
         g_p = -np.sin(x) + 1 / x
         h_p = 0
-        assert AutoDiff([f, g, h]).get_jacobian(x, "r") == approx(
+        assert AutoDiff([f, g, h]).get_jacobian(x, mode="r") == approx(
             np.array([[f_p], [g_p], [h_p]]))
 
         # vector function with m=3
@@ -90,14 +89,21 @@ class TestAutoDiffReverse:
 
         res = np.array([[f_p_0, f_p_1, f_p_2], [g_p_0, g_p_1, g_p_2],
                         [h_p_0, h_p_1, h_p_2]])
-        assert AutoDiff([f, g, h]).get_jacobian(x, "r") == approx(res)
+        assert AutoDiff([f, g, h]).get_jacobian(x, mode="r") == approx(res)
 
     def test_get_derivative(self):
+        # scalar function with m=1 and default_seed
+        f = lambda x: -x + cos(x) * sin(x) + 5 * x**4
+        x = 1.5
+        assert AutoDiff(f).get_derivative(x, mode="r") == np.dot(
+            np.array([-1 + 20 * x**3 + (np.cos(x))**2 - (np.sin(x))**2]),
+            np.array([1]))
+
         # scalar function with m=1 and scalar seed
         f = lambda x: -x + cos(x) * sin(x) + 5 * x**4
         x = 1.5
         p = 5
-        assert AutoDiff(f).get_derivative(x, p, "r") == np.dot(
+        assert AutoDiff(f).get_derivative(x, p, mode="r") == np.dot(
             np.array([-1 + 20 * x**3 + (np.cos(x))**2 - (np.sin(x))**2]),
             np.array([p]))
 
@@ -105,7 +111,7 @@ class TestAutoDiffReverse:
         f = lambda x: -x + cos(x) * sin(x) + 5 * x**4
         x = 1.5
         p = np.array([5])
-        assert AutoDiff(f).get_derivative(x, p, "r") == np.dot(
+        assert AutoDiff(f).get_derivative(x, p, mode="r") == np.dot(
             np.array([-1 + 20 * x**3 + (np.cos(x))**2 - (np.sin(x))**2]), p)
 
         # scalar function with m=1 and seed with length>1
@@ -113,34 +119,34 @@ class TestAutoDiffReverse:
         x = 1.5
         p = np.array([1, 5])
         with pytest.raises(ValueError):
-            ad = AutoDiff(f).get_derivative(x, p, "reverse")
+            ad = AutoDiff(f).get_derivative(x, p, mode="r")
 
         # scalar function with m=2 and seed with length=2
         f = lambda x: x[0] * sin(x[1])
         x = np.array([1, math.pi])
         p = np.array([1, 5])
-        assert AutoDiff(f).get_derivative(x, p, "r") == approx(
+        assert AutoDiff(f).get_derivative(x, p, mode="r") == approx(
             np.dot(np.array([0.0, -1]), p))
 
         # scalar function with a nested list (invalid input)
         f = lambda x: x[0] * sin(x[1])
         with pytest.raises(TypeError):
             ad = AutoDiff(f)
-            ad.get_derivative([1, [math.pi]], np.array([0, 1]), "r")
+            ad.get_derivative([1, [math.pi]], np.array([0, 1]), mode="r")
 
         # scalar function with 2-d array values (invalid input)
         with pytest.raises(TypeError):
             ad = AutoDiff(f)
             x = np.array([[1], [math.pi]])
             p = np.array([1, 5])
-            ad.get_derivative(x, p, "r")
+            ad.get_derivative(x, p, mode="r")
 
         # scalar function with m=1 and 2-d array seed (invalid input)
         with pytest.raises(TypeError):
             ad = AutoDiff(f)
             x = np.array([1, math.pi])
             p = np.array([[1], [5]])
-            ad.get_derivative(x, p, "r")
+            ad.get_derivative(x, p, mode="r")
 
         # n=2 vector function with m=1 and len(seed)>1 (invalid input)
         f = lambda x: exp(x) * (-x**(-1 / 2))
@@ -151,7 +157,7 @@ class TestAutoDiffReverse:
         p = np.array([1, 2.0, -1.5])
 
         with pytest.raises(ValueError):
-            d = AutoDiff([f, g]).get_derivative(x, p, "r")
+            d = AutoDiff([f, g]).get_derivative(x, p, mode="r")
 
         # n=2 vector function with m=1 and scalar seed
         f = lambda x: exp(x) * (-x**(-1 / 2))
@@ -160,7 +166,7 @@ class TestAutoDiffReverse:
         f_p = (np.exp(x) * (1 - 2 * x)) / (2 * x**(3 / 2))
         g_p = -np.sin(x) + 1 / x
         p = -200.5
-        assert AutoDiff([f, g]).get_derivative(x, p, "r") == approx(
+        assert AutoDiff([f, g]).get_derivative(x, p, mode="r") == approx(
             np.dot(np.array([[f_p], [g_p]]), p))
 
         # n=2 vector function with m=1 and a seed array with length 1
@@ -170,7 +176,7 @@ class TestAutoDiffReverse:
         f_p = (np.exp(x) * (1 - 2 * x)) / (2 * x**(3 / 2))
         g_p = -np.sin(x) + 1 / x
         p = np.transpose(np.array([-200.5]))
-        assert AutoDiff([f, g]).get_derivative(x, p, "r") == approx(
+        assert AutoDiff([f, g]).get_derivative(x, p, mode="r") == approx(
             np.dot(np.array([[f_p], [g_p]]), p.reshape(-1, 1)))
 
         # n=3 vector function with m=3
@@ -192,8 +198,8 @@ class TestAutoDiffReverse:
         res = np.array([[f_p_0, f_p_1, f_p_2], [g_p_0, g_p_1, g_p_2],
                         [h_p_0, h_p_1, h_p_2]])
         ad = AutoDiff([f, g, h])
-        assert ad.get_derivative(x, p,
-                                 "r") == approx(np.dot(res, p.reshape(-1, 1)))
+        assert ad.get_derivative(x, p, mode="r") == approx(
+            np.dot(res, p.reshape(-1, 1)))
 
         assert (np.array_equal(ad.point, x) and np.array_equal(ad.seed, p)
                 and np.allclose(ad.jacobian, res, atol=1e-15)
@@ -222,5 +228,5 @@ class TestAutoDiffReverse:
 
         # same function and value as above with new seed
         p = np.array([1, 1, 0])
-        assert (AutoDiff([f, g, h]).get_derivative(x, p, "r") == approx(
+        assert (AutoDiff([f, g, h]).get_derivative(x, p, mode="r") == approx(
             np.dot(res, p.reshape(-1, 1))))
