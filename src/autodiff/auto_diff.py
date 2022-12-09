@@ -359,7 +359,7 @@ class AutoDiff:
                 adj_list[node] = set(node.parents)
 
             # toposort the computational graph
-            sorted_list = toposort_flatten(adj_list)
+            sorted_list = toposort_flatten(adj_list, sort=False)
 
             # set last node's adjoint
             output_node.adjoint = 1
@@ -383,7 +383,7 @@ class AutoDiff:
 
     def get_derivative(self,
                        point: Union[int, float, list, np.ndarray],
-                       seed_vector: Union[int, float, list, np.ndarray],
+                       seed_vector=None,
                        mode="forward"):
         """ calculate the directional derivative given point and the seed vector
 
@@ -410,6 +410,13 @@ class AutoDiff:
             If mode is not one of the accepted strings
         """
 
+        # handle default seed_vector
+        if seed_vector == None:
+            default_seed_vector = True
+            seed_vector = 1
+        else:
+            default_seed_vector = False
+
         self._check_vector(point)
         self._check_vector(seed_vector)
 
@@ -429,7 +436,14 @@ class AutoDiff:
             point_arr = point
 
         if len(point_arr) != len(seed_vector_arr):
-            raise ValueError("Dimension mismatch")
+            if default_seed_vector == True:
+                raise ValueError(
+                    f"You must provide a seed_vector when evaluating derivatives on a multivariate function."
+                )
+            else:
+                raise ValueError(
+                    f"seed_vector is length {len(seed_vector_arr)}, and point is length: {len(point_arr)}. They must match."
+                )
 
         # check if the point are the same as last set of computed point
         compare = self.point == point
