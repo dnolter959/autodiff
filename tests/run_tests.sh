@@ -5,8 +5,10 @@ set -e
 # list of test cases you want to run
 tests=(
     test_dual_numbers.py
+    test_comp_graph.py
     test_auto_diff_math.py
     test_auto_diff.py
+    test_auto_diff_rev.py
 )
 
 # Must add the module source path because we use `import cs107_package` in
