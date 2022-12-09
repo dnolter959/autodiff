@@ -326,7 +326,7 @@ class AutoDiff:
 
         jacobian = []
         self.computational_graph = []
-        
+
         # for creating an array of 0s in case of constant function or function returning constants
         if isinstance(point, (int, float)):
             shape = (1, )
@@ -351,7 +351,8 @@ class AutoDiff:
                     ]
                 else:
                     input_nodes = [
-                        CompGraphNode(p, added_nodes=added_nodes) for p in point
+                        CompGraphNode(p, added_nodes=added_nodes)
+                        for p in point
                     ]
 
                 output_node = func(input_nodes)
@@ -376,19 +377,20 @@ class AutoDiff:
                     # toposort the computational graph
                     sorted_list = toposort_flatten(adj_list, sort=False)
 
-                        
-
                     # set last node's adjoint
                     output_node.adjoint = 1
 
                     # compute adjoint for each node
                     for node in reversed(sorted_list):
                         if node.parents is not None and node.partials is not None:
-                            for parent, partial in zip(node.parents, node.partials):
+                            for parent, partial in zip(node.parents,
+                                                       node.partials):
                                 parent.adjoint += node.adjoint * partial
 
                     # the chain-rule incorporated partial is stored as the input nodes adjoint
-                    jacobian += [np.array([node.adjoint for node in input_nodes])]
+                    jacobian += [
+                        np.array([node.adjoint for node in input_nodes])
+                    ]
                     # store computational_graph
                     self.computational_graph += [adj_list]
 
@@ -400,7 +402,7 @@ class AutoDiff:
 
     def get_derivative(self,
                        point: Union[int, float, list, np.ndarray],
-                       seed_vector: Union[int, float, list, np.ndarray],
+                       seed_vector=None,
                        mode="forward"):
         """ calculate the directional derivative given point and the seed vector
 
@@ -427,6 +429,13 @@ class AutoDiff:
             If mode is not one of the accepted strings
         """
 
+        # handle default seed_vector
+        if seed_vector is None:
+            default_seed_vector = True
+            seed_vector = 1
+        else:
+            default_seed_vector = False
+
         self._check_vector(point)
         self._check_vector(seed_vector)
 
@@ -446,7 +455,14 @@ class AutoDiff:
             point_arr = point
 
         if len(point_arr) != len(seed_vector_arr):
-            raise ValueError("Dimension mismatch")
+            if default_seed_vector == True:
+                raise ValueError(
+                    f"You must provide a seed_vector when evaluating derivatives on a multivariate function."
+                )
+            else:
+                raise ValueError(
+                    f"seed_vector is length {len(seed_vector_arr)}, and point is length: {len(point_arr)}. They must match."
+                )
 
         # check if the point are the same as last set of computed point
         compare = self.point == point

@@ -231,6 +231,13 @@ class TestAutoDiff:
         assert AutoDiff([f, g, h]).get_jacobian(x) == approx(res)
 
     def test_get_derivative(self):
+        # scalar function with m=1 and default_seed
+        f = lambda x: -x + cos(x) * sin(x) + 5 * x**4
+        x = 1.5
+        assert AutoDiff(f).get_derivative(x) == np.dot(
+            np.array([-1 + 20 * x**3 + (np.cos(x))**2 - (np.sin(x))**2]),
+            np.array([1]))
+
         # scalar function with m=1 and scalar seed
         f = lambda x: -x + cos(x) * sin(x) + 5 * x**4
         x = 1.5
