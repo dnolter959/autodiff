@@ -200,7 +200,7 @@ with the specified mode ("forward" or "reverse")
 We can also compute the direciontal derivative evaluated at point at direction (a seed vector). To do so we invoke the function `get_derivative` which takes these arguments
 
 ```python
-get_drivative(point: Union[int, float, list, np.ndarray], seed_vector=, mode="forward"):
+get_derivative(point: Union[int, float, list, np.ndarray], seed_vector=, mode="forward"):
 ```
 An example:
 ```python
@@ -230,13 +230,10 @@ value = [2, 3] # Order must match the indexing of x in f definition
 jacobian = ad.get_jacobian(value) # [[4, 2]]
 
 seed_vector = np.array([1, 0])
-derivative = ad.get_derivative(value, seed_vector) # [[4]]
+derivative = ad.get_derivative(value, seed_vector) # 4
 
 seed_vector = np.array([0, 1])
-derivative = ad.get_derivative(value, seed_vector) # [[2]]
-
-# NOTE: we ultimately will return a scalar for the above 2 values
-# but our implementation for this case is still in development
+derivative = ad.get_derivative(value, seed_vector) # 2
 ```
 
 **Case 3: $\mathbb{R} \rightarrow \mathbb{R}^m$ ($m \gt 1$)**
@@ -271,7 +268,7 @@ derivative = ad.get_derivative(value, seed_vector) # [[-6], [-2cos(2) + 3]]
 
 **Directory Structure**
 
-  We plan to set up our package directory structure as the following:
+Here is our package directory structure:
   
 ```
 team14/
@@ -347,20 +344,6 @@ Core Class 1: `DualNumber`
 
 ```python
 class DualNumber:
-    def __init__(self, real, dual=1):
-        """class DualNumber
-        A class for representing dual numbers, which are used for automatic
-        differentiation.
-        Parameters
-        ----------
-        real : float
-            The real part of the dual number.
-        dual : float, optional
-            The dual part of the dual number. Defaults to 1.
-        """
-        self.real = real
-        self.dual = dual
-
     def __add__(self, other):
         """Addition operator for dual numbers.
         Parameters
@@ -389,11 +372,8 @@ class DualNumber:
 ```
 
 - These methods have been carefully constructed to handle cases of, say, adding a DualNumber to a scalar (no matter the order in which they are passed).
-- Currently, we overload the following operators:
-  - __add__, __radd__, __sub__, __rsub__, __mul__, __rmul__, __truediv__, __rtruediv__, __pow__, __rpow__, __neg__, __repr__, __eq__, __ne__
-- TODO: check if implemented
-  - lt, gt, le, ge
-  
+- We overload the following operators:
+  - __add__, __radd__, __sub__, __rsub__, __mul__, __rmul__, __truediv__, __rtruediv__, __pow__, __rpow__, __neg__, __repr__, __eq__, __ne__, __lt__, __gt__, __le__, __ge__
 
 Core Class 2: `CompGraphNode`
 
@@ -409,51 +389,51 @@ Core Class 2: `CompGraphNode`
 - In order to do this we will perform "operation overloading" on dunder methods, and define, for example:
 
 ```python
-class DualNumber:
-    def __init__(self, real, dual=1):
-        """class DualNumber
-        A class for representing dual numbers, which are used for automatic
-        differentiation.
-        Parameters
-        ----------
-        real : float
-            The real part of the dual number.
-        dual : float, optional
-            The dual part of the dual number. Defaults to 1.
-        """
-        self.real = real
-        self.dual = dual
-
+class CompGraphNode:
     def __add__(self, other):
-        """Addition operator for dual numbers.
+        """Addition operator for nodes.
         Parameters
         ----------
-        self : DualNumber
-            The first dual number.
-        other : DualNumber or float or int
-            The second dual number or a real number.
+        self : CompGraphNode
+            The first node.
+        other : CompGraphNode or float or int
+            The second node or a real number.
         Returns
         -------
-        DualNumber
-            The sum of the two dual numbers.
+        CompGraphNode
+            The sum of the two nodes.
         Raises
         ------
         TypeError
-            If the other operand is not a dual number or a real number.
+            If the other operand is not a node or a real number.
         """
-        if isinstance(other, DualNumber):
-            return DualNumber(self.real + other.real, self.dual + other.dual)
-        elif isinstance(other, (int, float)):
-            return DualNumber(self.real + other, self.dual)
-        else:
-            raise TypeError(
-                "unsupported operand type(s) for +: '{}' and '{}'".format(
-                    type(self), type(other)))
+        if ("add", self, other) in self._added_nodes:
+            return self._added_nodes.get(("add", self, other))
+
+        if isinstance(other, (CompGraphNode, int, float)):
+            if isinstance(other, CompGraphNode):
+                node = CompGraphNode(self.value + other.value,
+                                     parents=[self, other],
+                                     partials=[1, 1],
+                                     added_nodes=self._added_nodes)
+
+            else:
+                node = CompGraphNode(self.value + other,
+                                     parents=[self],
+                                     partials=[1],
+                                     added_nodes=self._added_nodes)
+
+            # add to existing nodes
+            self._added_nodes[("add", self, other)] = node
+            return node
+
+        raise TypeError(
+            "unsupported operand type(s) for +: '{}' and '{}'".format(
+                type(self), type(other)))
 ```
 
-- These methods have been carefully constructed to handle cases of, say, adding a DualNumber to a scalar (no matter the order in which they are passed).
-- Currently, we overload the following operators:
-  - __add__, __radd__, __sub__, __rsub__, __mul__, __rmul__, __truediv__, __rtruediv__, __pow__, __rpow__, __neg__, __repr__, __lt__, __gt__
+- We overload the following operators:
+  - __add__, __radd__, __sub__, __rsub__, __mul__, __rmul__, __truediv__, __rtruediv__, __pow__, __rpow__, __neg__, __repr__
   
 Module: `auto_diff_math.py`
 
@@ -464,43 +444,51 @@ Module: `auto_diff_math.py`
    - `new_dual` is the derivative of `func` applied to `real` *times* `dual`
 - These functions gracefully handle non-Dual numbers, by, for example, falling back to the standard implementation (e.g., `np.sin`) when passed a real number.
 - By explicitly defining elemental operations in this way, we ensure that when evaluating expressions containing dual numbers, python will resolve to a final expression which is itself a dual number whose dual part represents the derivative of interest
-- Here is an example of such a function functions.
+- Here is an example of such a function.
 
 ```python
-import math
-from dual_numbers import DualNumber
-
-
 def sin(x):
-    """Computes the sine of a DualNumber or a numpy array of DualNumbers.
+    """Computes the sine of a real number, a DualNumber object, or a CompGraphNode object.
     
     Parameters
     ----------
-    x : DualNumber or int or float
+    x : int, float, DualNumber, or CompGraphNode
         The value to compute the sine of.
         
     Returns
     -------
-    DualNumber or int or float
+    int, float, DualNumber, or CompGraphNode
         The sine of x.
         
     Raises
     ------
     TypeError
-        If x is not a DualNumber or int or float.
+        If x is not a int, float, DualNumber, or CompGraphNode
     
     """
+    if isinstance(x, (int, float)):
+        return math.sin(x)
+
+    if isinstance(x, CompGraphNode):
+        if ("sin", x, None) in x._added_nodes:
+            return x._added_nodes.get(("sin", x, None))
+
+        node = CompGraphNode(math.sin(x.value),
+                             parents=[x],
+                             partials=[math.cos(x.value)],
+                             added_nodes=x._added_nodes)
+
+        x._added_nodes[("sin", x, None)] = node
+        return node
+
     if isinstance(x, DualNumber):
         return DualNumber(math.sin(x.real), math.cos(x.real) * x.dual)
-    elif isinstance(x, (int, float)):
-        return DualNumber(math.sin(x), 0)
-    else:
-        raise TypeError("sin() only accepts DualNumbers, ints, or floats.")
+
+    raise TypeError(
+        "sin() only accepts int, float, DualNumber, or CompGraphNode.")
 ```
-- The following operations are currently implemented:
-  - sin, cos, tan, exp, log, sinh, cosh, tanh 
-- We will eventually implement:
-  - arcsin, arccos, arctan, exponentials with any base, logistic, log with any base, sqrt
+- We implement the following:
+  - sin, cos, tan, exp, log, sinh, cosh, tanh, arcsin, arccos, arctan, exponentials with any base, logistic, log with any base, sqrt
 
 Interface Class: `AutoDiff`
 
@@ -547,7 +535,6 @@ Interface Class: `AutoDiff`
 
 # Extension
 
-
 ### Automatic Differentiation through Reverse Mode
 
 We have implemented reverse mode to efficiently handle the calculation of derivatives in the case of $f : \mathbb{R}^n \rightarrow \mathbb{R}^m$ where $n \gg m$. The above session briefly discussed the inclusion of reverse mode while this session will go into more detail about the implementation.
@@ -573,28 +560,6 @@ We have implemented reverse mode to efficiently handle the calculation of deriva
     - Evidently, the constructed graph is a directed acyclic graph (DAG). A topological sort is then imposed on the graph, which returns a sorted list of nodes such that all a child node comes after its parent nodes. The reverse pass to calculate the adjoints of each node is then started at the **end** of the sorted nodes, the output node. The reverse topological order ensures that a child node's adjoint will be computed before its parent nodes'.
     - After the reverse pass is complete, the partial derivatives $\frac{\partial f_i}{\partial x_k}$ are stored as the adjoint of the input nodes. The Jacobian matrix and directional derivatives are generated using the adjoints. 
     
-### 1) Default seed in `get_derivative`
-
-We will ultimately simplify our implementation of the `get_derivative` function to assign a default seed_vector of [1] in the case of $\mathbb{R} \rightarrow \mathbb{R}^m (m \ge 1)$. This way the user will be able to calculate derivatives as follows:
-
-```python
-# Current Implementation
-f = lambda x: x**2 + 3*x
-ad = AutoDiff(f)
-der = f.get_derivative(2, 1) # 7
-
-# Proposed Implementation
-f = lambda x: x**2 + 3*x
-ad = AutoDiff(f)
-der = f.get_derivative(2) # 7
-```
-
-### 2) Integrate Sphinx Docs in Github Actions
-- We are currently documenting our code using Sphnix, and documentation is available in our `docs` folder
-- We have generated this documentation on a one-time basis, and we would like to 
-  - Ensure that current documentation is correctly generated from docstrings in our code for each of our modules
-  - Set up a Github Action to automatically re-generate documentation on push or merge to master
-  - Add a note in our README directing users to this documentation (explore hosting it on a Github Page)
 
 # Broader Impact and Inclusivity Statement
 
