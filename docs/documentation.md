@@ -124,7 +124,7 @@ python3 -m venv .venv
 source .venv/bin/activate
 
 # Install required packages
-python3 -m pip install numpy pytest pytest-cov
+python3 -m pip install numpy pytest pytest-cov topsort
 
 # Run tests
 cd tests && ./run_tests.sh pytest -v && cd ..
@@ -133,7 +133,7 @@ cd tests && ./run_tests.sh pytest -v && cd ..
 ./tests/check_coverage.sh pytest
 
 # set PYTHONPATH
-export PYTHONPATH="[local/path/to/team14/src]":${PYTHONPATH}
+export PYTHONPATH="${pwd}/src":${PYTHONPATH}
 
 # Run imports and then use functions as specified below
 
