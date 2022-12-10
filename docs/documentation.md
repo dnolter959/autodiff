@@ -572,6 +572,20 @@ However, any algorithms that facilitate machine learning applications also augme
 
 
 ## Software Inclusivity
-The future development of this software package for any additional features, such as higher order derivatives, will aim to be open and inclusive. The current contecnt of this software package is contributed equally by all members of our team with diverse backgrounds and experiences, and reflects equal appreiciation and respect towards the diverse knowledge and expertise associated with these backgrounds. We hope that any future development continue to uphoad these values while being open to the braoder community. Specifically, we welcome everyone's contribution regardless of their background and the review of contributions, conducted by all members of the team, will be based on nothing else but the quality of the content. 
+The future development of this software package for any additional features, such as higher order derivatives, will aim to be open and inclusive. The current content of this software package is contributed equally by all members of our team with diverse backgrounds and experiences, and reflects equal appreciation and respect towards the diverse knowledge and expertise associated with these backgrounds. We hope that any future development continue to uphold these values while being open to the broader community. Specifically, we welcome everyone's contribution regardless of their background and the review of contributions, conducted by all members of the team, will be based on nothing else but the quality of the content. 
 
+# Future Enhancements
+
+## Higher order derivatives
+A natural next step for our project is a implement functionality for higher order derivatives. Calculating higher order derivatives of course has many applications in science and mathematics. For example, in physics, we use them to find the acceleration or jerk of an object moving through space. 
+
+Second derivatives are particularly useful in identifying whether a critical point of a function is a minimum or maximum (or saddle point). This is useful in, for example, statistics when performing maximum likelihood estimation on a complex likelihood function of many parameters. 
+
+Of course, our package can currently be used "as is" to compute higher order derivatives, in the sense that we can repeatedly call our differentiation functions on functional output. However, this naive approach is inefficient and, if we were to explore this option, we would need to research alternative, more efficient algorithms. 
+
+## Host Documentation on a static webpage
+Currently, if a user would like to view our Sphnix documentation, they need to clone our repo and view the appropriate index.html file locally. We would instead provide a better user experience by hosting our documentation on a static webpage (perhaps even one that is updated automatically on push to master), and linking to this webpage in our root-level README. 
+
+## Default choice for forward/reverse mode
+Some users may not be familiar with "forward" vs. "reverse" mode and simply want to calculate derivatives using our package, without knowing when it is wise to specify forward vs reverse mode. We could provide a default choice of forward/reverse mode based on the inputs that the user provides to the interface (for example, applying reverse mode with very high dimensional inputs).   
 
