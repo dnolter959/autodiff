@@ -49,6 +49,7 @@ def sin(x):
 
 def cos(x):
     """Computes the cosine of a real number, a DualNumber object, or a CompGraphNode object.    
+    
     Parameters
     ----------
     x : int, float, DualNumber, or CompGraphNode
@@ -395,7 +396,7 @@ def tanh(x):
     Returns
     -------
     int, float, DualNumber, or CompGraphNode
-        The hyperbolic tangent (cosh) of x.
+        The hyperbolic tangent (cosh) of x test.
         
     Raises
     ------

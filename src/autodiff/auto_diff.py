@@ -1,3 +1,5 @@
+""" A class to perform automatic differentiation on scalar and vector functions"""
+
 import inspect
 import numpy as np
 import re
@@ -11,8 +13,6 @@ from autodiff.utils.auto_diff_math import *
 
 class AutoDiff:
     """ A class to perform automatic differentiation on scalar and vector functions 
-
-    ...
 
     Attributes
     ----------
