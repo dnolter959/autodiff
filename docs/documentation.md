@@ -106,9 +106,9 @@ Another way to ahieve automatic differentiation is through the reverse mode. Unl
 The package will include a module for an `AutoDiff` class that utilizes the core data structure, the `DualNumber` objects. The user will interact with the `AutoDiff` module, without needing to interact with the `DualNumber` class. As such, user should import the `AutoDiff` module and the elementary functions for dual numbers. The user will initialize an `AutoDiff` object with a list of lambda functions representing a vector function $\mathbf{f}$. The user can then evaluate either a directional derivative, gradient, or Jacobian. and an associated `value` at which to evaluate. Example use cases are shown below.
 
 
-**Install** (Not yet available for pip install)
+**Install**
 ```bash
-#TBD
+pip install -i https://test.pypi.org/simple/ --extra-index-url team14-autodiff
 ```
 
 **Virtual Environment Setup**
