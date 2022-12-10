@@ -1,13 +1,35 @@
+"""Module contains the node class for automatic differentiation."""
+
 import numpy as np
 
 class CompGraphNode:
+    """class CompGraphNode
+
+    A class for representing nodes, which are used for automatic
+    differentiation.
+    """
     def __init__(self,
                  value,
                  parents=None,
                  partials=None,
                  adjoint=0,
                  added_nodes=None):
+        """Constructs a CompGraphNode object.
 
+        Parameters
+        ----------
+        value : float
+            A a real number representing the value of the node.
+        parents : float, optional
+            A list of reference to the node's parent nodes; default is None.
+        partials : float, optional
+            a list of partial derivatives in the same order as the list parents; default is None.
+        adjoint : float, optional
+            The value of adjoint used in reverse pass.
+        added_nodes : float, optional
+            A dictionary storing the nodes that have already been added to the computational graph; default is None.
+
+        """
         assert isinstance(value, (int, float))
         self.value = value
 

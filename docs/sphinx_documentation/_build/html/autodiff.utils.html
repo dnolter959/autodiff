@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html lang="en">
+<html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
 
     <title>autodiff.utils package &#8212; Automatic Differentiation 1 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
@@ -12,9 +12,7 @@
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
-    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="prev" title="autodiff package" href="autodiff.html" />
@@ -35,242 +33,335 @@
           <div class="body" role="main">
             
   <section id="autodiff-utils-package">
-<h1>autodiff.utils package<a class="headerlink" href="#autodiff-utils-package" title="Permalink to this heading">¶</a></h1>
+<h1>autodiff.utils package<a class="headerlink" href="#autodiff-utils-package" title="Permalink to this headline">¶</a></h1>
 <section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">¶</a></h2>
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </section>
 <section id="module-autodiff.utils.auto_diff_math">
-<span id="autodiff-utils-auto-diff-math-module"></span><h2>autodiff.utils.auto_diff_math module<a class="headerlink" href="#module-autodiff.utils.auto_diff_math" title="Permalink to this heading">¶</a></h2>
-<p>Module containing overloaded functions to handle dual numbers.</p>
+<span id="autodiff-utils-auto-diff-math-module"></span><h2>autodiff.utils.auto_diff_math module<a class="headerlink" href="#module-autodiff.utils.auto_diff_math" title="Permalink to this headline">¶</a></h2>
+<p>Module containing overloaded functions to handle dual numbers and computational graph nodes.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="autodiff.utils.auto_diff_math.acos">
+<span class="sig-prename descclassname"><span class="pre">autodiff.utils.auto_diff_math.</span></span><span class="sig-name descname"><span class="pre">acos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autodiff/utils/auto_diff_math.html#acos"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autodiff.utils.auto_diff_math.acos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the arccosine of a real number, a DualNumber object, or a CompGraphNode object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>int</em><em>, </em><em>float</em><em>, </em><a class="reference internal" href="#autodiff.utils.dual_numbers.DualNumber" title="autodiff.utils.dual_numbers.DualNumber"><em>DualNumber</em></a><em>, or </em><em>CompGraphNode</em>) – The value to compute the arccosine of.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The arccosine of x.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int, float, <a class="reference internal" href="#autodiff.utils.dual_numbers.DualNumber" title="autodiff.utils.dual_numbers.DualNumber">DualNumber</a>, or CompGraphNode</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>TypeError</strong> – If x is not a int, float, DualNumber, or CompGraphNode</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="autodiff.utils.auto_diff_math.asin">
+<span class="sig-prename descclassname"><span class="pre">autodiff.utils.auto_diff_math.</span></span><span class="sig-name descname"><span class="pre">asin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autodiff/utils/auto_diff_math.html#asin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autodiff.utils.auto_diff_math.asin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the arcsine of a real number, a DualNumber object, or a CompGraphNode object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>int</em><em>, </em><em>float</em><em>, </em><a class="reference internal" href="#autodiff.utils.dual_numbers.DualNumber" title="autodiff.utils.dual_numbers.DualNumber"><em>DualNumber</em></a><em>, or </em><em>CompGraphNode</em>) – The value to compute the arcsine of.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The arcsine of x.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int, float, <a class="reference internal" href="#autodiff.utils.dual_numbers.DualNumber" title="autodiff.utils.dual_numbers.DualNumber">DualNumber</a>, or CompGraphNode</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>TypeError</strong> – If x is not a int, float, DualNumber, or CompGraphNode</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="autodiff.utils.auto_diff_math.atan">
+<span class="sig-prename descclassname"><span class="pre">autodiff.utils.auto_diff_math.</span></span><span class="sig-name descname"><span class="pre">atan</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autodiff/utils/auto_diff_math.html#atan"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autodiff.utils.auto_diff_math.atan" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the arctan of a real number, a DualNumber object, or a CompGraphNode object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>int</em><em>, </em><em>float</em><em>, </em><a class="reference internal" href="#autodiff.utils.dual_numbers.DualNumber" title="autodiff.utils.dual_numbers.DualNumber"><em>DualNumber</em></a><em>, or </em><em>CompGraphNode</em>) – The value to compute the arctangent of.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The arctangent of x.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int, float, <a class="reference internal" href="#autodiff.utils.dual_numbers.DualNumber" title="autodiff.utils.dual_numbers.DualNumber">DualNumber</a>, or CompGraphNode</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>TypeError</strong> – If x is not a int, float, DualNumber, or CompGraphNode</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="autodiff.utils.auto_diff_math.cos">
 <span class="sig-prename descclassname"><span class="pre">autodiff.utils.auto_diff_math.</span></span><span class="sig-name descname"><span class="pre">cos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autodiff/utils/auto_diff_math.html#cos"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autodiff.utils.auto_diff_math.cos" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the cosine of a DualNumber or a numpy array of DualNumbers.</p>
-<section id="parameters">
-<h3>Parameters<a class="headerlink" href="#parameters" title="Permalink to this heading">¶</a></h3>
-<dl class="simple">
-<dt>x<span class="classifier">DualNumber or int or float</span></dt><dd><p>The value to compute the cosine of.</p>
+<dd><p>Computes the cosine of a real number, a DualNumber object, or a CompGraphNode object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>int</em><em>, </em><em>float</em><em>, </em><a class="reference internal" href="#autodiff.utils.dual_numbers.DualNumber" title="autodiff.utils.dual_numbers.DualNumber"><em>DualNumber</em></a><em>, or </em><em>CompGraphNode</em>) – The value to compute the cosine of.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The cosine of x.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int, float, <a class="reference internal" href="#autodiff.utils.dual_numbers.DualNumber" title="autodiff.utils.dual_numbers.DualNumber">DualNumber</a>, or CompGraphNode</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>TypeError</strong> – If x is not a int, float, DualNumber, or CompGraphNode</p>
 </dd>
 </dl>
-</section>
-<section id="returns">
-<h3>Returns<a class="headerlink" href="#returns" title="Permalink to this heading">¶</a></h3>
-<dl class="simple">
-<dt>DualNumber or int or float</dt><dd><p>The cosine of x.</p>
-</dd>
-</dl>
-</section>
-<section id="raises">
-<h3>Raises<a class="headerlink" href="#raises" title="Permalink to this heading">¶</a></h3>
-<dl class="simple">
-<dt>TypeError</dt><dd><p>If x is not a DualNumber or int or float.</p>
-</dd>
-</dl>
-</section>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="autodiff.utils.auto_diff_math.cosh">
 <span class="sig-prename descclassname"><span class="pre">autodiff.utils.auto_diff_math.</span></span><span class="sig-name descname"><span class="pre">cosh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autodiff/utils/auto_diff_math.html#cosh"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autodiff.utils.auto_diff_math.cosh" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the hyperbolic cosine of a DualNumber or a numpy array of DualNumbers.</p>
-<section id="id1">
-<h3>Parameters<a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h3>
-<dl class="simple">
-<dt>x<span class="classifier">DualNumber or int or float</span></dt><dd><p>The value to compute the hyperbolic cosine of.</p>
+<dd><p>Computes the hyperbolic cosine of a real number, a DualNumber object, or a CompGraphNode object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>int</em><em>, </em><em>float</em><em>, </em><a class="reference internal" href="#autodiff.utils.dual_numbers.DualNumber" title="autodiff.utils.dual_numbers.DualNumber"><em>DualNumber</em></a><em>, or </em><em>CompGraphNode</em>) – The value to compute the hyperbolic cosine of.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The hyperbolic cosine (cosh) of x.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int, float, <a class="reference internal" href="#autodiff.utils.dual_numbers.DualNumber" title="autodiff.utils.dual_numbers.DualNumber">DualNumber</a>, or CompGraphNode</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>TypeError</strong> – If x is not a int, float, DualNumber, or CompGraphNode</p>
 </dd>
 </dl>
-</section>
-<section id="id2">
-<h3>Returns<a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h3>
-<dl class="simple">
-<dt>DualNumber or int or float</dt><dd><p>The hyperbolic cosine (cosh) of x.</p>
-</dd>
-</dl>
-</section>
-<section id="id3">
-<h3>Raises<a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h3>
-<dl class="simple">
-<dt>TypeError</dt><dd><p>If x is not a DualNumber or int or float.</p>
-</dd>
-</dl>
-</section>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="autodiff.utils.auto_diff_math.exp">
 <span class="sig-prename descclassname"><span class="pre">autodiff.utils.auto_diff_math.</span></span><span class="sig-name descname"><span class="pre">exp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autodiff/utils/auto_diff_math.html#exp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autodiff.utils.auto_diff_math.exp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the exponential of a DualNumber or a numpy array of DualNumbers.</p>
-<section id="id4">
-<h3>Parameters<a class="headerlink" href="#id4" title="Permalink to this heading">¶</a></h3>
-<dl class="simple">
-<dt>x<span class="classifier">DualNumber or int or float</span></dt><dd><p>The value to compute the exponential of.</p>
+<dd><p>Computes the exponential of a real number, a DualNumber object, or a CompGraphNode object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>int</em><em>, </em><em>float</em><em>, </em><a class="reference internal" href="#autodiff.utils.dual_numbers.DualNumber" title="autodiff.utils.dual_numbers.DualNumber"><em>DualNumber</em></a><em>, or </em><em>CompGraphNode</em>) – The value to compute the exponential of.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The exponential of x.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int, float, <a class="reference internal" href="#autodiff.utils.dual_numbers.DualNumber" title="autodiff.utils.dual_numbers.DualNumber">DualNumber</a>, or CompGraphNode</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>TypeError</strong> – If x is not a int, float, DualNumber, or CompGraphNode</p>
 </dd>
 </dl>
-</section>
-<section id="id5">
-<h3>Returns<a class="headerlink" href="#id5" title="Permalink to this heading">¶</a></h3>
-<dl class="simple">
-<dt>DualNumber or int or float</dt><dd><p>The exponential of x.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="autodiff.utils.auto_diff_math.exp_b">
+<span class="sig-prename descclassname"><span class="pre">autodiff.utils.auto_diff_math.</span></span><span class="sig-name descname"><span class="pre">exp_b</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autodiff/utils/auto_diff_math.html#exp_b"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autodiff.utils.auto_diff_math.exp_b" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the exponential (any base) of a real number, a DualNumber object, or a CompGraphNode object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>int</em><em>, </em><em>float</em><em>, </em><a class="reference internal" href="#autodiff.utils.dual_numbers.DualNumber" title="autodiff.utils.dual_numbers.DualNumber"><em>DualNumber</em></a><em>, or </em><em>CompGraphNode</em>) – The value to compute the exp of of.</p></li>
+<li><p><strong>base</strong> (<em>int</em><em> or </em><em>float</em>) – The base to use.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The exponential of x with base defined</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int, float, <a class="reference internal" href="#autodiff.utils.dual_numbers.DualNumber" title="autodiff.utils.dual_numbers.DualNumber">DualNumber</a>, or CompGraphNode</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>TypeError</strong> – If x is not a int, float, DualNumber, or CompGraphNode</p>
 </dd>
 </dl>
-</section>
-<section id="id6">
-<h3>Raises<a class="headerlink" href="#id6" title="Permalink to this heading">¶</a></h3>
-<dl class="simple">
-<dt>TypeError</dt><dd><p>If x is not a DualNumber or int or float.</p>
-</dd>
-</dl>
-</section>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="autodiff.utils.auto_diff_math.log">
 <span class="sig-prename descclassname"><span class="pre">autodiff.utils.auto_diff_math.</span></span><span class="sig-name descname"><span class="pre">log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autodiff/utils/auto_diff_math.html#log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autodiff.utils.auto_diff_math.log" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the natural logarithm of a DualNumber or a numpy array of DualNumbers.</p>
-<section id="id7">
-<h3>Parameters<a class="headerlink" href="#id7" title="Permalink to this heading">¶</a></h3>
-<dl class="simple">
-<dt>x<span class="classifier">DualNumber or int or float</span></dt><dd><p>The value to compute the natural logarithm of.</p>
+<dd><p>Computes the natural logarithm of a real number, a DualNumber object, or a CompGraphNode object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>int</em><em>, </em><em>float</em><em>, </em><a class="reference internal" href="#autodiff.utils.dual_numbers.DualNumber" title="autodiff.utils.dual_numbers.DualNumber"><em>DualNumber</em></a><em>, or </em><em>CompGraphNode</em>) – The value to compute the natural logarithm of.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The natural logarithm of x.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int, float, <a class="reference internal" href="#autodiff.utils.dual_numbers.DualNumber" title="autodiff.utils.dual_numbers.DualNumber">DualNumber</a>, or CompGraphNode</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>TypeError</strong> – If x is not a int, float, DualNumber, or CompGraphNode</p>
 </dd>
 </dl>
-</section>
-<section id="id8">
-<h3>Returns<a class="headerlink" href="#id8" title="Permalink to this heading">¶</a></h3>
-<dl class="simple">
-<dt>DualNumber or int or float</dt><dd><p>The natural logarithm of x.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="autodiff.utils.auto_diff_math.log_b">
+<span class="sig-prename descclassname"><span class="pre">autodiff.utils.auto_diff_math.</span></span><span class="sig-name descname"><span class="pre">log_b</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autodiff/utils/auto_diff_math.html#log_b"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autodiff.utils.auto_diff_math.log_b" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the logarithm (any base) of a real number, a DualNumber object, or a CompGraphNode object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>int</em><em>, </em><em>float</em><em>, </em><a class="reference internal" href="#autodiff.utils.dual_numbers.DualNumber" title="autodiff.utils.dual_numbers.DualNumber"><em>DualNumber</em></a><em>, or </em><em>CompGraphNode</em>) – The value to compute the logarithm of.</p></li>
+<li><p><strong>base</strong> (<em>int</em><em> or </em><em>float</em>) – The base to use.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The logarithm of x with base defined</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int, float, <a class="reference internal" href="#autodiff.utils.dual_numbers.DualNumber" title="autodiff.utils.dual_numbers.DualNumber">DualNumber</a>, or CompGraphNode</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>TypeError</strong> – If x is not a int, float, DualNumber, or CompGraphNode</p>
 </dd>
 </dl>
-</section>
-<section id="id9">
-<h3>Raises<a class="headerlink" href="#id9" title="Permalink to this heading">¶</a></h3>
-<dl class="simple">
-<dt>TypeError</dt><dd><p>If x is not a DualNumber or int or float.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="autodiff.utils.auto_diff_math.logistic">
+<span class="sig-prename descclassname"><span class="pre">autodiff.utils.auto_diff_math.</span></span><span class="sig-name descname"><span class="pre">logistic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autodiff/utils/auto_diff_math.html#logistic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autodiff.utils.auto_diff_math.logistic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the logistic (sigmoid) of a real number, a DualNumber object, or a CompGraphNode object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>int</em><em>, </em><em>float</em><em>, </em><a class="reference internal" href="#autodiff.utils.dual_numbers.DualNumber" title="autodiff.utils.dual_numbers.DualNumber"><em>DualNumber</em></a><em>, or </em><em>CompGraphNode</em>) – The value to compute the sigmoid of.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The sigmoid of x.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int, float, <a class="reference internal" href="#autodiff.utils.dual_numbers.DualNumber" title="autodiff.utils.dual_numbers.DualNumber">DualNumber</a>, or CompGraphNode</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>TypeError</strong> – If x is not a int, float, DualNumber, or CompGraphNode</p>
 </dd>
 </dl>
-</section>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="autodiff.utils.auto_diff_math.sin">
 <span class="sig-prename descclassname"><span class="pre">autodiff.utils.auto_diff_math.</span></span><span class="sig-name descname"><span class="pre">sin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autodiff/utils/auto_diff_math.html#sin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autodiff.utils.auto_diff_math.sin" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the sine of a DualNumber or a numpy array of DualNumbers.</p>
-<section id="id10">
-<h3>Parameters<a class="headerlink" href="#id10" title="Permalink to this heading">¶</a></h3>
-<dl class="simple">
-<dt>x<span class="classifier">DualNumber or int or float</span></dt><dd><p>The value to compute the sine of.</p>
+<dd><p>Computes the sine of a real number, a DualNumber object, or a CompGraphNode object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>int</em><em>, </em><em>float</em><em>, </em><a class="reference internal" href="#autodiff.utils.dual_numbers.DualNumber" title="autodiff.utils.dual_numbers.DualNumber"><em>DualNumber</em></a><em>, or </em><em>CompGraphNode</em>) – The value to compute the sine of.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The sine of x.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int, float, <a class="reference internal" href="#autodiff.utils.dual_numbers.DualNumber" title="autodiff.utils.dual_numbers.DualNumber">DualNumber</a>, or CompGraphNode</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>TypeError</strong> – If x is not a int, float, DualNumber, or CompGraphNode</p>
 </dd>
 </dl>
-</section>
-<section id="id11">
-<h3>Returns<a class="headerlink" href="#id11" title="Permalink to this heading">¶</a></h3>
-<dl class="simple">
-<dt>DualNumber or int or float</dt><dd><p>The sine of x.</p>
-</dd>
-</dl>
-</section>
-<section id="id12">
-<h3>Raises<a class="headerlink" href="#id12" title="Permalink to this heading">¶</a></h3>
-<dl class="simple">
-<dt>TypeError</dt><dd><p>If x is not a DualNumber or int or float.</p>
-</dd>
-</dl>
-</section>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="autodiff.utils.auto_diff_math.sinh">
 <span class="sig-prename descclassname"><span class="pre">autodiff.utils.auto_diff_math.</span></span><span class="sig-name descname"><span class="pre">sinh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autodiff/utils/auto_diff_math.html#sinh"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autodiff.utils.auto_diff_math.sinh" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the hyperbolic sine of a DualNumber or a numpy array of DualNumbers.</p>
-<section id="id13">
-<h3>Parameters<a class="headerlink" href="#id13" title="Permalink to this heading">¶</a></h3>
-<dl class="simple">
-<dt>x<span class="classifier">DualNumber or int or float</span></dt><dd><p>The value to compute the hyperbolic sine of.</p>
+<dd><p>Computes the hyperbolic sine of a real number, a DualNumber object, or a CompGraphNode object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>int</em><em>, </em><em>float</em><em>, </em><a class="reference internal" href="#autodiff.utils.dual_numbers.DualNumber" title="autodiff.utils.dual_numbers.DualNumber"><em>DualNumber</em></a><em>, or </em><em>CompGraphNode</em>) – The value to compute the hyperbolic sine of.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The hyperbolic sine (sinh) of x.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int, float, <a class="reference internal" href="#autodiff.utils.dual_numbers.DualNumber" title="autodiff.utils.dual_numbers.DualNumber">DualNumber</a>, or CompGraphNode</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>TypeError</strong> – If x is not a int, float, DualNumber, or CompGraphNode</p>
 </dd>
 </dl>
-</section>
-<section id="id14">
-<h3>Returns<a class="headerlink" href="#id14" title="Permalink to this heading">¶</a></h3>
-<dl class="simple">
-<dt>DualNumber or int or float</dt><dd><p>The hyperbolic sine (sinh) of x.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="autodiff.utils.auto_diff_math.sqrt">
+<span class="sig-prename descclassname"><span class="pre">autodiff.utils.auto_diff_math.</span></span><span class="sig-name descname"><span class="pre">sqrt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autodiff/utils/auto_diff_math.html#sqrt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autodiff.utils.auto_diff_math.sqrt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the square root of a real number, a DualNumber object, or a CompGraphNode object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>int</em><em>, </em><em>float</em><em>, </em><a class="reference internal" href="#autodiff.utils.dual_numbers.DualNumber" title="autodiff.utils.dual_numbers.DualNumber"><em>DualNumber</em></a><em>, or </em><em>CompGraphNode</em>) – The value to compute the square root of.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The sqrt of x.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int, float, <a class="reference internal" href="#autodiff.utils.dual_numbers.DualNumber" title="autodiff.utils.dual_numbers.DualNumber">DualNumber</a>, or CompGraphNode</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>TypeError</strong> – If x is not a int, float, DualNumber, or CompGraphNode</p>
 </dd>
 </dl>
-</section>
-<section id="id15">
-<h3>Raises<a class="headerlink" href="#id15" title="Permalink to this heading">¶</a></h3>
-<dl class="simple">
-<dt>TypeError</dt><dd><p>If x is not a DualNumber or int or float.</p>
-</dd>
-</dl>
-</section>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="autodiff.utils.auto_diff_math.tan">
 <span class="sig-prename descclassname"><span class="pre">autodiff.utils.auto_diff_math.</span></span><span class="sig-name descname"><span class="pre">tan</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autodiff/utils/auto_diff_math.html#tan"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autodiff.utils.auto_diff_math.tan" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the tangent of a DualNumber or a numpy array of DualNumbers.</p>
-<section id="id16">
-<h3>Parameters<a class="headerlink" href="#id16" title="Permalink to this heading">¶</a></h3>
-<dl class="simple">
-<dt>x<span class="classifier">DualNumber or int or float</span></dt><dd><p>The value to compute the tangent of.</p>
+<dd><p>Computes the tangent of a real number, a DualNumber object, or a CompGraphNode object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>int</em><em>, </em><em>float</em><em>, </em><a class="reference internal" href="#autodiff.utils.dual_numbers.DualNumber" title="autodiff.utils.dual_numbers.DualNumber"><em>DualNumber</em></a><em>, or </em><em>CompGraphNode</em>) – The value to compute the tangent of.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The tangent of x.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int, float, <a class="reference internal" href="#autodiff.utils.dual_numbers.DualNumber" title="autodiff.utils.dual_numbers.DualNumber">DualNumber</a>, or CompGraphNode</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>TypeError</strong> – If x is not a int, float, DualNumber, or CompGraphNode</p>
 </dd>
 </dl>
-</section>
-<section id="id17">
-<h3>Returns<a class="headerlink" href="#id17" title="Permalink to this heading">¶</a></h3>
-<dl class="simple">
-<dt>DualNumber or int or float</dt><dd><p>The tangent of x.</p>
-</dd>
-</dl>
-</section>
-<section id="id18">
-<h3>Raises<a class="headerlink" href="#id18" title="Permalink to this heading">¶</a></h3>
-<dl class="simple">
-<dt>TypeError</dt><dd><p>If x is not a DualNumber or int or float.</p>
-</dd>
-</dl>
-</section>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="autodiff.utils.auto_diff_math.tanh">
 <span class="sig-prename descclassname"><span class="pre">autodiff.utils.auto_diff_math.</span></span><span class="sig-name descname"><span class="pre">tanh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autodiff/utils/auto_diff_math.html#tanh"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autodiff.utils.auto_diff_math.tanh" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the hyperbolic tangent of a DualNumber or a numpy array of DualNumbers.</p>
-<section id="id19">
-<h3>Parameters<a class="headerlink" href="#id19" title="Permalink to this heading">¶</a></h3>
-<dl class="simple">
-<dt>x<span class="classifier">DualNumber or int or float</span></dt><dd><p>The value to compute the hyperbolic tangent of.</p>
+<dd><p>Computes the hyperbolic tangent of a real number, a DualNumber object, or a CompGraphNode object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>int</em><em>, </em><em>float</em><em>, </em><a class="reference internal" href="#autodiff.utils.dual_numbers.DualNumber" title="autodiff.utils.dual_numbers.DualNumber"><em>DualNumber</em></a><em>, or </em><em>CompGraphNode</em>) – The value to compute the hyperbolic tangent of.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The hyperbolic tangent (cosh) of x test.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int, float, <a class="reference internal" href="#autodiff.utils.dual_numbers.DualNumber" title="autodiff.utils.dual_numbers.DualNumber">DualNumber</a>, or CompGraphNode</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>TypeError</strong> – If x is not a int, float, DualNumber, or CompGraphNode</p>
 </dd>
 </dl>
-</section>
-<section id="id20">
-<h3>Returns<a class="headerlink" href="#id20" title="Permalink to this heading">¶</a></h3>
-<dl class="simple">
-<dt>DualNumber or int or float</dt><dd><p>The hyperbolic tangent (cosh) of x.</p>
-</dd>
-</dl>
-</section>
-<section id="id21">
-<h3>Raises<a class="headerlink" href="#id21" title="Permalink to this heading">¶</a></h3>
-<dl class="simple">
-<dt>TypeError</dt><dd><p>If x is not a DualNumber or int or float.</p>
-</dd>
-</dl>
-</section>
 </dd></dl>
 
 </section>
 <section id="module-autodiff.utils.dual_numbers">
-<span id="autodiff-utils-dual-numbers-module"></span><h2>autodiff.utils.dual_numbers module<a class="headerlink" href="#module-autodiff.utils.dual_numbers" title="Permalink to this heading">¶</a></h2>
+<span id="autodiff-utils-dual-numbers-module"></span><h2>autodiff.utils.dual_numbers module<a class="headerlink" href="#module-autodiff.utils.dual_numbers" title="Permalink to this headline">¶</a></h2>
 <p>Module contains the dual number class for automatic differentiation.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="autodiff.utils.dual_numbers.DualNumber">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autodiff.utils.dual_numbers.</span></span><span class="sig-name descname"><span class="pre">DualNumber</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">real</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dual</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autodiff/utils/dual_numbers.html#DualNumber"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autodiff.utils.dual_numbers.DualNumber" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">autodiff.utils.dual_numbers.</span></span><span class="sig-name descname"><span class="pre">DualNumber</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">real</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dual</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autodiff/utils/dual_numbers.html#DualNumber"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#autodiff.utils.dual_numbers.DualNumber" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>class DualNumber</p>
+<p>A class for representing dual numbers, which are used for automatic
+differentiation.</p>
 </dd></dl>
 
 </section>
 <section id="module-autodiff.utils">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-autodiff.utils" title="Permalink to this heading">¶</a></h2>
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-autodiff.utils" title="Permalink to this headline">¶</a></h2>
 </section>
 </section>
 
@@ -291,9 +382,9 @@
 
 
 <h3>Navigation</h3>
-<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="modules.html">autodiff</a><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">src</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="autodiff.html">autodiff package</a></li>
 </ul>
 </li>
@@ -303,7 +394,7 @@
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-  <li><a href="modules.html">autodiff</a><ul>
+  <li><a href="modules.html">src</a><ul>
   <li><a href="autodiff.html">autodiff package</a><ul>
       <li>Previous: <a href="autodiff.html" title="previous chapter">autodiff package</a></li>
   </ul></li>
@@ -315,12 +406,12 @@
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>
     </div>
 </div>
-<script>document.getElementById('searchbox').style.display = "block"</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -337,7 +428,7 @@
       &copy;2022, team14.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.3.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

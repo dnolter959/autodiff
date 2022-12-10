@@ -1,4 +1,4 @@
-autodiff
+src
 ========
 
 .. toctree::

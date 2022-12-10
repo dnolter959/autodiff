@@ -5,12 +5,13 @@ import numpy as np
 
 
 class DualNumber:
+    """class DualNumber
 
+    A class for representing dual numbers, which are used for automatic
+    differentiation.
+    """
     def __init__(self, real, dual=1):
-        """class DualNumber
-
-        A class for representing dual numbers, which are used for automatic
-        differentiation.
+        """Constructs a DualNumber object.
 
         Parameters
         ----------
