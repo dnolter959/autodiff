@@ -311,7 +311,6 @@ class CompGraphNode:
             "unsupported operand type(s) for +: '{}' and '{}'".format(
                 type(self), type(other)))
 
-        return node
 
     def __rtruediv__(self, other):
         """Reflexive division operator for nodes.
@@ -384,7 +383,6 @@ class CompGraphNode:
             "unsupported operand type(s) for +: '{}' and '{}'".format(
                 type(self), type(other)))
 
-        return node
 
     def __rpow__(self, other):
         """Reflexive power operator for nodes.

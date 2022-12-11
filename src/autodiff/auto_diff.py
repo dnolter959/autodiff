@@ -62,7 +62,7 @@ class AutoDiff:
         # check type of each function
         if sum([not isinstance(func, (Callable, int, float))
                 for func in f]) > 0:
-            raise TypeError("Invalid input type")
+            raise TypeError("Invalid function type")
 
         self.f = f
 
@@ -77,8 +77,11 @@ class AutoDiff:
     def __str__(self):
         """ returns a description of the functions contained in the AutoDiff object """
 
+        if not isinstance(self.f, list):
+            return ""
+
         if len(self.f) < 1:
-            return None
+            return ""
 
         if len(self.f) == 1:
             res = "AutoDiff object of a scalar function:\n"
@@ -89,12 +92,6 @@ class AutoDiff:
             res = res + inspect.getsource(func).split(':')[1].strip() + "\n"
 
         return res
-
-    def __repr__(self):
-        """ returns a representation of the object"""
-        f = [inspect.getsource(func).split('=')[1].strip() for func in self.f]
-        ret = re.sub("'", "", f"AutoDiff({f})")
-        return f"'{ret}'"
 
     def __eq__(self, other):
         """ compare equality of two AutoDiff objects 
@@ -158,25 +155,29 @@ class AutoDiff:
 
         self._check_vector(point)
 
-        if len(self.f) == 1:
-            if isinstance(self.f[0], (int, float)):
-                return self.f[0](point).real
-
         values = []
         for func in self.f:
-            val = func(point)
-            assert isinstance(val, (int, float, DualNumber,
-                                    CompGraphNode)), "invalid function value"
+            # constant functions
+            if isinstance(func, (int, float)):
+                values += [func]
 
-            if isinstance(val, (int, float)):
-                values += [val]
-            elif isinstance(val, DualNumber):
-                values += [val.real]
             else:
-                values += [val.value]
+                val = func(point)
+                assert isinstance(val,
+                                  (int, float, DualNumber,
+                                   CompGraphNode)), "invalid function value"
 
-        if len(values) == 1:
+                if isinstance(val, (int, float)):
+                    values += [val]
+                elif isinstance(val, DualNumber):
+                    values += [val.real]
+                else:
+                    values += [val.value]
+
+        # return scalar for scalar input
+        if isinstance(point, (int, float)) and len(values) == 1:
             return values[0]
+
         return values
 
     def get_partial(self,
@@ -206,6 +207,11 @@ class AutoDiff:
 
         assert var_index is None or isinstance(var_index, int)
 
+        if isinstance(point,
+                      (list, np.ndarray)) and (var_index < 0
+                                               or var_index >= len(point)):
+            raise IndexError("index out of bound")
+
         self._check_vector(point)
 
         if isinstance(point, (int, float)):
@@ -231,9 +237,10 @@ class AutoDiff:
             elif isinstance(func(point_dual), DualNumber):
                 ret = np.append(ret, func(point_dual).dual)
 
-        # return as a scalar if there is only 1 input
-        if len(ret) == 1:
+        # return as a scalar if input is scalar
+        if isinstance(point, (int, float)) and len(ret) == 1:
             return ret[0]
+
         # return as an array
         return ret
 
@@ -272,9 +279,12 @@ class AutoDiff:
         self.seed = None
         self.point = point
 
-        if mode in ["forward", "f"]:
+        if not isinstance(mode, str):
+            raise ValueError("Invalid mode")
+
+        if mode.lower() in ["forward", "f"]:
             jacobian = self._get_jacobian_forward(point)
-        elif mode in ["reverse", "r"]:
+        elif mode.lower() in ["reverse", "r"]:
             jacobian = self._get_jacobian_reverse(point)
         else:
             raise ValueError("Invalid mode")
@@ -481,11 +491,15 @@ class AutoDiff:
 
         derivative = np.dot(self.jacobian, seed_vector_arr.reshape(-1, 1))
 
-        if derivative.ndim == 1 and len(derivative) == 1:
-            derivative = derivative[0]
+        # if derivative.ndim == 1 and len(derivative) == 1:
+        #     derivative = derivative[0]
 
-        if derivative.size == 1:
+        if isinstance(point, (int, float)) and isinstance(
+                derivative, np.ndarray) and derivative.size == 1:
             derivative = derivative.flatten()[0]
+        elif isinstance(point, (list, np.ndarray)) and isinstance(
+                derivative, np.ndarray) and derivative.size == 1:
+            derivative = derivative.flatten()
 
         self.derivative = derivative
         return self.derivative

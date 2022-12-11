@@ -11,7 +11,6 @@ from autodiff.utils.comp_graph import CompGraphNode
 
 class TestCompGraphNode:
     """Test class for CompGraphNode"""
-
     def test_init(self):
         node = CompGraphNode(2)
 
