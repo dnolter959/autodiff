@@ -73,7 +73,7 @@ In the computational graph below, we can see that we begin with the inputs to th
 
 Let us examine the utility of a computational graph with a complex function such as: 
 
-$f(x_1, x_2) = [sin(\frac{x_1}{x_2} + \frac{x_1}{x_2}) - e^{x_2} ] \cdot [ \frac{x1}{x2} - e^{x_2}]$ 
+$f(x_1, x_2) = [sin(\frac{x_1}{x_2}) + e^{x_2} ] \cdot [ \frac{x1}{x2} - e^{x_2}]$ 
 
 We can see that elementary functions we will need are exp(), sin(), addition, subtraction, multiplication, and division. Additionally, we will need to create intermediate steps that build on the independent variables $x_1$ and $x_2$ in order to create all parts of the complex model. By following the arrows of the graph, we can see how we can begin at the independent variables and arrive back at the full complex function f(x). 
 
@@ -83,35 +83,48 @@ We can see that elementary functions we will need are exp(), sin(), addition, su
 
 The evaluation trace allows us to utilize the components of our computational graph to aid us in solving the function value at a specific point and the partial derivatives with respect to each independent variable. The latter is done by utilizing seed vectors, p, which indicate the input variable to calculate the partial derivative of for the function. We will require one pass for each of the independent variables $(x_1, x_2)$. In the first pass, shown below, we set the seed vector $p = [1\;0]$.
 
-| Forward Primal Trace           | Forward Tangent Trace ($p = [1 \; 0 ]$)                    |
-| ---                            | ---                                                        |
-| $v_{-1} = x_1 = 1.5$           | $D_pv_{-1} = 1$                                            |
-| $v_0 = x_2 = 0.5$              | $D_pv_{0} = 0$                                             |
-| $v_1 = \frac{v_{-1}}{v_0} = 3$ | $D_pv_1 = \frac{(v_0 D_pv_{-1} - v_{-1}D_pv_0}{v_o^2} = 2$ |
-| $v_2 = sin(v_1)$ = 0.141       | $D_pv_2 = cos(v_1) \cdot D_pv_1 = -1.98$                   |
-| $v_3 = exp(v_0) = 1.649$       | $D_pv_3 = v_3 \cdot D_pv_0 = 0$                            |
-| $v_4 = v_1 - v_3 = 1.351$      | $D_pv_4 = D_pv_1 - D_pv_3 = 2$                             |
-| $v_5 = v_2 + v_4 = 1.492$      | $D_pv_5 = D_pv_2 + D_pv_4 = 0.02$                          |
-| $v_6 = v_5 \cdot v_4 = 2.017$  | $D_pv_5 \cdot v_4 - D_pv_4 \cdot v_5 = 3.012$              |
+| Forward Primal Trace           | Forward Tangent Trace ($p = [1 \; 0 ]$)                     |
+| ---                            | ---                                                         |
+| $v_{-1} = x_1 = 1.5$           | $D_pv_{-1} = 1$                                             |
+| $v_0 = x_2 = 0.5$              | $D_pv_{0} = 0$                                              |
+| $v_1 = \frac{v_{-1}}{v_0} = 3$ | $D_pv_1 = \frac{(v_0 D_pv_{-1} - v_{-1}D_pv_0)}{v_o^2} = 2$ |
+| $v_2 = sin(v_1)$ = 0.141       | $D_pv_2 = cos(v_1) \cdot D_pv_1 = -1.98$                    |
+| $v_3 = exp(v_0) = 1.649$       | $D_pv_3 = v_3 \cdot D_pv_0 = 0$                             |
+| $v_4 = v_1 - v_3 = 1.351$      | $D_pv_4 = D_pv_1 - D_pv_3 = 2$                              |
+| $v_5 = v_2 + v_3 = 1.79$       | $D_pv_5 = D_pv_2 + D_pv_3 = 1.98$                           |
+| $v_6 = v_5 \cdot v_4 = 2.418$  | $D_pv_5 \cdot v_4 - D_pv_4 \cdot v_5 = .905$               |
 
 
 We point out that the left column gives us the result of our function $f(x_1 = 1.5, x_2 = 0.5)$. Meanwhile, the right column gives us the results of the partial derivative with respect to $x_1$. We would require another pass with $p =[0 \; 1]$ in order to solve for the partial derivative with respect to $x_2$.
 
 ### Reverse Mode
 
-Another way to ahieve automatic differentiation is through the reverse mode. Unlike the forward mode, reverse mode does not evaluate the primal trace and tangent trace simultaneously, where at each step of the evaluation, the chain rule has been incorporated. Instead,  reverse mode 
+Another way to perform automatic differentiation is through the reverse mode. Unlike the forward mode, reverse mode does not need to perform one pass for each independent variables. Intead, to calculate a function's gradient, the reverse mode algorithm only requires two passes: forward and reverse pass. During the forward pass, reverse mode evaluates the primal trace, the values of each elementary operations and functions, and the sensitivity, the partial derivative between a parent and a child node. The algorithm also builds and stores the computational graph in the forward pass. During the reverse pass, reverse mode computes the adjoints, which are the partial derivatives with chain-rule incorporated. For node $v_i$, this is achieved by summing the products of each of its children node's adjoint $\bar{v}_j$ and the partial derivatives $\partial v_j/\partial v_i$, where $v_j$ is a child of $v_i$. 
+
+For the example above, the reversre mode will work as follows
+
+| Forward Pass (Top -> Bottom)                                                                                                  | Reverse Pass (Bottom -> Top)                                                                                               |
+| ---                                                                                                                           | ---                                                                                                                        |
+| $v_{-1} = x_1 = 1.5$, $\frac{\partial v_{-1}}{\partial x_1} = 1$                                                              | $\bar{v}_{-1} = \bar{v}_1\cdot\frac{\partial v_{1}}{\partial v_{-1}} = .905$                                               |
+| $v_0 = x_2 = 0.5$, $\frac{\partial v_{0}}{\partial x_2} = 1$                                                                  | $\bar{v}_0 = \bar{v}_1\cdot\frac{\partial v_{1}}{\partial v_0}+\bar{v}_3\cdot\frac{\partial v_{3}}{\partial v_0} = .452$   |
+| $v_1 = \frac{v_{-1}}{v_0} = 3$, $\frac{\partial v_{1}}{\partial v_{-1}} = 2$, $\frac{\partial v_{1}}{\partial v_0} = -.444$   | $\bar{v}_1 = \bar{v}_2\cdot\frac{\partial v_{2}}{\partial v_1}+\bar{v}_4\cdot\frac{\partial v_{4}}{\partial v_1} = .155$   |
+| $v_2 = sin(v_1) = 0.141$, $\frac{\partial v_{2}}{\partial v_{1}} = -.990$                                                     | $\bar{v}_2 = \bar{v}_5\cdot\frac{\partial v_{5}}{\partial v_2} = 1.351$                                                    |
+| $v_3 = exp(v_0) = 1.649$, $\frac{\partial v_{3}}{\partial v_{0}} = 1.649$                                                     | $\bar{v}_3 = \bar{v}_4\cdot\frac{\partial v_{4}}{\partial v_3}+\bar{v}_5\cdot\frac{\partial v_{5}}{\partial v_3} = -.439$  |
+| $v_4 = v_1 - v_3 = 1.351$, $\frac{\partial v_{4}}{\partial v_{1}} = 1$, $\frac{\partial v_{4}}{\partial v_3} = -1$            | $\bar{v}_4 = \bar{v}_6\cdot\frac{\partial v_{6}}{\partial v_4} = 1.79$                                                     |
+| $v_5 = v_2 + v_3 = 1.79$, $\frac{\partial v_{5}}{\partial v_{2}} = 1$, $\frac{\partial v_{5}}{\partial v_3} = 1$              | $\bar{v}_5 = \bar{v}_6\cdot\frac{\partial v_{6}}{\partial v_5} = 1.351$                                                    |
+| $v_6 = v_5 \cdot v_4 = 2.418$, $\frac{\partial v_{6}}{\partial v_{5}} = 1.351$, $\frac{\partial v_{6}}{\partial v_4} = 1.79$  | $\bar{v}_6 = 1$                                                                                                            |
 
 ## How to Use AutoDiff
 
 The package will include a module for an `AutoDiff` class that utilizes the core data structure, the `DualNumber` objects. The user will interact with the `AutoDiff` module, without needing to interact with the `DualNumber` class. As such, user should import the `AutoDiff` module and the elementary functions for dual numbers. The user will initialize an `AutoDiff` object with a list of lambda functions representing a vector function $\mathbf{f}$. The user can then evaluate either a directional derivative, gradient, or Jacobian. and an associated `value` at which to evaluate. Example use cases are shown below.
 
 
-**Install**
+### Install
 ```bash
 pip install -i https://test.pypi.org/simple/ --extra-index-url https://test.pypi.org/simple/ team14-autodiff
 ```
 
-**Virtual Environment Setup**
+### Virtual Environment Setup
 ```bash
 # Clone repo locally
 mkdir test_autodiff
@@ -141,16 +154,16 @@ export PYTHONPATH="${pwd}/src":${PYTHONPATH}
 python3 driver_script.py
 ```
 
-**Imports**
+### Imports
 ```python
 import numpy as np
 from autodiff.auto_diff import AutoDiff
 from autodiff.utils.auto_diff_math import *
 ```
 
-**Functions and Arguments**
+### Functions and Arguments
 
-Below we discuss usage of the interface functions included in `AutoDiff`. For detailed documentation and a list of supported operations and mathematical functions, please see our [sphinx documentation](./sphinx_documentation/_build/html/index.html).
+Below we discuss usage of the interface functions included in `AutoDiff`. For detailed documentation and a list of supported operations and mathematical functions, please see our TODO [sphinx documentation](./sphinx_documentation/_build/html/index.html).
 
 A function callable or list of callables is all that's needed to initiate an AutoDiff object. For example, here we initiate an AutoDiff object `ad` containing the vector function $\mathbf{f} = [f_1, f_2]^T$
 
@@ -212,7 +225,41 @@ ad.get_partial(point, var_index = 1)
 ```
 More sample usgaes of the aforementioned functions are inluded as Demos below. 
 
-**Demos**
+**Mathematical Functions Supported**
+```python
+# sine
+sin(x)
+# cosine
+cos(x)
+# tangent 
+tan(x)
+# exponential
+exp(x)
+# exponential with arbitrary base
+exp_b(x, base)
+# log with base e 
+log(x)
+# log with arbitrary base 
+log_b(x, base)
+# hyperbolic sine 
+sinh(x)
+# hyperbolic cosine 
+cosh(x)
+# hyperbolic tangent
+tanh(x)
+# square root
+sqrt(x)
+# arcsine
+asin(x)
+# arccosine
+acos(x)
+# arctan
+atan(x)
+# logistic (sigmoid)
+logistic(x)
+```
+
+### Demos
 
 **Case 1: $\mathbb{R} \rightarrow \mathbb{R}$**
 
@@ -226,8 +273,8 @@ value = 2
 partial = ad.get_partial(value) # 6
 
 # althugh users can use get_jacobian, note that by definition Jacobian is a matrix, 
-# so this returns a 1x1 matrix instead of a scalar
-jacobian = ad.get_jacobian(value) # [[6]]
+# so this returns vector instead of a scalar
+jacobian = ad.get_jacobian(value) # [6]
 
 # not specifying the seed in the R -> R case results in seed = 1
 # note that if seed is specified to a scalar s other than 1, the function
@@ -236,12 +283,17 @@ derivative = ad.get_derivative(value) # 6
 ```
 
 **Case 2: $\mathbb{R}^n \rightarrow \mathbb{R}$ ($n \gt 1$)**
+
+This is when we have a scalar function with multiple independent variables. Note that in this case the Jacobian returns a row vector, which should be distinguished from a column vector returned in case of $\mathbb{R}\to\mathbb{R}^m$. This is consistent with the definition of a Jacobian matrix.
+
 ```python
 f = lambda x: x[0]**2 + 2*x[1]
 ad = AutoDiff(f)
 value = [2, 3] # Order must match the indexing of x in f definition
+# row vector
 jacobian = ad.get_jacobian(value) # [[4, 2]]
 
+# directional derivatives
 seed_vector = np.array([1, 0])
 derivative = ad.get_derivative(value, seed_vector) # 4
 
@@ -250,24 +302,31 @@ derivative = ad.get_derivative(value, seed_vector) # 2
 ```
 
 **Case 3: $\mathbb{R} \rightarrow \mathbb{R}^m$ ($m \gt 1$)**
+
+This is when we have a vector function with a single independent variable. Note that in this case the Jacobian returns a column vector, which should be distinguished from a row vector returned in case of $\mathbb{R}^n\to\mathbb{R}$. This is consistent with the definition of a Jacobian matrix.
 ```python
 f1 = lambda x: x**2 + 2*x
 f2 = lambda x: sin(x)
 
 ad = AutoDiff([f1, f2])
 value = 2
+# column vector
 jacobian = ad.get_jacobian(value) # [[6], [cos(2)]]
 
+# directional derivative
 seed_vector = np.array([1])
 derivative = ad.get_derivative(value, seed_vector) # [[6], [cos(2)]]
 ``` 
 
 **Case 4: $\mathbb{R}^n \rightarrow \mathbb{R}^m$ ($n, m \gt 1$)**
+
 ```python
 f1 = lambda x: x[0]**2 + 2*x[1]
 f2 = lambda x: sin(x[0]) + 3*x[1]
 ad = AutoDiff([f1, f2])
 value = [2, 5] # Ordering specified by index of variables in f1, f2
+
+# m x n matrix
 jacobian = ad.get_jacobian(value) # [[4, 2], [cos(2), 3]]
 
 seed_vector = np.array([1, 0])
