@@ -150,30 +150,57 @@ from autodiff.utils.auto_diff_math import *
 
 **Functions and Arguments**
 
-Below we discuss usage of the major functions included in `AutoDiff` below. For detailed documentation and a list of supported operations and mathematical functions, please see our sphinx documentation.
+Below we discuss usage of the interface functions included in `AutoDiff`. For detailed documentation and a list of supported operations and mathematical functions, please see our [sphinx documentation](./sphinx_documentation/_build/html/index.html).
 
-A function callable or list of callables is all that's needed to initiate an AutoDiff object. For example, below we have initiate an AutoDiff object `ad` containing the vector function $\mathbf{f} = [f_1, f_2]^T$
+A function callable or list of callables is all that's needed to initiate an AutoDiff object. For example, here we initiate an AutoDiff object `ad` containing the vector function $\mathbf{f} = [f_1, f_2]^T$
+
 ```python
 f1 = lambda(x): x[0]+x[1]
 f2 = lambda(x): x[0]*x[1]
 ad = AutoDiff([f1, f2])
 ```
-Note that, as shown in the example above, if the function takes $\mathbb{R}^m$ input, the argument for the function should be treated as an array with integer indices, and the index `k-1` should be used to indicate $x_k$ for $k\in \{1,...,m\}$, i.e. `x[0]` represents $x_1$.
+Note that, as shown in the example above, if the function takes an $\mathbb{R}^m$ input, the argument for the function should be treated as an array with integer indices, and the index `k-1` should be used to indicate $x_k$ for $k\in \{1,...,m\}$, i.e. `x[0]` represents $x_1$.
 
 To evaluate the function values at a given point $\mathbf{x}$ we use `get_value`, the function arguments are
 
 ```python
 ad.get_value(point: Union[int, float, list, np.ndarray])
 ```
+
 where `point` should be an `int` or `float` object if $x\in\mathbb{R}$ and a python list or numpy array if $\mathbf{x}\in\mathbb{R}^m$. An example would then be
+
 ```python
 # evaluate function value at point
 point = np.array([1, 1)]
 ad.get_value(point)
 ```
 
-Now entering the differentiation territory. First, to obtain partial derivative with respect to a specific $x_k$ given a `point`, we can use the function
+Now entering the differentiation territory. To obtain the gradient of a scalar function or the Jacobian matrix of vector function, use `get_jacobian`
 
+```python
+get_jacobian(point: Union[int, float, list, np.ndarray], mode="forward"):
+```
+
+Note that the Jacobian matrix is the most generalized form of partial derivatives of $\mathbf{f}:\mathbb{R}^m\to\mathbb{R}^n$. As mentioned above, the `get_jacobian` function returns a **gradient** in case of scalar function $f:\mathbb{R}^m\to\mathbb{R}$. We will include a related demo later in this documentation.
+
+The Jacobian can be computed through forward or reverse mode, specified via the `mode` argument, which takes one of the valid strings (case insensitive) `["f", "forward", "r", "reverse"`, with default set to forward mode.
+
+We can also compute the **direciontal derivative** evaluated at point at direction (a seed vector). To do so we invoke the function `get_derivative` which takes these arguments
+
+```python
+get_derivative(point: Union[int, float, list, np.ndarray], seed_vector=None, mode="forward"):
+```
+ where the coordinates are passed to `point` and $k-1$ is passed to `var_index`. If the function has one single, scalar input, `var_index` is ignored and the partial derivative is the derivative evaluated at `point`. The `mode` argument works in the same way as in `get_jacobian`. 
+ 
+ In the example below we have an input of $\mathbf{x}=[x_1, x_2]^T$ and we obtain the partial derivative with respect to $x_2$, evaluated at $[1, 1]^T$:
+ 
+```python
+point = np.array([1, 1)]
+p = np.array([1,0])
+ad.get_derivative(point, seed_vector = p)
+```
+
+The next function that may come in handy is `get_partial`. This function can be used to obtain only the partial derivative with respect to one specific independent variable when there are multiple:
 ```python
 get_partial(point: Union[int, float, list, np.ndarray], var_index = None)
 ```
@@ -183,43 +210,29 @@ get_partial(point: Union[int, float, list, np.ndarray], var_index = None)
 point = np.array([1, 1)]
 ad.get_partial(point, var_index = 1)
 ```
+More sample usgaes of the aforementioned functions are inluded as Demos below. 
 
-The next function that may come in handy is  
-```python
-get_jacobian(point: Union[int, float, list, np.ndarray], mode="forward"):
-```
-Note that the Jacobian matrix is the most generalized form of partial derivatives of $\mathbf{f}:\mathbb{R}^m\to\mathbb{R}^n$. The `get_jacobian` function returns a **gradient** in case of scalar function $f:\mathbb{R}^m\to\mathbb{R}$. We will include a specific example later in this documentation.
-
-```python
-# obtain the jacobian matrix evaluated at point, with the specified mode ("forward" or "reverse")
-ad.get_jacobian(point: Union[int, float, list, np.ndarray], mode="forward"):
-```
-
-with the specified mode ("forward" or "reverse")
-
-We can also compute the direciontal derivative evaluated at point at direction (a seed vector). To do so we invoke the function `get_derivative` which takes these arguments
-
-```python
-get_derivative(point: Union[int, float, list, np.ndarray], seed_vector=, mode="forward"):
-```
-An example:
-```python
-point = np.array([1, 1)]
-p = np.array([1,0])
-ad.get_derivative(point, seed_vector = p)
-```
-
-**More Examples**
+**Demos**
 
 **Case 1: $\mathbb{R} \rightarrow \mathbb{R}$**
+
+In this case, users can use `get_partial`, `get_jacobian`, and `get_derivative` to achieve the same goal of computing derivatives.
 ```python
 f = lambda x: x**2 + 2*x
 ad = AutoDiff(f)
 value = 2
+
+# when x in R, the partial derivative w.r.t. x is the derivative
+partial = ad.get_partial(value) # 6
+
+# althugh users can use get_jacobian, note that by definition Jacobian is a matrix, 
+# so this returns a 1x1 matrix instead of a scalar
 jacobian = ad.get_jacobian(value) # [[6]]
 
-seed_vector = np.array([1])
-derivative = ad.get_derivative(value, seed_vector) # 6
+# not specifying the seed in the R -> R case results in seed = 1
+# note that if seed is specified to a scalar s other than 1, the function
+# returns the product of the derivative and s
+derivative = ad.get_derivative(value) # 6
 ```
 
 **Case 2: $\mathbb{R}^n \rightarrow \mathbb{R}$ ($n \gt 1$)**
