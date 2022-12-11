@@ -108,7 +108,7 @@ The package will include a module for an `AutoDiff` class that utilizes the core
 
 **Install**
 ```bash
-pip install -i https://test.pypi.org/simple/ --extra-index-url team14-autodiff
+pip install -i https://test.pypi.org/simple/ --extra-index-url https://test.pypi.org/simple/ team14-autodiff
 ```
 
 **Virtual Environment Setup**
