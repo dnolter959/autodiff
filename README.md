@@ -1,6 +1,8 @@
 ![example workflow](https://code.harvard.edu/CS107/team14/actions/workflows/test.yml/badge.svg)
 ![second badge](https://code.harvard.edu/CS107/team14/actions/workflows/code_coverage.yml/badge.svg)
 
+**Code Coverage Report:** https://code.harvard.edu/pages/CS107/team14/
+
 # team14-autodiff
 
 ## Overiew
@@ -13,14 +15,18 @@
 
 We will provide separate (but similar) installation instructions for 1) typical users and 2) fellow developers. In each case we will assume the user will install in a virtual environment, and will show correspond steps. 
 
-#### 1) Installation for typical package users
+If a user (typical or developer) wishes to install our package in a virtual environment, they may begin by running the following commands. Within a virtual environment, a user must install package dependencies (as specified below: numpy, pytest, toposort, pytest-cov); but this step is not necessary if these dependencies are already installed within the user's local environment. 
+
 ```sh
 # Create and activate virtual environment
 mkdir test_autodiff
 cd test_autodiff
 python3 -m venv .venv
 source .venv/bin/activate
+```
 
+#### 1) Installation for typical package users
+```sh
 # Install package and necessary dependencies
 python -m pip install -i https://test.pypi.org/simple/ team14-autodiff
 python -m pip install numpy pytest pytest-cov toposort
@@ -28,16 +34,15 @@ python -m pip install numpy pytest pytest-cov toposort
 
 #### 2) Installation for developers
 ```sh
-# Create and activate virtual environment
-mkdir test_autodiff
-cd test_autodiff
-
-python3 -m venv .venv
-source .venv/bin/activate
-
 # Clone repo
 git clone git@code.harvard.edu:CS107/team14.git
 cd team14
+
+# Install necessary dependencies
+python -m pip install numpy pytest pytest-cov toposort
+
+# set PYTHONPATH
+export PYTHONPATH="${pwd}/src":${PYTHONPATH}
 
 # Run tests
 cd tests && ./run_tests.sh pytest -v && cd ..
@@ -47,10 +52,6 @@ cd tests && ./run_tests.sh pytest -v && cd ..
 
 # Look at Sphinx Docs
 open docs/sphinx/build/html/index.html 
-
-# Install package and necessary dependencies
-python -m pip install -i https://test.pypi.org/simple/ team14-autodiff
-python -m pip install numpy pytest pytest-cov toposort
 
 # Run test script
 python3 driver_script.py
@@ -72,6 +73,15 @@ More detailed documentation is available [here](https://code.harvard.edu/CS107/t
 import numpy as np
 from autodiff.auto_diff import AutoDiff
 from autodiff.utils.auto_diff_math import *
+```
+
+**Case 0: Evaluating a function at an input**
+```python
+f = lambda x: x**2 + 2*x
+ad = AutoDiff(f)
+value = 2
+
+derivative = ad.get_value(value) # 8
 ```
 
 **Case 1: $\mathbb{R} \rightarrow \mathbb{R}$**
@@ -126,6 +136,14 @@ derivative = ad.get_derivative(value, seed_vector) # [[4], [cos(2)]]
 
 seed_vector = np.array([-2, 1])
 derivative = ad.get_derivative(value, seed_vector) # [[-6], [-2cos(2) + 3]]
+```
+
+## Documentation
+Complete, function-level documentation is available via Sphinx. To access it, follow these steps (also outlined above in developer-level installation.)
+
+```sh
+git clone git@code.harvard.edu:CS107/team14.git
+open team14/docs/sphinx/build/html/index.html 
 ```
 
 ## Broader Impact

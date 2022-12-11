@@ -119,25 +119,38 @@ For the example above, the reversre mode will work as follows
 The package will include a module for an `AutoDiff` class that utilizes the core data structure, the `DualNumber` objects. The user will interact with the `AutoDiff` module, without needing to interact with the `DualNumber` class. As such, user should import the `AutoDiff` module and the elementary functions for dual numbers. The user will initialize an `AutoDiff` object with a list of lambda functions representing a vector function $\mathbf{f}$. The user can then evaluate either a directional derivative, gradient, or Jacobian. and an associated `value` at which to evaluate. Example use cases are shown below.
 
 
-### Install
-```bash
-pip install -i https://test.pypi.org/simple/ --extra-index-url https://test.pypi.org/simple/ team14-autodiff
-```
+### Installation
 
-### Virtual Environment Setup
-```bash
-# Clone repo locally
+We will provide separate (but similar) installation instructions for 1) typical users and 2) fellow developers. In each case we will assume the user will install in a virtual environment, and will show correspond steps. 
+
+If a user (typical or developer) wishes to install our package in a virtual environment, they may begin by running the following commands. Within a virtual environment, a user must install package dependencies (as specified below: numpy, pytest, toposort, pytest-cov); but this step is not necessary if these dependencies are already installed within the user's local environment. 
+
+```sh
+# Create and activate virtual environment
 mkdir test_autodiff
 cd test_autodiff
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+#### 1) Installation for typical package users
+```sh
+# Install package and necessary dependencies
+python -m pip install -i https://test.pypi.org/simple/ team14-autodiff
+python -m pip install numpy pytest pytest-cov toposort
+```
+
+#### 2) Installation for developers
+```sh
+# Clone repo
 git clone git@code.harvard.edu:CS107/team14.git
 cd team14
 
-# Create and activate virtual environment
-python3 -m venv .venv
-source .venv/bin/activate
+# Install necessary dependencies
+python -m pip install numpy pytest pytest-cov toposort
 
-# Install required packages
-python3 -m pip install numpy pytest pytest-cov toposort
+# set PYTHONPATH
+export PYTHONPATH="${pwd}/src":${PYTHONPATH}
 
 # Run tests
 cd tests && ./run_tests.sh pytest -v && cd ..
@@ -145,12 +158,10 @@ cd tests && ./run_tests.sh pytest -v && cd ..
 # Run code coverage
 ./tests/check_coverage.sh pytest
 
-# set PYTHONPATH
-export PYTHONPATH="${pwd}/src":${PYTHONPATH}
+# Look at Sphinx Docs
+open docs/sphinx/build/html/index.html 
 
-# Run imports and then use functions as specified below
-
-# Here is an example script that imports and runs Newton's Method
+# Run test script
 python3 driver_script.py
 ```
 
@@ -163,7 +174,7 @@ from autodiff.utils.auto_diff_math import *
 
 ### Functions and Arguments
 
-Below we discuss usage of the interface functions included in `AutoDiff`. For detailed documentation and a list of supported operations and mathematical functions, please see our TODO [sphinx documentation](./sphinx_documentation/_build/html/index.html).
+Below we discuss usage of the interface functions included in `AutoDiff`. For detailed documentation and a list of supported operations and mathematical functions, please see our sphinx documentation.
 
 A function callable or list of callables is all that's needed to initiate an AutoDiff object. For example, here we initiate an AutoDiff object `ad` containing the vector function $\mathbf{f} = [f_1, f_2]^T$
 
@@ -390,7 +401,7 @@ team14/
   - As indicated above, the test suite will be in the `tests/` directory, separated from the source files.
 - Package distribution
   - PyPI with PEP517.
-- TODO: How can someone install your package? Should developers and consumers follow a different installation procedure?How can someone install your package? Should developers and consumers follow a different installation procedure?
+- Package installation is detailed above, separately for developers and typical users. Developers may wish to run our tests, look at our documentation, and run code coverage locally. To do so they must git clone our repository and run the commands specified above. In this situation they do not need to install the package from PyPI; they can simply set their PYTHONPATH as specified.
 
 ## Implementation Details
 
