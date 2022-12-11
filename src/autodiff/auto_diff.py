@@ -37,7 +37,6 @@ class AutoDiff:
         Computes the directional derivative evaluated at the point in the direction and 
         magnitude of seed_vector
     """
-
     def __init__(self, f: Union[list, Callable, int, float]):
         """
         Constructs an AutoDiff object.
@@ -77,12 +76,12 @@ class AutoDiff:
 
     def __str__(self):
         """ returns a description of the functions contained in the AutoDiff object """
-        
+
         if not isinstance(self.f, list):
             return ""
-        
+
         if len(self.f) < 1:
-            return "" 
+            return ""
 
         if len(self.f) == 1:
             res = "AutoDiff object of a scalar function:\n"
@@ -161,11 +160,12 @@ class AutoDiff:
             # constant functions
             if isinstance(func, (int, float)):
                 values += [func]
-            
+
             else:
                 val = func(point)
-                assert isinstance(val, (int, float, DualNumber,
-                                        CompGraphNode)), "invalid function value"
+                assert isinstance(val,
+                                  (int, float, DualNumber,
+                                   CompGraphNode)), "invalid function value"
 
                 if isinstance(val, (int, float)):
                     values += [val]
@@ -173,7 +173,7 @@ class AutoDiff:
                     values += [val.real]
                 else:
                     values += [val.value]
-        
+
         # return scalar for scalar input
         if isinstance(point, (int, float)) and len(values) == 1:
             return values[0]
@@ -489,9 +489,11 @@ class AutoDiff:
         # if derivative.ndim == 1 and len(derivative) == 1:
         #     derivative = derivative[0]
 
-        if isinstance(point, (int, float)) and isinstance(derivative, np.ndarray) and derivative.size == 1:
+        if isinstance(point, (int, float)) and isinstance(
+                derivative, np.ndarray) and derivative.size == 1:
             derivative = derivative.flatten()[0]
-        elif isinstance(point, (list, np.ndarray)) and isinstance(derivative, np.ndarray) and derivative.size == 1:
+        elif isinstance(point, (list, np.ndarray)) and isinstance(
+                derivative, np.ndarray) and derivative.size == 1:
             derivative = derivative.flatten()
 
         self.derivative = derivative

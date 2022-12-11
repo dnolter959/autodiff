@@ -13,7 +13,6 @@ from autodiff.utils.dual_numbers import DualNumber
 
 class TestDualNumber:
     """Test class for dual number types"""
-
     def test_init(self):
         z1 = DualNumber(2, 1)
         assert z1.real == 2
@@ -175,8 +174,7 @@ class TestDualNumber:
         assert (z1**z2).real == 5
         assert (z1**z2).dual == (5**0) * (1 * 5 + np.log(5) * 5 * 1)
         assert (z3**z1).real == 1
-        assert (z3**z1).dual == 5 * 1 ** (5 -1) * 0
-
+        assert (z3**z1).dual == 5 * 1**(5 - 1) * 0
 
     def test_reflective_power(self):
         z1 = DualNumber(3, 3)

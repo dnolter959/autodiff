@@ -13,7 +13,6 @@ from autodiff.utils.auto_diff_math import *
 
 class TestAutoDiffMath:
     """Test class for dual number types"""
-
     def test_sin(self):
         z1 = DualNumber(np.pi / 4)
         z2 = np.pi / 4
@@ -221,7 +220,6 @@ class TestAutoDiffMath:
         with pytest.raises(ValueError):
             asin(CompGraphNode(1.5))
 
-
     def test_acos(self):
         z1 = DualNumber(0.5)
         z2 = 0.5
@@ -260,7 +258,6 @@ class TestAutoDiffMath:
 
         with pytest.raises(ValueError):
             acos(CompGraphNode(1.5))
-
 
     def test_atan(self):
         z1 = DualNumber(0.5)

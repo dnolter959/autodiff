@@ -10,7 +10,6 @@ from autodiff.utils.auto_diff_math import *
 
 
 class TestAutoDiff:
-
     def test_construction(self):
         # initialize with None
         with pytest.raises(TypeError):
@@ -59,12 +58,12 @@ class TestAutoDiff:
         ad3 = AutoDiff(h)
         assert ad1 != ad3
 
-        ad4 = AutoDiff([f,h])
+        ad4 = AutoDiff([f, h])
         assert ad1 != ad4
 
     def test_str(self):
         # change f attribute of AD object directly
-        f = lambda x: x+1
+        f = lambda x: x + 1
         ad = AutoDiff([f])
         ad.f = None
         assert str(ad) == ""
@@ -103,7 +102,7 @@ class TestAutoDiff:
         f = 3
         g = 2
         x = 1.5
-        compare = AutoDiff([f,g]).get_value(x) == np.array([3, 2])
+        compare = AutoDiff([f, g]).get_value(x) == np.array([3, 2])
         assert compare.all()
 
         # scalar function with m=1
@@ -136,7 +135,8 @@ class TestAutoDiff:
         h_v = 5
         assert np.allclose(AutoDiff([f, g, h]).get_value(x),
                            np.array([f_v, g_v, h_v]),
-                           rtol=1e-15, atol=1e-15)
+                           rtol=1e-15,
+                           atol=1e-15)
 
         # vector function with m=3
         x = np.array([-1, 10, 105.5])
@@ -148,7 +148,8 @@ class TestAutoDiff:
         h_v = 5 + x[0]
         assert np.allclose(AutoDiff([f, g, h]).get_value(x),
                            np.array([f_v, g_v, h_v]),
-                           rtol=1e-15, atol=1e-15)
+                           rtol=1e-15,
+                           atol=1e-15)
 
     def test_get_partial(self):
         # scalar function with m=1
@@ -160,26 +161,23 @@ class TestAutoDiff:
         # scalar constant function with m=1
         f = 2
         x = 1.5
-        assert AutoDiff(f).get_partial(
-            x) == 0
+        assert AutoDiff(f).get_partial(x) == 0
 
         # scalar constant function with m=1
         f = lambda x: 2
         x = 1.5
-        assert AutoDiff(f).get_partial(
-            x) == 0
+        assert AutoDiff(f).get_partial(x) == 0
 
         # scalar function with constant return with m=1
         f = lambda x: sin(10)
         x = 1.5
-        assert AutoDiff(f).get_partial(
-            x) == 0
+        assert AutoDiff(f).get_partial(x) == 0
 
         # scalar function with m=2 passed as list
         f = lambda x: x[0] * sin(x[1])
-        assert (AutoDiff(f).get_partial([1, math.pi], 0)
-                == approx(0.0) and AutoDiff(f).get_partial(
-                    np.array([1, math.pi]), 1) == approx(-1))
+        assert (AutoDiff(f).get_partial([1, math.pi], 0) == approx(0.0)
+                and AutoDiff(f).get_partial(np.array([1, math.pi]),
+                                            1) == approx(-1))
 
         # scalar function with a nested list (invalid input)
         f = lambda x: x[0] * sin(x[1])
@@ -260,8 +258,8 @@ class TestAutoDiff:
 
         # scalar function with m=2 passed as list
         f = lambda x: x[0] * sin(x[1])
-        assert AutoDiff(f).get_jacobian([1, math.pi]) == approx(
-            np.array([[0.0, -1]]))
+        assert AutoDiff(f).get_jacobian([1, math.pi
+                                         ]) == approx(np.array([[0.0, -1]]))
 
         # scalar function with a nested list (invalid input)
         f = lambda x: x[0] * sin(x[1])
@@ -323,7 +321,6 @@ class TestAutoDiff:
                         [h_p_0, h_p_1, h_p_2]])
         assert AutoDiff([f, g, h]).get_jacobian(x) == approx(res)
 
-
     def test_get_derivative(self):
         # scalar function with m=1 and default_seed
         f = lambda x: -x + cos(x) * sin(x) + 5 * x**4
@@ -351,8 +348,11 @@ class TestAutoDiff:
         f = lambda x: -x[0] + cos(x[0]) * sin(x[0]) + 5 * x[0]**4
         x = np.array([1.5])
         p = np.array([5])
-        assert AutoDiff(f).get_derivative(x, p) == np.array([np.dot(
-            np.array([-1 + 20 * x**3 + (np.cos(x))**2 - (np.sin(x))**2]), p)])
+        assert AutoDiff(f).get_derivative(x, p) == np.array([
+            np.dot(
+                np.array([-1 + 20 * x**3 + (np.cos(x))**2 - (np.sin(x))**2]),
+                p)
+        ])
 
         # scalar function with m=1 passed as vector and default seed
         f = lambda x: -x + cos(x) * sin(x) + 5 * x**4

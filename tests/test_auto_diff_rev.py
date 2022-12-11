@@ -59,7 +59,7 @@ class TestAutoDiffReverse:
         f = lambda x: 2
         x = 1.5
         assert AutoDiff(f).get_jacobian(x, mode='r') == 0
-        
+
         # scalar function with m=1
         f = lambda x: -x + cos(x) * sin(x) + 5 * x**4
         x = 1.5
@@ -74,9 +74,8 @@ class TestAutoDiffReverse:
 
         # scalar function with m=2 passed as list
         f = lambda x: x[0] * sin(x[1])
-        assert AutoDiff(f).get_jacobian([1, math.pi], 
-                                        mode="r") == approx(
-                                                np.array([[0.0, -1]]))
+        assert AutoDiff(f).get_jacobian([1, math.pi], mode="r") == approx(
+            np.array([[0.0, -1]]))
 
         # scalar function with a nested list (invalid input)
         f = lambda x: x[0] * sin(x[1])
@@ -117,7 +116,8 @@ class TestAutoDiffReverse:
 
         res = np.array([[f_p_0, f_p_1, f_p_2], [g_p_0, g_p_1, g_p_2],
                         [h_p_0, h_p_1, h_p_2]])
-        assert AutoDiff([f, g, h]).get_jacobian(x, mode="REVERSE") == approx(res)
+        assert AutoDiff([f, g, h]).get_jacobian(x,
+                                                mode="REVERSE") == approx(res)
 
     def test_get_derivative(self):
         # scalar function with m=1 and default_seed
@@ -260,18 +260,44 @@ class TestAutoDiffReverse:
             np.dot(res, p.reshape(-1, 1))))
 
     def test_forward_reverse_match(self):
-        f = lambda x: 1/x + x*x**2 - cos(1/x) + sin(cos(1/x)) - log_b(x, 5)/sinh(x**2)
+        # complicated scalar function with 1d input
+        f = lambda x: 1 / x + x * x**2 - cos(1 / x) + sin(cos(1 / x)) - log_b(
+            x, 5) / sinh(x**2)
         x = 0.5
         adf = AutoDiff(f)
         adr = AutoDiff(f)
 
-        assert adf.get_derivative(x, mode="f") == approx(adr.get_derivative(x, mode="r"))
+        assert adf.get_derivative(x, mode="f") == approx(
+            adr.get_derivative(x, mode="r"))
 
-        f = lambda x: 1/x + x*x**2 - cos(1/x) + sin(cos(1/x)) - log_b(x, 5)/sin(x**2)
-        g = lambda x: x*(1/x + x*x**2 - cos(1/x) + sin(cos(1/x)) - log_b(x, 5)/sin(x**2)) - exp_b(x/20, 6)-cos(x)
-        h = lambda x: x**(-1/2) - tan(x**(-1/2))*(x+x**(-0.5))-1000*x*20*exp(x-6) +(x-6)**15
+        # complicated vector function with 1d input
+        f = lambda x: 1 / x + x * x**2 - cos(1 / x) + sin(cos(1 / x)) - log_b(
+            x, 5) / sin(x**2)
+        g = lambda x: x * (1 / x + x * x**2 - cos(1 / x) + sin(cos(1 / x)) -
+                           log_b(x, 5) / sin(x**2)) - exp_b(x / 20, 6) - cos(x)
+        h = lambda x: x**(-1 / 2) - tan(x**(-1 / 2)) * (x + x**(
+            -0.5)) - 1000 * x * 20 * exp(x - 6) + (x - 6)**15
         x = 100
-        adf = AutoDiff([f,g,h])
-        adr = AutoDiff([f,g,h])
-        assert np.allclose(adf.get_derivative(x, mode="f"), adr.get_derivative(x, mode="r"), rtol=1e-15, atol=1e-15)
+        adf = AutoDiff([f, g, h])
+        adr = AutoDiff([f, g, h])
+        assert np.allclose(adf.get_derivative(x, mode="f"),
+                           adr.get_derivative(x, mode="r"),
+                           rtol=1e-15,
+                           atol=1e-15)
 
+        # complicated vector function with 2d input
+        f = lambda x: sin(x[0] * (x[1] + 1) - cos(x[1] + 1) / x[0]**2) - x[
+            0]**2 + x[0] / (x[0] + 1) * exp(x[1]**2)
+        g = lambda x: x[1] * (1 / x[0] + x[1] * x[0]**2 - cos(1 / x[0]) + sin(
+            cos(1 / x[0])) - log_b(x[0], 5) / sin(x[0]**2)) - exp_b(
+                x[0] / 20, 6) - cos(x[1])
+        h = lambda x: x[0]**(-1 / 2) - tan(x[0]**(-1 / 2)) * (x[0] + x[0]**(
+            -0.5)) - 1000 * x[1] * 20 * exp(x[0] - 6) + (x[0] - 6)**15
+        x = np.array([0.5, -11])
+        adf = AutoDiff([f, g, h])
+        adr = AutoDiff([f, g, h])
+        p = np.array([2, 3])
+        assert np.allclose(adf.get_derivative(x, mode="f", seed_vector=p),
+                           adr.get_derivative(x, mode="r", seed_vector=p),
+                           rtol=1e-15,
+                           atol=1e-15)
