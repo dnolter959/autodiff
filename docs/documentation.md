@@ -124,7 +124,7 @@ python3 -m venv .venv
 source .venv/bin/activate
 
 # Install required packages
-python3 -m pip install numpy pytest pytest-cov topsort
+python3 -m pip install numpy pytest pytest-cov toposort
 
 # Run tests
 cd tests && ./run_tests.sh pytest -v && cd ..
