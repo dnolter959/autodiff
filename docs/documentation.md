@@ -150,7 +150,7 @@ cd team14
 python -m pip install numpy pytest pytest-cov toposort
 
 # set PYTHONPATH
-export PYTHONPATH="${pwd}/src":${PYTHONPATH}
+export PYTHONPATH="$(pwd -P)/src":${PYTHONPATH}
 
 # Run tests
 cd tests && ./run_tests.sh pytest -v && cd ..
