@@ -88,7 +88,7 @@ The evaluation trace allows us to utilize the components of our computational gr
 | $v_{-1} = x_1 = 1.5$           | $D_pv_{-1} = 1$                                             |
 | $v_0 = x_2 = 0.5$              | $D_pv_{0} = 0$                                              |
 | $v_1 = \frac{v_{-1}}{v_0} = 3$ | $D_pv_1 = \frac{(v_0 D_pv_{-1} - v_{-1}D_pv_0)}{v_o^2} = 2$ |
-| $v_2 = sin(v_1)$ = 0.141       | $D_pv_2 = cos(v_1) \cdot D_pv_1 = -1.98$                    |
+| $v_2 = sin(v_1) = 0.141$       | $D_pv_2 = cos(v_1) \cdot D_pv_1 = -1.98$                    |
 | $v_3 = exp(v_0) = 1.649$       | $D_pv_3 = v_3 \cdot D_pv_0 = 0$                             |
 | $v_4 = v_1 - v_3 = 1.351$      | $D_pv_4 = D_pv_1 - D_pv_3 = 2$                              |
 | $v_5 = v_2 + v_3 = 1.79$       | $D_pv_5 = D_pv_2 + D_pv_3 = 1.98$                           |
@@ -103,16 +103,16 @@ Another way to perform automatic differentiation is through the reverse mode. Un
 
 For the example above, the reversre mode will work as follows
 
-| Forward Pass (Top -> Bottom)                                                                                                  | Reverse Pass (Bottom -> Top)                                                                                               |
-| ---                                                                                                                           | ---                                                                                                                        |
-| $v_{-1} = x_1 = 1.5$, $\frac{\partial v_{-1}}{\partial x_1} = 1$                                                              | $\bar{v}_{-1} = \bar{v}_1\cdot\frac{\partial v_{1}}{\partial v_{-1}} = .905$                                               |
-| $v_0 = x_2 = 0.5$, $\frac{\partial v_{0}}{\partial x_2} = 1$                                                                  | $\bar{v}_0 = \bar{v}_1\cdot\frac{\partial v_{1}}{\partial v_0}+\bar{v}_3\cdot\frac{\partial v_{3}}{\partial v_0} = .452$   |
-| $v_1 = \frac{v_{-1}}{v_0} = 3$, $\frac{\partial v_{1}}{\partial v_{-1}} = 2$, $\frac{\partial v_{1}}{\partial v_0} = -.444$   | $\bar{v}_1 = \bar{v}_2\cdot\frac{\partial v_{2}}{\partial v_1}+\bar{v}_4\cdot\frac{\partial v_{4}}{\partial v_1} = .155$   |
-| $v_2 = sin(v_1) = 0.141$, $\frac{\partial v_{2}}{\partial v_{1}} = -.990$                                                     | $\bar{v}_2 = \bar{v}_5\cdot\frac{\partial v_{5}}{\partial v_2} = 1.351$                                                    |
-| $v_3 = exp(v_0) = 1.649$, $\frac{\partial v_{3}}{\partial v_{0}} = 1.649$                                                     | $\bar{v}_3 = \bar{v}_4\cdot\frac{\partial v_{4}}{\partial v_3}+\bar{v}_5\cdot\frac{\partial v_{5}}{\partial v_3} = -.439$  |
-| $v_4 = v_1 - v_3 = 1.351$, $\frac{\partial v_{4}}{\partial v_{1}} = 1$, $\frac{\partial v_{4}}{\partial v_3} = -1$            | $\bar{v}_4 = \bar{v}_6\cdot\frac{\partial v_{6}}{\partial v_4} = 1.79$                                                     |
-| $v_5 = v_2 + v_3 = 1.79$, $\frac{\partial v_{5}}{\partial v_{2}} = 1$, $\frac{\partial v_{5}}{\partial v_3} = 1$              | $\bar{v}_5 = \bar{v}_6\cdot\frac{\partial v_{6}}{\partial v_5} = 1.351$                                                    |
-| $v_6 = v_5 \cdot v_4 = 2.418$, $\frac{\partial v_{6}}{\partial v_{5}} = 1.351$, $\frac{\partial v_{6}}{\partial v_4} = 1.79$  | $\bar{v}_6 = 1$                                                                                                            |
+| Forward Pass (Top -> Bottom)                                                                                                 | Reverse Pass (Bottom -> Top)                                                                                                 |
+| ---                                                                                                                          | ---                                                                                                                          |
+| $v_{-1} = x_1 = 1.5$, $\frac{\partial v_{-1}}{\partial x_1} = 1$                                                             | $\bar{v}_{-1} = \bar{v}_1\cdot\frac{\partial v_{1}}{\partial v_{-1}} = .905$                                                 |
+| $v_0 = x_2 = 0.5$, $\frac{\partial v_{0}}{\partial x_2} = 1$                                                                 | $\bar{v}_0 = \bar{v}_1\cdot\frac{\partial v_{1}}{\partial v_0}+\bar{v}_3\cdot\frac{\partial v_{3}}{\partial v_0} = -.925$    |
+| $v_1 = \frac{v_{-1}}{v_0} = 3$, $\frac{\partial v_{1}}{\partial v_{-1}} = 2$, $\frac{\partial v_{1}}{\partial v_0} = -.444$  | $\bar{v}_1 = \bar{v}_2\cdot\frac{\partial v_{2}}{\partial v_1}+\bar{v}_4\cdot\frac{\partial v_{4}}{\partial v_1} = .453$     |
+| $v_2 = sin(v_1) = 0.141$, $\frac{\partial v_{2}}{\partial v_{1}} = -.990$                                                    | $\bar{v}_2 = \bar{v}_5\cdot\frac{\partial v_{5}}{\partial v_2} = 1.351$                                                      |
+| $v_3 = exp(v_0) = 1.649$, $\frac{\partial v_{3}}{\partial v_{0}} = 1.649$                                                    | $\bar{v}_3 = \bar{v}_4\cdot\frac{\partial v_{4}}{\partial v_3}+\bar{v}_5\cdot\frac{\partial v_{5}}{\partial v_3} = -.439$    |
+| $v_4 = v_1 - v_3 = 1.351$, $\frac{\partial v_{4}}{\partial v_{1}} = 1$, $\frac{\partial v_{4}}{\partial v_3} = -1$           | $\bar{v}_4 = \bar{v}_6\cdot\frac{\partial v_{6}}{\partial v_4} = 1.79$                                                       |
+| $v_5 = v_2 + v_3 = 1.79$, $\frac{\partial v_{5}}{\partial v_{2}} = 1$, $\frac{\partial v_{5}}{\partial v_3} = 1$             | $\bar{v}_5 = \bar{v}_6\cdot\frac{\partial v_{6}}{\partial v_5} = 1.351$                                                      |
+| $v_6 = v_5 \cdot v_4 = 2.418$, $\frac{\partial v_{6}}{\partial v_{5}} = 1.351$, $\frac{\partial v_{6}}{\partial v_4} = 1.79$ | $\bar{v}_6 = 1$                                                                                                              |
 
 ## How to Use AutoDiff
 
