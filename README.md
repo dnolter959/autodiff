@@ -13,7 +13,7 @@
 
 ### Installation
 
-We will provide separate (but similar) installation instructions for 1) typical users and 2) fellow developers. In each case we will assume the user will install in a virtual environment, and will show correspond steps. 
+We will provide separate (but similar) installation instructions for 1) typical users and 2) fellow developers.
 
 If a user (typical or developer) wishes to install our package in a virtual environment, they may begin by running the following commands. Within a virtual environment, a user must install package dependencies (as specified below: numpy, pytest, toposort, pytest-cov); but this step is not necessary if these dependencies are already installed within the user's local environment. 
 
