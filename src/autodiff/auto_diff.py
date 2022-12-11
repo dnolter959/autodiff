@@ -207,6 +207,11 @@ class AutoDiff:
 
         assert var_index is None or isinstance(var_index, int)
 
+        if isinstance(point,
+                      (list, np.ndarray)) and (var_index < 0
+                                               or var_index >= len(point)):
+            raise IndexError("index out of bound")
+
         self._check_vector(point)
 
         if isinstance(point, (int, float)):

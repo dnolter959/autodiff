@@ -190,6 +190,16 @@ class TestAutoDiff:
             ad = AutoDiff(f)
             ad.get_partial(np.array([[1], [math.pi]]), 0)
 
+        # scalar function with non-integer index
+        with pytest.raises(AssertionError):
+            ad = AutoDiff(f)
+            ad.get_partial(np.array([1, math.pi]), 0.5)
+
+        # scalar function with out-of-bound index
+        with pytest.raises(IndexError):
+            ad = AutoDiff(f)
+            ad.get_partial(np.array([1, math.pi]), 2)
+
         # vector function with m=1
         f = lambda x: exp(x) * (-x**(-1 / 2))
         g = lambda x: cos(x) + log(x)
