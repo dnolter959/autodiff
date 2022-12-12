@@ -79,36 +79,36 @@ from autodiff.utils.auto_diff_math import *
 ```python
 f = lambda x: x**2 + 2*x
 ad = AutoDiff(f)
-value = 2
+x = 2
 
-derivative = ad.get_value(value) # 8
+value = ad.get_value(x) # 8
 ```
 
 **Case 1: $\mathbb{R} \rightarrow \mathbb{R}$**
 ```python
 f = lambda x: x**2 + 2*x
 ad = AutoDiff(f)
-value = 2
+x = 2
 
-derivative = ad.get_derivative(value) # 6 # (Defualt mode is forward)
-derivative = ad.get_derivative(value, mode="reverse") # 6
+derivative = ad.get_derivative(x) # 6 # (Defualt mode is forward)
+derivative = ad.get_derivative(x, mode="reverse") # 6
 ```
 
 **Case 2: $\mathbb{R}^n \rightarrow \mathbb{R}$ ($n \gt 1$)**
 ```python
 f = lambda x: x[0]**2 + 2*x[1]
 ad = AutoDiff(f)
-value = [2, 3] # Order must match the indexing of x in f definition
+x = [2, 3] # Order must match the indexing of x in f definition
 
-jacobian = ad.get_jacobian(value) # [[4, 2]]
+jacobian = ad.get_jacobian(x) # [[4, 2]]
 
 # Take derivative with respect to x[0]
 seed_vector = np.array([1, 0])
-derivative = ad.get_derivative(value, seed_vector) # 4
+derivative = ad.get_derivative(x, seed_vector) # 4
 
 # Take derivative with respect to x[1]
 seed_vector = np.array([0, 1])
-derivative = ad.get_derivative(value, seed_vector) # 2
+derivative = ad.get_derivative(x, seed_vector) # 2
 ```
 
 **Case 3: $\mathbb{R} \rightarrow \mathbb{R}^m$ ($m \gt 1$)**
@@ -116,10 +116,10 @@ derivative = ad.get_derivative(value, seed_vector) # 2
 f1 = lambda x: x**2 + 2*x
 f2 = lambda x: sin(x)
 ad = AutoDiff([f1, f2])
-value = 2
+x = 2
 
-jacobian = ad.get_jacobian(value) # [[6], [cos(2)]]
-derivative = ad.get_derivative(value) # [[6], [cos(2)]]
+jacobian = ad.get_jacobian(x) # [[6], [cos(2)]]
+derivative = ad.get_derivative(x) # [[6], [cos(2)]]
 ``` 
 
 **Case 4: $\mathbb{R}^n \rightarrow \mathbb{R}^m$ ($n, m \gt 1$)**
@@ -127,15 +127,15 @@ derivative = ad.get_derivative(value) # [[6], [cos(2)]]
 f1 = lambda x: x[0]**2 + 2*x[1]
 f2 = lambda x: sin(x[0]) + 3*x[1]
 ad = AutoDiff([f1, f2])
-value = [2, 5] # Ordering specified by index of variables in f1, f2
+x = [2, 5] # Ordering specified by index of variables in f1, f2
 
-jacobian = ad.get_jacobian(value) # [[4, 2], [cos(2), 3]]
+jacobian = ad.get_jacobian(x) # [[4, 2], [cos(2), 3]]
 
 seed_vector = np.array([1, 0])
-derivative = ad.get_derivative(value, seed_vector) # [[4], [cos(2)]]
+derivative = ad.get_derivative(x, seed_vector) # [[4], [cos(2)]]
 
 seed_vector = np.array([-2, 1])
-derivative = ad.get_derivative(value, seed_vector) # [[-6], [-2cos(2) + 3]]
+derivative = ad.get_derivative(x, seed_vector) # [[-6], [-2cos(2) + 3]]
 ```
 
 ## Documentation

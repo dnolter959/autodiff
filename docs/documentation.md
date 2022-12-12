@@ -179,8 +179,8 @@ Below we discuss usage of the interface functions included in `AutoDiff`. For de
 A function callable or list of callables is all that's needed to initiate an AutoDiff object. For example, here we initiate an AutoDiff object `ad` containing the vector function $\mathbf{f} = [f_1, f_2]^T$
 
 ```python
-f1 = lambda(x): x[0]+x[1]
-f2 = lambda(x): x[0]*x[1]
+f1 = lambda x: x[0]+x[1]
+f2 = lambda x: x[0]*x[1]
 ad = AutoDiff([f1, f2])
 ```
 Note that, as shown in the example above, if the function takes an $\mathbb{R}^m$ input, the argument for the function should be treated as an array with integer indices, and the index `k-1` should be used to indicate $x_k$ for $k\in \{1,...,m\}$, i.e. `x[0]` represents $x_1$.
@@ -224,7 +224,7 @@ p = np.array([1,0])
 ad.get_derivative(point, seed_vector = p)
 ```
 
-The next function that may come in handy is `get_partial`. This function can be used to obtain only the partial derivative with respect to one specific independent variable when there are multiple:
+The next function that may come in handy is `get_partial`. This function can be used to obtain only the partial derivative with respect to one specific independent variable when there are multiple. Note that `get_partial` only performs forward mode as it only computes partials for one derivative variable.
 ```python
 get_partial(point: Union[int, float, list, np.ndarray], var_index = None)
 ```
