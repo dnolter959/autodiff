@@ -163,9 +163,6 @@ class AutoDiff:
 
             else:
                 val = func(point)
-                #assert isinstance(val,
-                #                  (int, float, DualNumber,
-                #                   CompGraphNode)), "invalid function value"
 
                 if isinstance(val, (int, float)):
                     values += [val]
