@@ -195,7 +195,7 @@ where `point` should be an `int` or `float` object if $x\in\mathbb{R}$ and a pyt
 
 ```python
 # evaluate function value at point
-point = np.array([1, 1])
+point = [1, 1]
 ad.get_value(point)
 ```
 
