@@ -185,17 +185,17 @@ ad = AutoDiff([f1, f2])
 ```
 Note that, as shown in the example above, if the function takes an $\mathbb{R}^m$ input, the argument for the function should be treated as an array with integer indices, and the index `k-1` should be used to indicate $x_k$ for $k\in \{1,...,m\}$, i.e. `x[0]` represents $x_1$.
 
-To evaluate the function values at a given point $\mathbf{x}$ we use `get_value`, the function arguments are
+To evaluate the function values at a given point $\mathbf{x}$ we use `get_value`, the function arguments are (note that the below code block is only used to show the argument types and not intended to be used as actual code)
 
 ```python
-ad.get_value(point: Union[int, float, list, np.ndarray])
+get_value(point: Union[int, float, list, np.ndarray])
 ```
 
 where `point` should be an `int` or `float` object if $x\in\mathbb{R}$ and a python list or numpy array if $\mathbf{x}\in\mathbb{R}^m$. An example would then be
 
 ```python
 # evaluate function value at point
-point = np.array([1, 1)]
+point = np.array([1, 1])
 ad.get_value(point)
 ```
 
@@ -219,7 +219,7 @@ get_derivative(point: Union[int, float, list, np.ndarray], seed_vector=None, mod
  In the example below we have an input of $\mathbf{x}=[x_1, x_2]^T$ and we obtain the partial derivative with respect to $x_2$, evaluated at $[1, 1]^T$:
  
 ```python
-point = np.array([1, 1)]
+point = np.array([1, 1])
 p = np.array([1,0])
 ad.get_derivative(point, seed_vector = p)
 ```
@@ -231,7 +231,7 @@ get_partial(point: Union[int, float, list, np.ndarray], var_index = None)
  where the coordinates are passed to `point` and $k-1$ is passed to `var_index`. If the function has one single input (in which case `point` must be a scalar), var_index is ignored and the partial derivative is the derivative evaluated at `point`. In the example below we have an input of $\mathbf{x}=[x_1, x_2]^T$ and we obtain the partial derivative with respect to $x_2$, evaluated at $[1, 1]^T$:
 
 ```python
-point = np.array([1, 1)]
+point = np.array([1, 1])
 ad.get_partial(point, var_index = 1)
 ```
 More sample usgaes of the aforementioned functions are inluded as Demos below. 
