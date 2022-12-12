@@ -163,16 +163,15 @@ class AutoDiff:
 
             else:
                 val = func(point)
-                assert isinstance(val,
-                                  (int, float, DualNumber,
-                                   CompGraphNode)), "invalid function value"
 
                 if isinstance(val, (int, float)):
                     values += [val]
                 elif isinstance(val, DualNumber):
                     values += [val.real]
-                else:
+                elif isinstance(val, CompGraphNode):
                     values += [val.value]
+                else:
+                    values += [val.item()]
 
         # return scalar for scalar input
         if isinstance(point, (int, float)) and len(values) == 1:
@@ -503,3 +502,4 @@ class AutoDiff:
 
         self.derivative = derivative
         return self.derivative
+
