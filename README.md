@@ -1,5 +1,5 @@
-![example workflow](https://github.com/dnolter959/autodiff/actions/workflows/test.yml/badge.svg)
-![second badge](https://github.com/dnolter959/autodiff/actions/workflows/code_coverage.yml/badge.svg)
+![test](https://github.com/dnolter959/autodiff/actions/workflows/test.yml/badge.svg)
+![coverage](https://github.com/dnolter959/autodiff/actions/workflows/code_coverage.yml/badge.svg)
 
 # team14-autodiff
 
