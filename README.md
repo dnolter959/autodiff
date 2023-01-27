@@ -1,7 +1,9 @@
-![test](https://github.com/dnolter959/autodiff/actions/workflows/test.yml/badge.svg)
-![coverage](https://github.com/dnolter959/autodiff/actions/workflows/code_coverage.yml/badge.svg)
 
 # team14-autodiff
+
+## Context
+
+This Python package was created as part of a four-person group project for [CS 107](https://harvard-iacs.github.io/2022-CS107/), "Systems Development for Computational Science", a course offered at Harvard School of Engineering and Applied Sciences. The code is fully tested, and a code coverage report is available here: https://dnolter959.github.io/autodiff/.
 
 ## Overiew
 
@@ -33,7 +35,7 @@ python -m pip install numpy pytest pytest-cov toposort
 #### 2) Installation for developers
 ```sh
 # Clone repo
-git clone git@code.harvard.edu:CS107/team14.git
+git clone git@github.com:dnolter959/autodiff.git
 cd team14
 
 # Install necessary dependencies
@@ -64,7 +66,7 @@ Below we show typical uses for our package. It can be used to calculate derivati
  - Derivatives and jacobians can be calculated using either forward or reverse mode; the default option is forward; if you would like to specify reverse mode include the option `mode="reverse"` in the `get_derivative` or  `get_jacobian` functions.
  - In the event that you would like to take a derivative of a function with multiple inputs, you must specify the variable with which you wish to take the derivative with respect to. In particular, you make this specification using a generalized `seed_vector`. See example in Case 2 below. 
 
-More detailed documentation is available [here](https://code.harvard.edu/CS107/team14/blob/a317cdad86199a2ba208187f3bd9e13f92d4f555/docs/documentation.md). 
+More detailed documentation is available [here](https://github.com/dnolter959/autodiff/blob/main/docs/documentation.md). 
 
 **Imports**
 ```python
